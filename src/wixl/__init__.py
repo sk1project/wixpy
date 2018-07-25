@@ -43,8 +43,12 @@ import wix
 PROJECT = 'pyWiXL'
 VERSION = '0.1'
 
+PYWIXL_ENGINE = 0
+WIXL_ENGINE = 1
+WIX_ENGINE = 2
 
-def build(json_data, xml_only=False, stdout=False):
+
+def build(json_data, xml_only=False, engine=WIXL_ENGINE, stdout=False):
     json_data['_pkgname'] = PROJECT
     json_data['_pkgver'] = VERSION
 
@@ -69,26 +73,35 @@ def build(json_data, xml_only=False, stdout=False):
     output_path = os.path.join(json_data.get('_OutputDir', './'), output)
 
     if xml_only:
+        if not engine == WIXL_ENGINE:
+            wix.WIXL = False
         if stdout:
             wix.Wix(json_data).write_xml(sys.stdout)
         else:
             print 'Writing XML into %s...' % output_path
             with open(output_path, 'wb') as fp:
                 wix.Wix(json_data).write_xml(fp)
-    elif wix.WIXL:
+
+    elif engine == WIXL_ENGINE:
         xml_file = tempfile.NamedTemporaryFile(delete=True)
         with open(xml_file.name, 'wb') as fp:
             wix.Wix(json_data).write_xml(fp)
         arch = '-a x64' if json_data.get('Win64') else ''
         os.system('wixl -v %s -o %s %s' % (arch, output_path, xml_file.name))
-    elif not wix.WIXL:
+
+    elif engine == WIX_ENGINE:
         raise Exception('WiX backend support is not implemented yet!')
+
+    elif engine == PYWIXL_ENGINE:
+        if os.name == 'nt':
+            raise Exception('pyWiXL backend is not supported on MS Windows!')
+        import libmsi
+        libmsi.MsiDatabase(wix.Wix(json_data)).write_msi(output_path)
 
 
 if __name__ == "__main__":
     current_path = os.path.dirname(os.path.abspath(__file__))
     path = os.path.dirname(current_path)
-    # wix.WIXL = False
     MSI_DATA = {
         # Required
         'Name': PROJECT,
@@ -118,6 +131,6 @@ if __name__ == "__main__":
         '_OutputDir': os.path.expanduser('~'),
         '_SkipHidden': True,
     }
-    build(MSI_DATA, xml_only=True, stdout=True)
+    build(MSI_DATA, xml_only=True, engine=WIX_ENGINE, stdout=True)
     # build(MSI_DATA, xml_only=True)
     # build(MSI_DATA)
