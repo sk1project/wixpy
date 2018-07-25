@@ -49,7 +49,7 @@ WIXL_ENGINE = 1
 WIX_ENGINE = 2
 
 
-def build(json_data, xml_only=False, engine=WIXL_ENGINE, stdout=False):
+def build(json_data, xml_only=False, engine=PYWIXL_ENGINE, stdout=False):
     json_data['_pkgname'] = PROJECT
     json_data['_pkgver'] = VERSION
 
@@ -97,7 +97,10 @@ def build(json_data, xml_only=False, engine=WIXL_ENGINE, stdout=False):
         if os.name == 'nt':
             raise Exception('pyWiXL backend is not supported on MS Windows!')
         import libmsi
-        libmsi.MsiDatabase(wix.Wix(json_data)).write_msi(output_path)
+        wixutils.echo_msg('Building Wix model...')
+        model = wix.Wix(json_data)
+        wixutils.echo_msg('Writing MSI package into %s...' % output_path)
+        libmsi.MsiDatabase(model).write_msi(output_path)
 
 
 if __name__ == "__main__":
@@ -132,6 +135,7 @@ if __name__ == "__main__":
         '_OutputDir': os.path.expanduser('~'),
         '_SkipHidden': True,
     }
-    build(MSI_DATA, xml_only=True, engine=WIX_ENGINE, stdout=True)
+    # build(MSI_DATA, xml_only=True, engine=WIX_ENGINE, stdout=True)
     # build(MSI_DATA, xml_only=True)
-    # build(MSI_DATA)
+    # build(MSI_DATA, engine=WIXL_ENGINE)
+    build(MSI_DATA)
