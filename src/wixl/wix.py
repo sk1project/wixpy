@@ -20,7 +20,8 @@
 import os
 import wixutils
 
-WIXL = True
+WIXL = False
+
 XMLNS = 'http://schemas.microsoft.com/wix/2006/wi'
 INDENT = 4
 WRAP = 3

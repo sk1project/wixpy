@@ -73,20 +73,24 @@ def build(json_data, xml_only=False, engine=PYWIXL_ENGINE, stdout=False):
         output += '.wxs'
     output_path = os.path.join(json_data.get('_OutputDir', './'), output)
 
+    if engine == WIXL_ENGINE:
+        wix.WIXL = True
+
+    wixutils.echo_msg('Building Wix model...')
+    model = wix.Wix(json_data)
+
     if xml_only:
-        if not engine == WIXL_ENGINE:
-            wix.WIXL = False
         if stdout:
-            wix.Wix(json_data).write_xml(sys.stdout)
+            model.write_xml(sys.stdout)
         else:
             wixutils.echo_msg('Writing XML into %s...' % output_path)
             with open(output_path, 'wb') as fp:
-                wix.Wix(json_data).write_xml(fp)
+                model.write_xml(fp)
 
     elif engine == WIXL_ENGINE:
         xml_file = tempfile.NamedTemporaryFile(delete=True)
         with open(xml_file.name, 'wb') as fp:
-            wix.Wix(json_data).write_xml(fp)
+            model.write_xml(fp)
         arch = '-a x64' if json_data.get('Win64') else ''
         os.system('wixl -v %s -o %s %s' % (arch, output_path, xml_file.name))
 
@@ -97,10 +101,10 @@ def build(json_data, xml_only=False, engine=PYWIXL_ENGINE, stdout=False):
         if os.name == 'nt':
             raise Exception('pyWiXL backend is not supported on MS Windows!')
         import libmsi
-        wixutils.echo_msg('Building Wix model...')
-        model = wix.Wix(json_data)
         wixutils.echo_msg('Writing MSI package into %s...' % output_path)
         libmsi.MsiDatabase(model).write_msi(output_path)
+
+    model.destroy()
 
 
 if __name__ == "__main__":
