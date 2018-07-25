@@ -17,7 +17,7 @@
 # 	You should have received a copy of the GNU General Public License
 # 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import sys
 import uuid
 
 
@@ -27,3 +27,16 @@ def get_guid():
 
 def get_id(prefix=''):
     return '%s%s' % (prefix, get_guid().replace('-', ''))
+
+
+STDOUT_ENDC = '\033[0m'
+
+
+def echo_msg(msg, newline=True, flush=True, code=''):
+    if newline:
+        msg += '\n'
+    if code:
+        msg = code + msg + STDOUT_ENDC
+    sys.stdout.write(msg)
+    if flush:
+        sys.stdout.flush()
