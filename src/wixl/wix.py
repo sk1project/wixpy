@@ -20,8 +20,6 @@
 import os
 import wixutils
 
-# from wixutils import *
-
 WIXL = True
 XMLNS = 'http://schemas.microsoft.com/wix/2006/wi'
 INDENT = 4
@@ -168,6 +166,8 @@ OS_CONDITION = {
     '600': 'Windows Vista, Windows Server 2008',
     '601': 'Windows 7, Windows Server 2008R2',
     '602': 'Windows 8, Windows Server 2012',
+    '603': 'Windows 8.1, Windows Server 2012 R2',
+    '1000': 'Windows 10, Windows Server 2016',
 }
 
 
@@ -236,7 +236,7 @@ class WixComponent(WixElement):
     is_comp = True
 
     def __init__(self, parent, data, path, rel_path):
-        super(WixComponent, self).__init__(parent, self.tag, 
+        super(WixComponent, self).__init__(parent, self.tag,
                                            Guid=wixutils.get_guid(), **data)
         self.add(WixFile(self, data, path, rel_path))
         self.set(Id=wixutils.get_id('cmp'))
@@ -271,7 +271,7 @@ class WixInstallDir(WixElement):
     is_dir = True
 
     def __init__(self, parent, data):
-        super(WixInstallDir, self).__init__(parent, self.tag, 
+        super(WixInstallDir, self).__init__(parent, self.tag,
                                             Id='INSTALLDIR',
                                             Name=data.get('_InstallDir'))
         path = data.get('_SourceDir')
@@ -306,7 +306,7 @@ class WixTargetDir(WixElement):
 
     def __init__(self, parent, data):
         self.comment = 'Installed file tree'
-        super(WixTargetDir, self).__init__(parent, self.tag, 
+        super(WixTargetDir, self).__init__(parent, self.tag,
                                            Id='TARGETDIR',
                                            Name='SourceDir')
         self.add(WixPfDir(self, data))
@@ -365,7 +365,7 @@ class WixShortcutComponent(WixElement):
     def __init__(self, parent, data, shortcut_data):
         pid = wixutils.get_id()
         guid = wixutils.get_guid()
-        super(WixShortcutComponent, self).__init__(parent, self.tag, 
+        super(WixShortcutComponent, self).__init__(parent, self.tag,
                                                    Guid=guid, **data)
         self.add(WixShortcut(self, shortcut_data))
         self.add(WixRemoveFolder(self, Id=shortcut_data['DirectoryRef'],
