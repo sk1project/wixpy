@@ -1,0 +1,6 @@
+Ubuntu 16.04
+------------
+python
+python-gi
+gir1.2-libmsi0
+gir1.2-libgcab-1.0
