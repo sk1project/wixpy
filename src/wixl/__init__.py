@@ -39,6 +39,7 @@ import sys
 import tempfile
 
 import wix
+import wixutils
 
 PROJECT = 'pyWiXL'
 VERSION = '0.1'
@@ -78,7 +79,7 @@ def build(json_data, xml_only=False, engine=WIXL_ENGINE, stdout=False):
         if stdout:
             wix.Wix(json_data).write_xml(sys.stdout)
         else:
-            print 'Writing XML into %s...' % output_path
+            wixutils.echo_msg('Writing XML into %s...' % output_path)
             with open(output_path, 'wb') as fp:
                 wix.Wix(json_data).write_xml(fp)
 
