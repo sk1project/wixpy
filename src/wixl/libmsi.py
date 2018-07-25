@@ -35,8 +35,3 @@ class MsiDatabase(object):
         # TODO: write info
         # TODO: write tables
         db.commit()
-
-
-if __name__ == "__main__":
-    db = Libmsi.Database.new('/home/igor/test.msi', Libmsi.DbFlags.CREATE, None)
-    db.commit()
