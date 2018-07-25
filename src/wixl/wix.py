@@ -20,7 +20,7 @@
 import os
 import uuid
 
-WIXL = os.name != 'nt'
+WIXL = True
 XMLNS = 'http://schemas.microsoft.com/wix/2006/wi'
 INDENT = 4
 WRAP = 3
