@@ -18,7 +18,9 @@
 # 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import uuid
+import wixutils
+
+# from wixutils import *
 
 WIXL = True
 XMLNS = 'http://schemas.microsoft.com/wix/2006/wi'
@@ -72,14 +74,6 @@ def defaults():
     }
 
 
-def get_guid():
-    return str(uuid.uuid4()).upper()
-
-
-def get_id(prefix=''):
-    return '%s%s' % (prefix, get_guid().replace('-', ''))
-
-
 class WixElement(object):
     parent = None
     childs = None
@@ -98,9 +92,9 @@ class WixElement(object):
         self.attrs = {key: value for key, value in kwargs.items()
                       if key in ATTRS[self.tag]}
         if 'Id' not in self.attrs or self.attrs['Id'] == '*':
-            self.attrs['Id'] = get_id()
+            self.attrs['Id'] = wixutils.get_id()
         if self.attrs.get('Guid') == '*':
-            self.attrs['Guid'] = get_guid()
+            self.attrs['Guid'] = wixutils.get_guid()
 
     def destroy(self):
         for child in self.childs:
@@ -232,7 +226,7 @@ class WixFile(WixElement):
 
     def __init__(self, parent, data, path, rel_path):
         self.path = path
-        pid = get_id('fil')
+        pid = wixutils.get_id('fil')
         super(WixFile, self).__init__(parent, self.tag, **data)
         self.set(Id=pid, Name=os.path.basename(rel_path), Source=path)
 
@@ -243,9 +237,9 @@ class WixComponent(WixElement):
 
     def __init__(self, parent, data, path, rel_path):
         super(WixComponent, self).__init__(parent, self.tag, 
-                                           Guid=get_guid(), **data)
+                                           Guid=wixutils.get_guid(), **data)
         self.add(WixFile(self, data, path, rel_path))
-        self.set(Id=get_id('cmp'))
+        self.set(Id=wixutils.get_id('cmp'))
         COMPONENTS.append(self.attrs['Id'])
 
 
@@ -257,7 +251,7 @@ class WixDirectory(WixElement):
         name = kwargs['Name'] if 'Name' in kwargs \
             else os.path.basename(rel_path)
         pid = kwargs['Id'] if 'Id' in kwargs \
-            else get_id('dir')
+            else wixutils.get_id('dir')
         super(WixDirectory, self).__init__(parent, self.tag, Id=pid, Name=name)
 
         if data is not None:
@@ -369,8 +363,8 @@ class WixShortcutComponent(WixElement):
     tag = 'Component'
 
     def __init__(self, parent, data, shortcut_data):
-        pid = get_id()
-        guid = get_guid()
+        pid = wixutils.get_id()
+        guid = wixutils.get_guid()
         super(WixShortcutComponent, self).__init__(parent, self.tag, 
                                                    Guid=guid, **data)
         self.add(WixShortcut(self, shortcut_data))
@@ -397,7 +391,7 @@ class WixProduct(WixElement):
 
     def __init__(self, parent, data):
         super(WixProduct, self).__init__(parent, self.tag, **data)
-        self.set(Id=get_guid())
+        self.set(Id=wixutils.get_guid())
         self.add(WixPackage(self, data))
         COMPONENTS[:] = []
         self.add(WixMedia(self, data))
@@ -424,7 +418,7 @@ class WixProduct(WixElement):
             pm_dir.pop('Name')
             pm_dir.comment = 'Application ProgramMenu folder'
             target_dir.add(pm_dir)
-            shortcut_dir = WixDirectory(self, Id=get_id('mnu'),
+            shortcut_dir = WixDirectory(self, Id=wixutils.get_id('mnu'),
                                         Name=data.get('_ProgramMenuFolder'))
             pm_dir.add(shortcut_dir)
             ref = shortcut_dir.attrs['Id']

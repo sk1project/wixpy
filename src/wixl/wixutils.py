@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   libmsi gobject wrapper
+#   wixl related utils
 #
 # 	Copyright (C) 2018 by Igor E. Novikov
 #
@@ -17,26 +17,13 @@
 # 	You should have received a copy of the GNU General Public License
 # 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gi
 
-gi.require_version('Libmsi', '1.0')
-
-from gi.repository import Libmsi
+import uuid
 
 
-class MsiDatabase(object):
-    model = None
-
-    def __init__(self, model):
-        self.model = model
-
-    def write_msi(self, filename):
-        db = Libmsi.Database.new(filename, Libmsi.DbFlags.CREATE, None)
-        # TODO: write info
-        # TODO: write tables
-        db.commit()
+def get_guid():
+    return str(uuid.uuid4()).upper()
 
 
-if __name__ == "__main__":
-    db = Libmsi.Database.new('/home/igor/test.msi', Libmsi.DbFlags.CREATE, None)
-    db.commit()
+def get_id(prefix=''):
+    return '%s%s' % (prefix, get_guid().replace('-', ''))
