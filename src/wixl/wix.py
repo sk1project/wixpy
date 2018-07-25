@@ -420,11 +420,11 @@ class WixProduct(WixElement):
         self.add(target_dir)
 
         if data.get('_Shortcuts') and data.get('_ProgramMenuFolder'):
-            pm_dir = WixDirectory(Id='ProgramMenuFolder', Name='')
+            pm_dir = WixDirectory(self, Id='ProgramMenuFolder', Name='')
             pm_dir.pop('Name')
             pm_dir.comment = 'Application ProgramMenu folder'
             target_dir.add(pm_dir)
-            shortcut_dir = WixDirectory(Id=get_id('mnu'),
+            shortcut_dir = WixDirectory(self, Id=get_id('mnu'),
                                         Name=data.get('_ProgramMenuFolder'))
             pm_dir.add(shortcut_dir)
             ref = shortcut_dir.attrs['Id']
@@ -440,7 +440,7 @@ class WixProduct(WixElement):
                 }
                 shortcut_data.update(shortcut)
                 shortcut_data['Target'] = '[#%s]' % target_id
-                dir_ref.add(WixShortcutComponent(data, shortcut_data))
+                dir_ref.add(WixShortcutComponent(dir_ref, data, shortcut_data))
 
         if COMPONENTS:
             self.add(WixFeature(self, data))
