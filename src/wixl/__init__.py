@@ -49,6 +49,10 @@ WIXL_ENGINE = 1
 WIX_ENGINE = 2
 
 
+def _normalize_path(path):
+    return os.path.abspath(os.path.expanduser(path))
+
+
 def build(json_data, xml_only=False, engine=PYWIXL_ENGINE, 
           encoding='utf-8', stdout=False):
     wixutils.DEFAULT_ENCODING = encoding
@@ -65,6 +69,10 @@ def build(json_data, xml_only=False, engine=PYWIXL_ENGINE,
 
     if '_OsCondition' in json_data:
         json_data['_OsCondition'] = str(json_data['_OsCondition'])
+
+    for key in ('_Icon', '_OutputDir', '_SourceDir'):
+        if key in json_data:
+            json_data[key] = _normalize_path(json_data[key])
 
     output = json_data.get('_OutputName')
     if not output:
@@ -128,7 +136,7 @@ if __name__ == "__main__":
         '_OsCondition': 601,
         '_CheckX64': True,
         '_Conditions': [],  # [[msg,condition,level], ...]
-        '_Icon': os.path.expanduser('~/Projects/pywixl.ico'),
+        '_Icon': '~/Projects/pywixl.ico',
         '_ProgramMenuFolder': 'sK1 Project',
         '_Shortcuts': [
             {'Name': PROJECT,
@@ -138,10 +146,10 @@ if __name__ == "__main__":
         '_SourceDir': path,
         '_InstallDir': 'wixl-%s' % VERSION,
         '_OutputName': '%s-%s-win64.msi' % (PROJECT.lower(), VERSION),
-        '_OutputDir': os.path.expanduser('~'),
+        '_OutputDir': '~',
         '_SkipHidden': True,
     }
-    # build(MSI_DATA, xml_only=True, engine=WIX_ENGINE, stdout=True)
-    # build(MSI_DATA, xml_only=True)
+    # build(MSI_DATA, xml_only=True, engine=WIXL_ENGINE, stdout=True)
+    build(MSI_DATA, xml_only=True, stdout=True)
     # build(MSI_DATA, engine=WIXL_ENGINE)
-    build(MSI_DATA)
+    # build(MSI_DATA)
