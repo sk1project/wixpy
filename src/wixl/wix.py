@@ -108,6 +108,9 @@ class WixElement(object):
     def set(self, **kwargs):
         self.attrs.update(kwargs)
 
+    def get(self, key):
+        return self.attrs.get(key, '')
+
     def pop(self, key):
         if key in self.attrs:
             self.attrs.pop(key)
