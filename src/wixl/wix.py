@@ -463,6 +463,7 @@ class Wix(WixElement):
     def __init__(self, data):
         self.msi_data = defaults()
         self.msi_data.update(data)
+        wixutils.MSI_ENCODING = 'cp%s' % self.msi_data['Codepage']
         self.source_dir = self.msi_data.get('_SourceDir', '.')
         super(Wix, self).__init__(None, self.tag, xmlns=XMLNS)
         self.pop('Id')

@@ -24,6 +24,9 @@ gi.require_version('Libmsi', '1.0')
 from gi.repository import Libmsi
 
 
+
+
+
 class MsiDatabase(object):
     model = None
 

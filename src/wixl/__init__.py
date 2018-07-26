@@ -49,7 +49,9 @@ WIXL_ENGINE = 1
 WIX_ENGINE = 2
 
 
-def build(json_data, xml_only=False, engine=PYWIXL_ENGINE, stdout=False):
+def build(json_data, xml_only=False, engine=PYWIXL_ENGINE, 
+          encoding='utf-8', stdout=False):
+    wixutils.DEFAULT_ENCODING = encoding
     json_data['_pkgname'] = PROJECT
     json_data['_pkgver'] = VERSION
 

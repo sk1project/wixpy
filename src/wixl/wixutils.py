@@ -40,3 +40,11 @@ def echo_msg(msg, newline=True, flush=True, code=''):
     sys.stdout.write(msg)
     if flush:
         sys.stdout.flush()
+
+
+DEFAULT_ENCODING = 'utf-8'
+MSI_ENCODING = 'cp1252'
+
+
+def msi_str(text):
+    return text.decode(DEFAULT_ENCODING).encode(MSI_ENCODING)
