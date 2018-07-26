@@ -61,6 +61,7 @@ def defaults():
         'Language': '1033',
         'Languages': '1033',
         'Codepage': '1252',
+        'SummaryCodepage': '1252',
         # Internals
         'InstallerVersion': '200',
         'Compressed': 'yes',
