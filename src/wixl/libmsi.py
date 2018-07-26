@@ -24,7 +24,19 @@ gi.require_version('Libmsi', '1.0')
 from gi.repository import Libmsi
 
 
+class MsiSummaryInfo(object):
+    properties = None
 
+    def __init__(self, model):
+        self.properties = []
+        prod = model.get_product()
+        pack = model.get_package()
+        media = model.get_media()
+        msiprop = Libmsi.Property
+        self.add(msiprop.TITLE, "%s Installation Database" % prod.get('Name'))
+
+    def add(self, prop, value):
+        self.properties.append((prop, value))
 
 
 class MsiDatabase(object):
