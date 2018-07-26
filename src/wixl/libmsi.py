@@ -18,7 +18,6 @@
 # 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gi
-import sys
 
 import wixutils
 
@@ -27,6 +26,7 @@ gi.require_version('Libmsi', '1.0')
 from gi.repository import Libmsi
 
 msi_str = wixutils.msi_str
+MAXINT = 4294967295
 
 
 class MsiSummaryInfo(object):
@@ -74,7 +74,7 @@ class MsiSummaryInfo(object):
         self.properties.append((prop, value))
 
     def write_msi(self, db):
-        msi_prop = Libmsi.SummaryInfo.new(None, sys.maxint)
+        msi_prop = Libmsi.SummaryInfo.new(None, MAXINT)
         for prop, value in self.properties:
             if prop in [Libmsi.Property.CREATED_TM,
                         Libmsi.Property.LASTSAVED_TM]:
