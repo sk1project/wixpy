@@ -18,6 +18,7 @@
 # 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+
 import wixutils
 
 WIXL = False
@@ -385,6 +386,8 @@ class WixPackage(WixElement):
 
     def __init__(self, parent, data):
         super(WixPackage, self).__init__(parent, self.tag, **data)
+        if not WIXL:
+            self.set(Platform='x64' if data.get('Win64') else 'x86')
 
 
 class WixProduct(WixElement):
@@ -471,3 +474,12 @@ class Wix(WixElement):
         tab = indent * ' '
         fp.write('%s<?xml version="1.0" encoding="utf-8"?>\n' % tab)
         super(Wix, self).write_xml(fp, indent)
+
+    def get_product(self):
+        return self.childs[0]
+
+    def get_package(self):
+        return self.get_product().childs[0]
+
+    def get_media(self):
+        return self.get_product().childs[1]
