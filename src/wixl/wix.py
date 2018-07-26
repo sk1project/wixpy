@@ -65,7 +65,7 @@ def defaults():
         'Compressed': 'yes',
         'KeyPath': 'yes',
         # Media
-        'Cabinet': 'Sample.cab',
+        'Cabinet': 'installer.cab',
         'EmbedCab': 'yes',
         'DiskPrompt': 'CD-ROM #1',
         'DiskId': '1',
