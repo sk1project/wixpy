@@ -478,7 +478,8 @@ class Wix(WixElement):
 
     def write_xml(self, fp, indent=0):
         tab = indent * ' '
-        fp.write('%s<?xml version="1.0" encoding="utf-8"?>\n' % tab)
+        enc = wixutils.DEFAULT_ENCODING
+        fp.write('%s<?xml version="1.0" encoding="%s"?>\n' % (tab, enc))
         super(Wix, self).write_xml(fp, indent)
 
     def get_product(self):
