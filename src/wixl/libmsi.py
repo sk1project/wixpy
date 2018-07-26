@@ -23,6 +23,10 @@ gi.require_version('Libmsi', '1.0')
 
 from gi.repository import Libmsi
 
+import wixutils
+
+msi_str = wixutils.msi_str
+
 
 class MsiSummaryInfo(object):
     properties = None
@@ -32,8 +36,8 @@ class MsiSummaryInfo(object):
         prod = model.get_product()
         pack = model.get_package()
         media = model.get_media()
-        msiprop = Libmsi.Property
-        self.add(msiprop.TITLE, "%s Installation Database" % prod.get('Name'))
+        self.add(Libmsi.Property.TITLE,
+                 msi_str("%s Installation Database" % prod.get('Name')))
 
     def add(self, prop, value):
         self.properties.append((prop, value))
