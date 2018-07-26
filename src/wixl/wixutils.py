@@ -18,6 +18,7 @@
 # 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import time
 import uuid
 
 
@@ -48,3 +49,7 @@ MSI_ENCODING = 'cp1252'
 
 def msi_str(text):
     return text.decode(DEFAULT_ENCODING).encode(MSI_ENCODING)
+
+
+def filetime_now():
+    return (int(time.time()) + 134774 * 86400) * 10 ** 7
