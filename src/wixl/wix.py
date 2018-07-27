@@ -135,6 +135,15 @@ class WixElement(object):
         else:
             fp.write(' />\n')
 
+    def write_msi_records(self, db):
+        pass
+
+    def write_msi(self, db):
+        self.write_msi_records(db)
+        if self.childs:
+            for child in self.childs:
+                child.write_msi(db)
+
 
 class WixCondition(WixElement):
     tag = 'Condition'
