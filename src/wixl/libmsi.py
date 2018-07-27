@@ -96,6 +96,7 @@ class MsiDatabase(object):
     def write_msi(self, filename):
         db = Libmsi.Database.new(filename, Libmsi.DbFlags.CREATE, None)
         MsiSummaryInfo(self.model).write_msi(db)
+        self.model.write_msi(self)
         for item in self.tables.items():
             item[1].write_msi(db)
         db.commit()
