@@ -34,13 +34,10 @@ STDOUT_ENDC = '\033[0m'
 
 
 def echo_msg(msg, newline=True, flush=True, code=''):
-    if newline:
-        msg += '\n'
-    if code:
-        msg = code + msg + STDOUT_ENDC
+    msg += '\n' if newline else ''
+    msg = code + msg + STDOUT_ENDC if code else msg
     sys.stdout.write(msg)
-    if flush:
-        sys.stdout.flush()
+    sys.stdout.flush() if flush else None
 
 
 DEFAULT_ENCODING = 'utf-8'
@@ -51,8 +48,9 @@ def msi_str(text):
     return text.decode(DEFAULT_ENCODING).encode(MSI_ENCODING)
 
 
-def sql_str(text):
-    return msi_str(text.replace("'", "\\'"))
+def sql_str(val):
+    return str(val).encode() if not isinstance(val, str) \
+        else "'%s'" % val.replace("'", "\\'")
 
 
 def filetime_now():
