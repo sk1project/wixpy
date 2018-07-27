@@ -51,5 +51,9 @@ def msi_str(text):
     return text.decode(DEFAULT_ENCODING).encode(MSI_ENCODING)
 
 
+def sql_str(text):
+    return msi_str(text.replace("'", "\\'"))
+
+
 def filetime_now():
     return (int(time.time()) + 134774 * 86400) * 10 ** 7

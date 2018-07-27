@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   libmsi gobject wrapper
+#   MSI tables
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #

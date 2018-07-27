@@ -20,6 +20,7 @@
 import gi
 
 import wixutils
+import msitabs
 
 gi.require_version('Libmsi', '1.0')
 
@@ -86,6 +87,33 @@ class MsiSummaryInfo(object):
         msi_prop.save(db)
 
 
+class MsiTable(object):
+    name = None
+    records = None
+
+    def __init__(self, name):
+        self.name = name
+        self.records = []
+
+    def add(self, *args):
+        self.records.append(args)
+
+    def write_msi(self, db):
+        # Create table
+        fields = ['`%s` %s' % (name, descr)
+                  for name, descr in msitabs.MT_TABLES[self.name]]
+        table_description = ', '.join(fields)
+        sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
+
+        # Write records
+        for record in self.records:
+            fields =["`%s`" % item[0] for item in msitabs.MT_TABLES[self.name]]
+            values = ["'%s'" % wixutils.sql_str(item) for item in record]
+            sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
+                  (self.name, ', '.join(fields),', '.join(values))
+
+
+# "INSERT INTO `Property` (`Property`, `Value`) VALUES (?, ?)"
 class MsiDatabase(object):
     model = None
 
