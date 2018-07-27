@@ -94,8 +94,11 @@ class MsiTable(object):
     def __init__(self, name):
         self.name = name
         self.records = []
+        self.length = len(msitabs.MT_TABLES[self.name])
 
     def add(self, *args):
+        if len(args) != self.length:
+            raise ValueError('Non appropriate members for record!')
         self.records.append(args)
 
     def write_msi(self, db):
@@ -104,22 +107,25 @@ class MsiTable(object):
                   for name, descr in msitabs.MT_TABLES[self.name]]
         table_description = ', '.join(fields)
         sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
+        Libmsi.Query.new(db, wixutils.msi_str(sql)).execute()
 
         # Write records
         for record in self.records:
-            fields =["`%s`" % item[0] for item in msitabs.MT_TABLES[self.name]]
-            values = ["'%s'" % wixutils.sql_str(item) for item in record]
+            fields = ["`%s`" % item[0] for item in msitabs.MT_TABLES[self.name]]
+            values = [wixutils.sql_str(item) for item in record]
             sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
-                  (self.name, ', '.join(fields),', '.join(values))
+                  (self.name, ', '.join(fields), ', '.join(values))
+            Libmsi.Query.new(db, wixutils.msi_str(sql)).execute()
 
 
-# "INSERT INTO `Property` (`Property`, `Value`) VALUES (?, ?)"
 class MsiDatabase(object):
     model = None
 
     def __init__(self, model):
         self.model = model
         self.tables = {}
+        for key in msitabs.MT_TABLES.keys():
+            self.tables[key] = MsiTable(key)
 
     def write_msi(self, filename):
         db = Libmsi.Database.new(filename, Libmsi.DbFlags.CREATE, None)
