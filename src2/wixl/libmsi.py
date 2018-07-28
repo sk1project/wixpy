@@ -98,24 +98,34 @@ class MsiTable(object):
 
     def add(self, *args):
         if len(args) != self.length:
-            raise ValueError('Non appropriate members for record!')
+            raise ValueError('Incorrect number of members for record!')
         self.records.append(args)
 
     def write_msi(self, db):
         # Create table
-        fields = ['`%s` %s' % (name, descr)
-                  for name, descr in msitabs.MT_TABLES[self.name]]
-        table_description = ', '.join(fields)
-        sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
-        Libmsi.Query.new(db, wixutils.msi_str(sql)).execute()
+        if not self.name.startswith('_'):
+            fields = ['`%s` %s' % (name, tp)
+                      for name, tp in msitabs.MT_TABLES[self.name]]
+            table_description = ', '.join(fields)
+            sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
+            Libmsi.Query.new(db, wixutils.msi_str(sql)).execute()
 
         # Write records
+        fields = ["`%s`" % item[0] for item in msitabs.MT_TABLES[self.name]]
+        values = ["?"] * self.length
+        sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
+              (self.name, ', '.join(fields), ', '.join(values))
+        query = Libmsi.Query.new(db, wixutils.msi_str(sql))
         for record in self.records:
-            fields = ["`%s`" % item[0] for item in msitabs.MT_TABLES[self.name]]
-            values = [wixutils.sql_str(item) for item in record]
-            sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
-                  (self.name, ', '.join(fields), ', '.join(values))
-            Libmsi.Query.new(db, wixutils.msi_str(sql)).execute()
+            msirec = Libmsi.Record.new(self.length)
+            for item in record:
+                if isinstance(item, int):
+                    msirec.set_int(item)
+                elif isinstance(item, str):
+                    msirec.set_string(wixutils.msi_str(item))
+                else:
+                    raise ValueError('Incompatible type of record item')
+            query.execute(msirec)
 
 
 class MsiDatabase(object):
