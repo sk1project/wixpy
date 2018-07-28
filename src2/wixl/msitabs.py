@@ -152,33 +152,84 @@ MT_TABLES = {
     MT_INSTALLEXECUTESEQUENCE: MT_ACTION,
     MT_INSTALLUISEQUENCE: MT_ACTION,
     MT_STREAMS: (
-        ('', ''),
-    ),  #
+        ('Name', 'CHAR(72) NOT NULL'),
+        ('Data', 'OBJECT NOT NULL PRIMARY KEY `Name`'),
+    ),
     MT_SHORTCUT: (
-        ('', ''),
-    ),  #
+        ('Shortcut', 'CHAR(72) NOT NULL'),
+        ('Directory_', 'CHAR(72) NOT NULL'),
+        ('Name', 'CHAR(128) NOT NULL LOCALIZABLE'),
+        ('Component_', 'CHAR(72) NOT NULL'),
+        ('Target', 'CHAR(72) NOT NULL'),
+        ('Arguments', 'CHAR(255)'),
+        ('Description', 'CHAR(255) LOCALIZABLE'),
+        ('Hotkey', 'INT'),
+        ('Icon_', 'CHAR(72)'),
+        ('IconIndex', 'INT'),
+        ('ShowCmd', 'INT'),
+        ('WkDir', 'CHAR(72)'),
+        ('DisplayResourceDLL', 'CHAR(255)'),
+        ('DisplayResourceId', 'INT'),
+        ('DescriptionResourceDLL', 'CHAR(255)'),
+        ('DescriptionResourceId', 'INT PRIMARY KEY `Shortcut`'),
+    ),
     MT_UPGRADE: (
-        ('', ''),
-    ),  #
+        ('UpgradeCode', 'CHAR(38) NOT NULL'),
+        ('VersionMin', 'CHAR(20)'),
+        ('VersionMax', 'CHAR(20)'),
+        ('Language', 'CHAR(255)'),
+        ('Attributes', 'LONG NOT NULL'),
+        ('Remove', 'CHAR(255)'),
+        ('ActionProperty', 'CHAR(72) NOT NULL PRIMARY KEY `UpgradeCode`, '
+                           '`VersionMin`, `VersionMax`, `Language`, '
+                           '`Attributes`'),
+    ),
     MT_LAUNCHCONDITION: (
-        ('', ''),
-    ),  #
+        ('Condition', 'CHAR(255) NOT NULL'),
+        ('Description', 'CHAR(255) NOT NULL '
+                        'LOCALIZABLE PRIMARY KEY `Condition`'),
+    ),
     MT_APPSEARCH: (
-        ('', ''),
-    ),  #
+        ('Property', 'CHAR(72) NOT NULL'),
+        ('Signature_', 'CHAR(72) NOT NULL '
+                       'PRIMARY KEY `Property`, `Signature_`'),
+    ),
     MT_CUSTOMACTION: (
-        ('', ''),
-    ),  #
+        ('Action', 'CHAR(72) NOT NULL'),
+        ('Type', 'INT NOT NULL'),
+        ('Source', 'CHAR(72)'),
+        ('Target', 'CHAR(255)'),
+        ('ExtendedType', 'LONG PRIMARY KEY `Action`'),
+    ),
     MT_REGLOCATOR: (
-        ('', ''),
-    ),  #
+        ('Signature_', 'CHAR(72) NOT NULL'),
+        ('Root', 'INT NOT NULL'),
+        ('Key', 'CHAR(255) NOT NULL'),
+        ('Name', 'CHAR(255)'),
+        ('Type', 'INT PRIMARY KEY `Signature_`'),
+    ),
     MT_CREATEFOLDER: (
-        ('', ''),
-    ),  #
+        ('Directory_', 'CHAR(72) NOT NULL'),
+        ('Component_', 'CHAR(72) NOT NULL '
+                       'PRIMARY KEY `Directory_`, `Component_`'),
+    ),
     MT_SIGNATURE: (
-        ('', ''),
-    ),  #
+        ('Signature', 'CHAR(72) NOT NULL'),
+        ('FileName', 'CHAR(255) NOT NULL'),
+        ('MinVersion', 'CHAR(20)'),
+        ('MaxVersion', 'CHAR(20)'),
+        ('MinSize', 'LONG'),
+        ('MaxSize', 'LONG'),
+        ('MinDate', 'LONG'),
+        ('MaxDate', 'LONG'),
+        ('Languages', 'CHAR(255) PRIMARY KEY `Signature`'),
+    ),
     MT_FILEHASH: (
-        ('', ''),
-    ),  #
+        ('File_', 'CHAR(72) NOT NULL'),
+        ('Options', 'INT NOT NULL'),
+        ('HashPart1', 'LONG NOT NULL'),
+        ('HashPart2', 'LONG NOT NULL'),
+        ('HashPart3', 'LONG NOT NULL'),
+        ('HashPart4', 'LONG NOT NULL PRIMARY KEY `File_`'),
+    ),
 }
