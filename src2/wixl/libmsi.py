@@ -117,12 +117,16 @@ class MsiTable(object):
               (self.name, ', '.join(fields), ', '.join(values))
         query = Libmsi.Query.new(db, wixutils.msi_str(sql))
         for record in self.records:
+            index = self.records.index(record) + 1
             msirec = Libmsi.Record.new(self.length)
             for item in record:
                 if isinstance(item, int):
-                    msirec.set_int(item)
+                    msirec.set_int(index, item)
                 elif isinstance(item, str):
-                    msirec.set_string(wixutils.msi_str(item))
+                    msirec.set_string(index, wixutils.msi_str(item))
+                elif self.name == '_Streams' and index == 2:
+                    # TODO: implement item streaming
+                    msirec.set_stream(index, item)
                 else:
                     raise ValueError('Incompatible type of record item')
             query.execute(msirec)
@@ -142,5 +146,6 @@ class MsiDatabase(object):
         MsiSummaryInfo(self.model).write_msi(db)
         self.model.write_msi(self)
         for item in self.tables.items():
+            wixutils.echo_msg('Writing %s table...' % item[0])
             item[1].write_msi(db)
         db.commit()
