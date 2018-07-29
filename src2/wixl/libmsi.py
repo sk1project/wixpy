@@ -19,12 +19,12 @@
 
 import gi
 
-import wixutils
-import msitabs
-
 gi.require_version('Libmsi', '1.0')
 
 from gi.repository import Libmsi
+
+import wixutils
+import msitabs
 
 msi_str = wixutils.msi_str
 MAXINT = 4294967295
@@ -88,6 +88,7 @@ class MsiSummaryInfo(object):
 
 
 class MsiTable(object):
+    length = None  # type: int
     name = None
     records = None
 
