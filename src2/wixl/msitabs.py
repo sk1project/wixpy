@@ -48,20 +48,24 @@ MT_FILEHASH = 'MsiFileHash'
 
 MT_ACTION = (('Action', 'CHAR(72) NOT NULL'),
              ('Condition', 'CHAR(255)'),
-             ('Sequence', 'INT PRIMARY KEY `Action`'),)
+             ('Sequence', 'INT '
+                          'PRIMARY KEY `Action`'),)
 
 MT_TABLES = {
     MT_PROPERTY: (
         ('Property', 'CHAR(72) NOT NULL'),
-        ('Value', 'CHAR(0) NOT NULL LOCALIZABLE PRIMARY KEY `Property`'),
+        ('Value', 'CHAR(0) NOT NULL LOCALIZABLE '
+                  'PRIMARY KEY `Property`'),
     ),
     MT_ICON: (
         ('Name', 'CHAR(72) NOT NULL'),
-        ('Data', 'OBJECT NOT NULL PRIMARY KEY `Name`'),
+        ('Data', 'OBJECT NOT NULL '
+                 'PRIMARY KEY `Name`'),
     ),
     MT_BINARY: (
         ('Name', 'CHAR(72) NOT NULL'),
-        ('Data', 'OBJECT NOT NULL PRIMARY KEY `Name`'),
+        ('Data', 'OBJECT NOT NULL '
+                 'PRIMARY KEY `Name`'),
     ),
     MT_MEDIA: (
         ('DiskId', 'INT NOT NULL'),
@@ -69,12 +73,14 @@ MT_TABLES = {
         ('DiskPrompt', 'CHAR(64) LOCALIZABLE'),
         ('Cabinet', 'CHAR(255)'),
         ('VolumeLabel', 'CHAR(32)'),
-        ('Source', 'CHAR(72) PRIMARY KEY `DiskId`'),
+        ('Source', 'CHAR(72) '
+                   'PRIMARY KEY `DiskId`'),
     ),
     MT_DIRECTORY: (
         ('Directory', 'CHAR(72) NOT NULL'),
         ('Directory_Parent', 'CHAR(72)'),
-        ('DefaultDir', 'CHAR(255) NOT NULL LOCALIZABLE PRIMARY KEY `Directory`')
+        ('DefaultDir', 'CHAR(255) NOT NULL LOCALIZABLE '
+                       'PRIMARY KEY `Directory`')
     ),
     MT_COMPONENT: (
         ('Component', 'CHAR(72) NOT NULL'),
@@ -82,7 +88,8 @@ MT_TABLES = {
         ('Directory_', 'CHAR(72) NOT NULL'),
         ('Attributes', 'INT NOT NULL'),
         ('Condition', 'CHAR(255)'),
-        ('KeyPath', 'CHAR(72) PRIMARY KEY `Component`'),
+        ('KeyPath', 'CHAR(72) '
+                    'PRIMARY KEY `Component`'),
     ),
     MT_FEATURE: (
         ('Feature', 'CHAR(38) NOT NULL'),
@@ -92,18 +99,21 @@ MT_TABLES = {
         ('Display', 'INT'),
         ('Level', 'INT NOT NULL'),
         ('Directory_', 'CHAR(72)'),
-        ('Attributes', 'INT NOT NULL PRIMARY KEY `Feature`')
+        ('Attributes', 'INT NOT NULL '
+                       'PRIMARY KEY `Feature`')
     ),
     MT_FEATURECOMPONENTS: (
         ('Feature_', 'CHAR(38) NOT NULL'),
-        ('Component_', 'CHAR(72) NOT NULL PRIMARY KEY `Feature_`, `Component_`')
+        ('Component_', 'CHAR(72) NOT NULL '
+                       'PRIMARY KEY `Feature_`, `Component_`')
     ),
     MT_REMOVEFILE: (
         ('FileKey', 'CHAR(72) NOT NULL'),
         ('Component_', 'CHAR(72) NOT NULL'),
         ('FileName', 'CHAR(255) LOCALIZABLE'),
         ('DirProperty', 'CHAR(72) NOT NULL'),
-        ('InstallMode', 'INT NOT NULL PRIMARY KEY `FileKey`'),
+        ('InstallMode', 'INT NOT NULL '
+                        'PRIMARY KEY `FileKey`'),
     ),
     MT_REGISTRY: (
         ('Registry', 'CHAR(72) NOT NULL'),
@@ -119,7 +129,8 @@ MT_TABLES = {
         ('Event', 'INT NOT NULL'),
         ('Arguments', 'CHAR(255) LOCALIZABLE'),
         ('Wait', 'INT'),
-        ('Component_', 'CHAR(72) NOT NULL PRIMARY KEY `ServiceControl`'),
+        ('Component_', 'CHAR(72) NOT NULL '
+                       'PRIMARY KEY `ServiceControl`'),
     ),
     MT_SERVICEINSTALL: (
         ('ServiceInstall', 'CHAR(72) NOT NULL'),
@@ -134,7 +145,8 @@ MT_TABLES = {
         ('Password', 'CHAR(255)'),
         ('Arguments', 'CHAR(255)'),
         ('Component_', 'CHAR(72) NOT NULL'),
-        ('Description', 'CHAR(255) LOCALIZABLE PRIMARY KEY `ServiceInstall`'),
+        ('Description', 'CHAR(255) LOCALIZABLE '
+                        'PRIMARY KEY `ServiceInstall`'),
     ),
     MT_FILE: (
         ('File', 'CHAR(72) NOT NULL'),
@@ -144,7 +156,8 @@ MT_TABLES = {
         ('Version', 'CHAR(72)'),
         ('Language', 'CHAR(20)'),
         ('Attributes', 'INT'),
-        ('Sequence', 'LONG NOT NULL PRIMARY KEY `File`'),
+        ('Sequence', 'LONG NOT NULL '
+                     'PRIMARY KEY `File`'),
     ),
     MT_ADMINEXECUTESEQUENCE: MT_ACTION,
     MT_ADMINUISEQUENCE: MT_ACTION,
@@ -153,7 +166,8 @@ MT_TABLES = {
     MT_INSTALLUISEQUENCE: MT_ACTION,
     MT_STREAMS: (
         ('Name', 'CHAR(72) NOT NULL'),
-        ('Data', 'OBJECT NOT NULL PRIMARY KEY `Name`'),
+        ('Data', 'OBJECT NOT NULL '
+                 'PRIMARY KEY `Name`'),
     ),
     MT_SHORTCUT: (
         ('Shortcut', 'CHAR(72) NOT NULL'),
@@ -171,7 +185,8 @@ MT_TABLES = {
         ('DisplayResourceDLL', 'CHAR(255)'),
         ('DisplayResourceId', 'INT'),
         ('DescriptionResourceDLL', 'CHAR(255)'),
-        ('DescriptionResourceId', 'INT PRIMARY KEY `Shortcut`'),
+        ('DescriptionResourceId', 'INT '
+                                  'PRIMARY KEY `Shortcut`'),
     ),
     MT_UPGRADE: (
         ('UpgradeCode', 'CHAR(38) NOT NULL'),
@@ -180,9 +195,9 @@ MT_TABLES = {
         ('Language', 'CHAR(255)'),
         ('Attributes', 'LONG NOT NULL'),
         ('Remove', 'CHAR(255)'),
-        ('ActionProperty', 'CHAR(72) NOT NULL PRIMARY KEY `UpgradeCode`, '
-                           '`VersionMin`, `VersionMax`, `Language`, '
-                           '`Attributes`'),
+        ('ActionProperty', 'CHAR(72) NOT NULL '
+                           'PRIMARY KEY `UpgradeCode`, `VersionMin`, '
+                           '`VersionMax`, `Language`, `Attributes`'),
     ),
     MT_LAUNCHCONDITION: (
         ('Condition', 'CHAR(255) NOT NULL'),
@@ -199,14 +214,16 @@ MT_TABLES = {
         ('Type', 'INT NOT NULL'),
         ('Source', 'CHAR(72)'),
         ('Target', 'CHAR(255)'),
-        ('ExtendedType', 'LONG PRIMARY KEY `Action`'),
+        ('ExtendedType', 'LONG '
+                         'PRIMARY KEY `Action`'),
     ),
     MT_REGLOCATOR: (
         ('Signature_', 'CHAR(72) NOT NULL'),
         ('Root', 'INT NOT NULL'),
         ('Key', 'CHAR(255) NOT NULL'),
         ('Name', 'CHAR(255)'),
-        ('Type', 'INT PRIMARY KEY `Signature_`'),
+        ('Type', 'INT '
+                 'PRIMARY KEY `Signature_`'),
     ),
     MT_CREATEFOLDER: (
         ('Directory_', 'CHAR(72) NOT NULL'),
@@ -222,7 +239,8 @@ MT_TABLES = {
         ('MaxSize', 'LONG'),
         ('MinDate', 'LONG'),
         ('MaxDate', 'LONG'),
-        ('Languages', 'CHAR(255) PRIMARY KEY `Signature`'),
+        ('Languages', 'CHAR(255) '
+                      'PRIMARY KEY `Signature`'),
     ),
     MT_FILEHASH: (
         ('File_', 'CHAR(72) NOT NULL'),
@@ -230,6 +248,7 @@ MT_TABLES = {
         ('HashPart1', 'LONG NOT NULL'),
         ('HashPart2', 'LONG NOT NULL'),
         ('HashPart3', 'LONG NOT NULL'),
-        ('HashPart4', 'LONG NOT NULL PRIMARY KEY `File_`'),
+        ('HashPart4', 'LONG NOT NULL '
+                      'PRIMARY KEY `File_`'),
     ),
 }
