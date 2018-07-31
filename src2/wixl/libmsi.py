@@ -56,6 +56,10 @@ class MsiSummaryInfo(object):
         appname = msi_str(prod.get('Name'))
         security = 2
 
+        source = msitabs.SF_COMPRESSED
+        if pkg.get('InstallScope') == "perUser":
+            source |= msitabs.SF_NO_PRIVILEGES
+
         self.add(Libmsi.Property.TITLE, title)
         self.add(Libmsi.Property.AUTHOR, author)
         self.add(Libmsi.Property.LASTAUTHOR, author)
@@ -70,6 +74,7 @@ class MsiSummaryInfo(object):
         self.add(Libmsi.Property.VERSION, version)
         self.add(Libmsi.Property.APPNAME, appname)
         self.add(Libmsi.Property.SECURITY, security)
+        self.add(Libmsi.Property.SOURCE, source)
 
     def add(self, prop, value):
         self.properties.append((prop, value))
@@ -101,6 +106,7 @@ class MsiTable(object):
         if len(args) != self.length:
             raise ValueError('Incorrect number of members for record!')
         self.records.append(args)
+        return args
 
     def write_msi(self, db):
         # Create table
@@ -125,6 +131,8 @@ class MsiTable(object):
                     msirec.set_int(index, item)
                 elif isinstance(item, str):
                     msirec.set_string(index, wixutils.msi_str(item))
+                elif isinstance(item, msitabs.FileStream):
+                    msirec.load_stream(index, item.filepath)
                 elif self.name == '_Streams' and index == 2:
                     # TODO: implement item streaming
                     msirec.set_stream(index, item)
@@ -139,6 +147,7 @@ class MsiDatabase(object):
     def __init__(self, model):
         self.model = model
         self.tables = {}
+        self.medias = []
         for key in msitabs.MT_TABLES.keys():
             self.tables[key] = MsiTable(key)
 
