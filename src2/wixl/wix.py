@@ -305,8 +305,9 @@ class WixDirectory(WixElement):
                     self.add(WixComponent(self, data, item_path, item_rel_path))
 
     def write_msi_records(self, db):
-        db.table_directory.add(self.get('Id'), self.parent.get('Id'),
-                               self.get('Name') or '.')
+        table = db.tables[msitabs.MT_DIRECTORY]
+        table.add(self.get('Id'), self.parent.get('Id'),
+                  self.get('Name') or '.')
 
 
 class WixInstallDir(WixElement):
@@ -331,8 +332,8 @@ class WixInstallDir(WixElement):
                 self.add(WixComponent(self, data, item_path, item_rel_path))
 
     def write_msi_records(self, db):
-        db.table_directory.add(self.get('Id'), self.parent.get('Id'),
-                               self.get('Name'))
+        table = db.tables[msitabs.MT_DIRECTORY]
+        table.add(self.get('Id'), self.parent.get('Id'), self.get('Name'))
 
 
 class WixPfDir(WixElement):
@@ -346,8 +347,8 @@ class WixPfDir(WixElement):
         self.add(WixInstallDir(self, data))
 
     def write_msi_records(self, db):
-        db.table_directory.add(self.get('Id'), self.parent.get('Id'),
-                               self.get('Name'))
+        table = db.tables[msitabs.MT_DIRECTORY]
+        table.add(self.get('Id'), self.parent.get('Id'), self.get('Name'))
 
 
 class WixTargetDir(WixElement):
@@ -358,12 +359,12 @@ class WixTargetDir(WixElement):
     def __init__(self, parent, data):
         self.comment = 'Installed file tree'
         super(WixTargetDir, self).__init__(parent, self.tag,
-                                           Id='TARGETDIR',
-                                           Name='SourceDir')
+                                           Id='TARGETDIR', Name='SourceDir')
         self.add(WixPfDir(self, data))
 
     def write_msi_records(self, db):
-        db.table_directory.add(self.get('Id'), None, self.get('Name'));
+        table = db.tables[msitabs.MT_DIRECTORY]
+        table.add(self.get('Id'), None, self.get('Name'));
 
 
 class WixFeature(WixElement):
@@ -372,8 +373,7 @@ class WixFeature(WixElement):
 
     def __init__(self, parent, data):
         super(WixFeature, self).__init__(parent, self.tag,
-                                         Title=data.get('Name'),
-                                         Level='1')
+                                         Title=data.get('Name'), Level='1')
         for item in COMPONENTS:
             self.add(WixComponentRef(self, Id=item))
 
