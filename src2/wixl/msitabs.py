@@ -17,11 +17,29 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# SourceFlags
-SF_SHORT_NAMES = 0
-SF_COMPRESSED = 1
-SF_ADMIN = 2
-SF_NO_PRIVILEGES = 3
+
+class SourceFlags(object):
+    SHORT_NAMES = 0
+    COMPRESSED = 1
+    ADMIN = 2
+    NO_PRIVILEGES = 3
+
+
+class ComponentAttribute(object):
+    LOCAL_ONLY = 0
+    SOURCE_ONLY = 1
+    OPTIONAL = 2
+    REGISTRY_KEY_PATH = 3
+    SHARED_DLL_REF_COUNT = 4
+    PERMANENT = 5
+    ODBC_DATA_SOURCE = 6
+    TRANSITIVE = 7
+    NEVER_OVERWRITE = 8
+    _64BIT = 9
+    REGISTRY_REFLECTION = 10
+    UNINSTALL_ON_SUPERSEDENCE = 11
+    SHARED = 12
+
 
 MT_PROPERTY = 'Property'
 MT_ICON = 'Icon'
