@@ -304,6 +304,10 @@ class WixDirectory(WixElement):
                 elif os.path.isfile(item_path):
                     self.add(WixComponent(self, data, item_path, item_rel_path))
 
+    def write_msi_records(self, db):
+        db.table_directory.add(self.get('Id'), self.parent.get('Id'),
+                               self.get('Name'))
+
 
 class WixInstallDir(WixElement):
     tag = 'Directory'
@@ -326,6 +330,10 @@ class WixInstallDir(WixElement):
             elif os.path.isfile(item_path):
                 self.add(WixComponent(self, data, item_path, item_rel_path))
 
+    def write_msi_records(self, db):
+        db.table_directory.add(self.get('Id'), self.parent.get('Id'),
+                               self.get('Name'))
+
 
 class WixPfDir(WixElement):
     tag = 'Directory'
@@ -336,6 +344,10 @@ class WixPfDir(WixElement):
             else 'ProgramFilesFolder'
         super(WixPfDir, self).__init__(parent, self.tag, Id=pid, Name='PFiles')
         self.add(WixInstallDir(self, data))
+
+    def write_msi_records(self, db):
+        db.table_directory.add(self.get('Id'), self.parent.get('Id'),
+                               self.get('Name'))
 
 
 class WixTargetDir(WixElement):
@@ -349,6 +361,9 @@ class WixTargetDir(WixElement):
                                            Id='TARGETDIR',
                                            Name='SourceDir')
         self.add(WixPfDir(self, data))
+
+    def write_msi_records(self, db):
+        db.table_directory.add(self.get('Id'), None, self.get('Name'));
 
 
 class WixFeature(WixElement):
