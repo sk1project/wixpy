@@ -19,6 +19,7 @@
 
 import os
 
+import msitabs
 import wixutils
 
 WIXL = False
@@ -35,7 +36,7 @@ ATTRS = {
                 'Manufacturer'),
     'Package': ('Id', 'Keywords', 'Description', 'Comments', 'InstallerVersion',
                 'Languages', 'Compressed', 'Manufacturer', 'SummaryCodepage',
-                'Platform'),
+                'Platform', 'InstallScope'),
     'Media': ('Id', 'Cabinet', 'EmbedCab', 'DiskPrompt'),
     'Property': ('Id', 'Value',),
     'Icon': ('Id', 'SourceFile',),
@@ -64,6 +65,7 @@ def defaults():
         'SummaryCodepage': '1252',
         # Internals
         'InstallerVersion': '200',
+        'InstallScope': 'perMachine',
         'Compressed': 'yes',
         'KeyPath': 'yes',
         # Media
@@ -175,6 +177,10 @@ class WixCondition(WixElement):
             condition = '%s<![CDATA[%s]]>' % (tab_int, self.condition)
             fp.write('>\n%s\n%s</%s>\n' % (condition, tab, self.tag))
 
+    def write_msi_records(self, db):
+        db.tables[msitabs.MT_LAUNCHCONDITION].add(self.condition,
+                                                  self.get('Message'))
+
 
 OS_CONDITION = {
     '501': 'Windows XP, Windows Server 2003',
@@ -215,6 +221,9 @@ class WixProperty(WixElement):
     def __init__(self, parent, pid, value):
         super(WixProperty, self).__init__(parent, self.tag, Id=pid, Value=value)
 
+    def write_msi_records(self, db):
+        db.tables[msitabs.MT_PROPERTY].add(self.get('Id'), self.get('Value'))
+
 
 class WixIcon(WixElement):
     tag = 'Icon'
@@ -226,6 +235,12 @@ class WixIcon(WixElement):
                                       SourceFile=data.get('_Icon', ''),
                                       Id=os.path.basename(self.source))
 
+    def write_msi_records(self, db):
+        filepath = self.get('SourceFile')
+        if os.path.exists(filepath):
+            db.tables[msitabs.MT_ICON].add(self.get('Id'),
+                                           msitabs.FileStream(filepath))
+
 
 class WixMedia(WixElement):
     tag = 'Media'
@@ -233,6 +248,14 @@ class WixMedia(WixElement):
 
     def __init__(self, parent, data):
         super(WixMedia, self).__init__(parent, self.tag, Id='1', **data)
+
+    def write_msi_records(self, db):
+        cabinet = '#%s' % self.get('Cabinet') if self.get('EmbedCab') == 'yes' \
+            else self.get('Cabinet')
+        disk = int(self.get('Id'))
+        rec = db.tables[msitabs.MT_MEDIA].add(disk, 0, self.get('DiskPrompt'),
+                                              cabinet, None, None)
+        db.medias.append(rec)
 
 
 class WixFile(WixElement):
@@ -403,6 +426,10 @@ class WixPackage(WixElement):
         if not WIXL:
             self.set(Platform='x64' if data.get('Win64') else 'x86')
 
+    def write_msi_records(self, db):
+        if self.get('InstallScope') == "perMachine":
+            db.tables[msitabs.MT_PROPERTY].add('ALLUSERS', '1')
+
 
 class WixProduct(WixElement):
     tag = 'Product'
@@ -469,6 +496,15 @@ class WixProduct(WixElement):
                 if work_dir_id is not None:
                     return work_dir_id, target_id
         return work_dir_id, target_id
+
+    def write_msi_records(self, db):
+        table = db.tables[msitabs.MT_PROPERTY]
+        table.add('Manufacturer', self.get('Manufacturer'))
+        table.add('ProductLanguage', self.get('Language'))
+        table.add('ProductCode', '{%s}' % self.get('Id'))
+        table.add('ProductName', self.get('Name'))
+        table.add('ProductVersion', self.get('Version'))
+        table.add('UpgradeCode', '{%s}' % self.get('UpgradeCode'))
 
 
 class Wix(WixElement):
