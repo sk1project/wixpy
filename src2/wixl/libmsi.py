@@ -56,9 +56,9 @@ class MsiSummaryInfo(object):
         appname = msi_str(prod.get('Name'))
         security = 2
 
-        source = msitabs.SF_COMPRESSED
+        source = msitabs.SourceFlags.COMPRESSED
         if pkg.get('InstallScope') == "perUser":
-            source |= msitabs.SF_NO_PRIVILEGES
+            source |= msitabs.SourceFlags.NO_PRIVILEGES
 
         self.add(Libmsi.Property.TITLE, title)
         self.add(Libmsi.Property.AUTHOR, author)
