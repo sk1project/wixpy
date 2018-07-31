@@ -306,7 +306,7 @@ class WixDirectory(WixElement):
 
     def write_msi_records(self, db):
         db.table_directory.add(self.get('Id'), self.parent.get('Id'),
-                               self.get('Name'))
+                               self.get('Name') or '.')
 
 
 class WixInstallDir(WixElement):
