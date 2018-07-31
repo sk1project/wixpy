@@ -17,6 +17,12 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# SourceFlags
+SF_SHORT_NAMES = 0
+SF_COMPRESSED = 1
+SF_ADMIN = 2
+SF_NO_PRIVILEGES = 3
+
 MT_PROPERTY = 'Property'
 MT_ICON = 'Icon'
 MT_BINARY = 'Binary'
@@ -252,3 +258,8 @@ MT_TABLES = {
                       'PRIMARY KEY `File_`'),
     ),
 }
+
+
+class FileStream(object):
+    def __init__(self, filepath):
+        self.filepath = filepath
