@@ -281,6 +281,21 @@ class WixComponent(WixElement):
         self.set(Id=wixutils.get_id('cmp'))
         COMPONENTS.append(self.attrs['Id'])
 
+    def write_msi_records(self, db):
+        attr = msitabs.ComponentAttribute.LOCAL_ONLY
+        key = None
+        if self.get('Win64') == 'yes':
+            attr |= msitabs.ComponentAttribute.X64
+        if any([child.tag == 'RegistryValue' for child in self.childs]):
+            attr |= msitabs.ComponentAttribute.REGISTRY_KEY_PATH
+            for child in self.childs:
+                if child.tag == 'RegistryValue':
+                    key = child.get('Key')
+                    break
+        table = db.tables[msitabs.MT_MEDIA]
+        table.add(self.get('Id'), '{%s}' % self.get('Guid'),
+                  self.parent.get('Id'), attr, key)
+
 
 class WixDirectory(WixElement):
     tag = 'Directory'
