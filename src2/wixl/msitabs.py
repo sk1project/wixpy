@@ -35,7 +35,7 @@ class ComponentAttribute(object):
     ODBC_DATA_SOURCE = 6
     TRANSITIVE = 7
     NEVER_OVERWRITE = 8
-    _64BIT = 9
+    X64 = 9
     REGISTRY_REFLECTION = 10
     UNINSTALL_ON_SUPERSEDENCE = 11
     SHARED = 12
