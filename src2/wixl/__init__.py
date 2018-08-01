@@ -41,7 +41,7 @@ import tempfile
 import wix
 import wixutils
 
-PROJECT = 'pyWiXL'
+PROJECT = 'WiX.Python'
 VERSION = '0.1'
 
 PYWIXL_ENGINE = 0
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         '_OsCondition': 601,
         '_CheckX64': True,
         '_Conditions': [],  # [[msg,condition,level], ...]
-        '_Icon': '~/Projects/pywixl.ico',
+        '_Icon': '~/Projects/wixpy.ico',
         '_ProgramMenuFolder': 'sK1 Project',
         '_Shortcuts': [
             {'Name': PROJECT,
