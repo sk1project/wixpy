@@ -379,7 +379,7 @@ class WixTargetDir(WixElement):
 
     def write_msi_records(self, db):
         table = db.tables[msitabs.MT_DIRECTORY]
-        table.add(self.get('Id'), None, self.get('Name'));
+        table.add(self.get('Id'), None, self.get('Name'))
 
 
 class WixFeature(WixElement):
