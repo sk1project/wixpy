@@ -49,8 +49,8 @@ WIXL_ENGINE = 1
 WIX_ENGINE = 2
 
 
-def _normalize_path(path):
-    return os.path.abspath(os.path.expanduser(path))
+def _normalize_path(wild_path):
+    return os.path.abspath(os.path.expanduser(wild_path))
 
 
 def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
@@ -146,8 +146,8 @@ if __name__ == "__main__":
         ],
         '_SourceDir': path,
         '_InstallDir': 'wixpy-%s' % VERSION,
-        '_OutputName': '%s-%s-%s.msi' % (PROJECT.lower(), VERSION, 
-                                            'win64' if win64 else 'win32'),
+        '_OutputName': '%s-%s-%s.msi' % (PROJECT.lower(), VERSION,
+                                         'win64' if win64 else 'win32'),
         '_OutputDir': '~',
         '_SkipHidden': True,
     }
