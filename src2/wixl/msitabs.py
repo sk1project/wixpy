@@ -41,6 +41,12 @@ class ComponentAttribute(object):
     SHARED = 12
 
 
+class FeatureDisplay(object):
+    HIDDEN = 0
+    EXPAND = 1
+    COLLAPSE = 2
+
+
 MT_PROPERTY = 'Property'
 MT_ICON = 'Icon'
 MT_BINARY = 'Binary'
