@@ -392,6 +392,9 @@ class WixFeature(WixElement):
         for item in COMPONENTS:
             self.add(WixComponentRef(self, Id=item))
 
+    def write_msi_records(self, db):
+        pass
+
 
 class WixShortcut(WixElement):
     tag = 'Shortcut'
