@@ -294,7 +294,7 @@ class WixComponent(WixElement):
                     break
         table = db.tables[msitabs.MT_MEDIA]
         table.add(self.get('Id'), '{%s}' % self.get('Guid'),
-                  self.parent.get('Id'), attr, key)
+                  self.parent.get('Id'), attr, None, key)
 
 
 class WixDirectory(WixElement):
@@ -393,7 +393,11 @@ class WixFeature(WixElement):
             self.add(WixComponentRef(self, Id=item))
 
     def write_msi_records(self, db):
-        pass
+        table = db.tables[msitabs.MT_FEATURE]
+        parent = self.parent.get('Id') if self.parent.tag == 'Feature' else None
+        table.add(self.get('Id'), parent, self.get('Title'),
+                  self.get('Description'), msitabs.FeatureDisplay.COLLAPSE,
+                  int(self.get('Level')), self.get('ConfigurableDirectory'), 0)
 
 
 class WixShortcut(WixElement):
