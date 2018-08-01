@@ -47,6 +47,12 @@ class FeatureDisplay(object):
     COLLAPSE = 2
 
 
+class InstallMode(object):
+    INSTALL = 1
+    UNINSTALL = 2
+    BOTH = 4
+
+
 MT_PROPERTY = 'Property'
 MT_ICON = 'Icon'
 MT_BINARY = 'Binary'
