@@ -434,6 +434,10 @@ class WixComponentRef(WixElement):
     def __init__(self, parent, **kwargs):
         super(WixComponentRef, self).__init__(parent, self.tag, **kwargs)
 
+    def write_msi_records(self, db):
+        table = db.tables[msitabs.MT_FEATURECOMPONENTS]
+        table.add(self.parent.get('Id'), self.get('Id'))
+
 
 class WixShortcutComponent(WixElement):
     tag = 'Component'
