@@ -120,6 +120,7 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
 if __name__ == "__main__":
     current_path = os.path.dirname(os.path.abspath(__file__))
     path = os.path.dirname(current_path)
+    win64 = True
     MSI_DATA = {
         # Required
         'Name': PROJECT,
@@ -130,11 +131,11 @@ if __name__ == "__main__":
         'Description': '%s %s Installer' % (PROJECT, VERSION),
         'Comments': 'Licensed under GPLv3',
         'Keywords': 'msi, wix, build',
-        'Win64': True,
+        'Win64': win64,
 
         # Installation infrastructure
         '_OsCondition': 601,
-        '_CheckX64': True,
+        '_CheckX64': win64,
         '_Conditions': [],  # [[msg,condition,level], ...]
         '_Icon': '~/Projects/wixpy.ico',
         '_ProgramMenuFolder': 'sK1 Project',
@@ -145,7 +146,8 @@ if __name__ == "__main__":
         ],
         '_SourceDir': path,
         '_InstallDir': 'wixpy-%s' % VERSION,
-        '_OutputName': '%s-%s-win64.msi' % (PROJECT.lower(), VERSION),
+        '_OutputName': '%s-%s-%s.msi' % (PROJECT.lower(), VERSION, 
+                                            'win64' if win64 else 'win32'),
         '_OutputDir': '~',
         '_SkipHidden': True,
     }
