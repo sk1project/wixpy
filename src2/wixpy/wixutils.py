@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   wixl related utils
+#   WiX related utils
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #

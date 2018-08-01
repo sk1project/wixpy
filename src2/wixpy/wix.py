@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   WiXL/WiX model
+#   WiX/WiXL model
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #

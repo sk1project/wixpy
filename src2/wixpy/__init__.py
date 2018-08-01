@@ -41,7 +41,7 @@ import tempfile
 import wix
 import wixutils
 
-PROJECT = 'WiX.Python'
+PROJECT = 'WiX.Py'
 VERSION = '0.1'
 
 WIXPY_ENGINE = 0
