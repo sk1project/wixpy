@@ -44,7 +44,7 @@ import wixutils
 PROJECT = 'WiX.Python'
 VERSION = '0.1'
 
-PYWIXL_ENGINE = 0
+WIXPY_ENGINE = 0
 WIXL_ENGINE = 1
 WIX_ENGINE = 2
 
@@ -53,7 +53,7 @@ def _normalize_path(path):
     return os.path.abspath(os.path.expanduser(path))
 
 
-def build(json_data, xml_only=False, engine=PYWIXL_ENGINE,
+def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
           encoding='utf-8', stdout=False):
     wixutils.DEFAULT_ENCODING = encoding
     json_data['_pkgname'] = PROJECT
@@ -107,7 +107,7 @@ def build(json_data, xml_only=False, engine=PYWIXL_ENGINE,
     elif engine == WIX_ENGINE:
         raise Exception('WiX backend support is not implemented yet!')
 
-    elif engine == PYWIXL_ENGINE:
+    elif engine == WIXPY_ENGINE:
         if os.name == 'nt':
             raise Exception('pyWiXL backend is not supported on MS Windows!')
         import libmsi
@@ -144,12 +144,12 @@ if __name__ == "__main__":
              'Target': '__init__.py'},
         ],
         '_SourceDir': path,
-        '_InstallDir': 'wixl-%s' % VERSION,
+        '_InstallDir': 'wixpy-%s' % VERSION,
         '_OutputName': '%s-%s-win64.msi' % (PROJECT.lower(), VERSION),
         '_OutputDir': '~',
         '_SkipHidden': True,
     }
     # build(MSI_DATA, xml_only=True, engine=WIXL_ENGINE, stdout=True)
-    build(MSI_DATA, xml_only=True, stdout=True)
-    # build(MSI_DATA, engine=WIXL_ENGINE)
+    # build(MSI_DATA, xml_only=True, stdout=True)
+    build(MSI_DATA, engine=WIXL_ENGINE)
     # build(MSI_DATA)
