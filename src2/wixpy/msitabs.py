@@ -52,6 +52,12 @@ class InstallMode(object):
     UNINSTALL = 2
     BOTH = 4
 
+    @classmethod
+    def from_string(cls, str_value):
+        return {'install': cls.INSTALL,
+                'uninstall': cls.UNINSTALL,
+                'both': cls.BOTH}[str_value]
+
 
 MT_PROPERTY = 'Property'
 MT_ICON = 'Icon'
