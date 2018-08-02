@@ -23,10 +23,10 @@ gi.require_version('Libmsi', '1.0')
 
 from gi.repository import Libmsi
 
-import wixutils
 import msi
+import utils
 
-msi_str = wixutils.msi_str
+msi_str = utils.msi_str
 MAXINT = 4294967295
 
 
@@ -50,7 +50,7 @@ class MsiSummaryInfo(object):
         keywords = msi_str(pkg.get('Keywords'))
         codepage = int(pkg.get('SummaryCodepage'))
         uuid = msi_str(prod.get('Id'))
-        filetime = wixutils.filetime_now()
+        filetime = utils.filetime_now()
         version = int(pkg.get('InstallerVersion'))
         version = 200 if arch == 'x64' and version < 200 else version
         appname = msi_str(prod.get('Name'))
@@ -115,14 +115,14 @@ class MsiTable(object):
                       for name, tp in msi.MT_TABLES[self.name]]
             table_description = ', '.join(fields)
             sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
-            Libmsi.Query.new(db, wixutils.msi_str(sql)).execute()
+            Libmsi.Query.new(db, utils.msi_str(sql)).execute()
 
         # Write records
         fields = ["`%s`" % item[0] for item in msi.MT_TABLES[self.name]]
         values = ["?"] * self.length
         sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
               (self.name, ', '.join(fields), ', '.join(values))
-        query = Libmsi.Query.new(db, wixutils.msi_str(sql))
+        query = Libmsi.Query.new(db, utils.msi_str(sql))
         for record in self.records:
             index = self.records.index(record) + 1
             msirec = Libmsi.Record.new(self.length)
@@ -130,7 +130,7 @@ class MsiTable(object):
                 if isinstance(item, int):
                     msirec.set_int(index, item)
                 elif isinstance(item, str):
-                    msirec.set_string(index, wixutils.msi_str(item))
+                    msirec.set_string(index, utils.msi_str(item))
                 elif isinstance(item, tuple) and item[0] == 'filepath':
                     msirec.load_stream(index, item[1])
                 elif self.name == '_Streams' and index == 2:
@@ -157,6 +157,6 @@ class MsiDatabase(object):
         MsiSummaryInfo(self.model).write_msi(db)
         self.model.write_msi(self)
         for item in self.tables.items():
-            wixutils.echo_msg('Writing %s table...' % item[0])
+            utils.echo_msg('Writing %s table...' % item[0])
             item[1].write_msi(db)
         db.commit()

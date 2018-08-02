@@ -39,7 +39,7 @@ import sys
 import tempfile
 
 import model
-import wixutils
+import utils
 
 PROJECT = 'WiX.Py'
 VERSION = '0.1'
@@ -55,7 +55,7 @@ def _normalize_path(wild_path):
 
 def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
           encoding='utf-8', stdout=False):
-    wixutils.DEFAULT_ENCODING = encoding
+    utils.DEFAULT_ENCODING = encoding
     json_data['_pkgname'] = PROJECT
     json_data['_pkgver'] = VERSION
 
@@ -86,14 +86,14 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
     if engine == WIXL_ENGINE:
         model.WIXL = True
 
-    wixutils.echo_msg('Building Wix model...')
+    utils.echo_msg('Building Wix model...')
     wixmodel = model.Wix(json_data)
 
     if xml_only:
         if stdout:
             wixmodel.write_xml(sys.stdout)
         else:
-            wixutils.echo_msg('Writing XML into %s...' % output_path)
+            utils.echo_msg('Writing XML into %s...' % output_path)
             with open(output_path, 'wb') as fp:
                 wixmodel.write_xml(fp)
 
@@ -111,7 +111,7 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
         if os.name == 'nt':
             raise Exception('pyWiXL backend is not supported on MS Windows!')
         import libmsi
-        wixutils.echo_msg('Writing MSI package into %s...' % output_path)
+        utils.echo_msg('Writing MSI package into %s...' % output_path)
         libmsi.MsiDatabase(wixmodel).write_msi(output_path)
 
     wixmodel.destroy()

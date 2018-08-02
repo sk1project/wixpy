@@ -20,7 +20,7 @@
 import os
 
 import msi
-import wixutils
+import utils
 
 WIXL = False
 
@@ -96,9 +96,9 @@ class WixElement(object):
         self.attrs = {key: value for key, value in kwargs.items()
                       if key in ATTRS[self.tag]}
         if 'Id' not in self.attrs or self.attrs['Id'] == '*':
-            self.attrs['Id'] = wixutils.get_id()
+            self.attrs['Id'] = utils.get_id()
         if self.attrs.get('Guid') == '*':
-            self.attrs['Guid'] = wixutils.get_guid()
+            self.attrs['Guid'] = utils.get_guid()
 
     def destroy(self):
         for child in self.childs:
@@ -264,7 +264,7 @@ class WixFile(WixElement):
 
     def __init__(self, parent, data, path, rel_path):
         self.path = path
-        pid = wixutils.get_id('fil')
+        pid = utils.get_id('fil')
         super(WixFile, self).__init__(parent, self.tag, **data)
         self.set(Id=pid, Name=os.path.basename(rel_path), Source=path)
 
@@ -286,9 +286,9 @@ class WixComponent(WixElement):
 
     def __init__(self, parent, data, path, rel_path):
         super(WixComponent, self).__init__(parent, self.tag,
-                                           Guid=wixutils.get_guid(), **data)
+                                           Guid=utils.get_guid(), **data)
         self.add(WixFile(self, data, path, rel_path))
-        self.set(Id=wixutils.get_id('cmp'))
+        self.set(Id=utils.get_id('cmp'))
         COMPONENTS.append(self.attrs['Id'])
 
     def write_msi_records(self, db):
@@ -318,7 +318,7 @@ class WixDirectory(WixElement):
         name = kwargs['Name'] if 'Name' in kwargs \
             else os.path.basename(rel_path)
         pid = kwargs['Id'] if 'Id' in kwargs \
-            else wixutils.get_id('dir')
+            else utils.get_id('dir')
         super(WixDirectory, self).__init__(parent, self.tag, Id=pid, Name=name)
 
         if data is not None:
@@ -438,7 +438,7 @@ class WixRegistryValue(WixElement):
 
     def __init__(self, parent, **kwargs):
         super(WixRegistryValue, self).__init__(parent, self.tag, **kwargs)
-        pid = wixutils.get_id('reg')
+        pid = utils.get_id('reg')
         self.set(Id=pid)
 
     def write_msi_records(self, db):
@@ -476,8 +476,8 @@ class WixShortcutComponent(WixElement):
     tag = 'Component'
 
     def __init__(self, parent, data, shortcut_data):
-        pid = wixutils.get_id()
-        guid = wixutils.get_guid()
+        pid = utils.get_id()
+        guid = utils.get_guid()
         super(WixShortcutComponent, self).__init__(parent, self.tag,
                                                    Guid=guid, **data)
         self.add(WixShortcut(self, shortcut_data))
@@ -510,7 +510,7 @@ class WixProduct(WixElement):
 
     def __init__(self, parent, data):
         super(WixProduct, self).__init__(parent, self.tag, **data)
-        self.set(Id=wixutils.get_guid())
+        self.set(Id=utils.get_guid())
         self.add(WixPackage(self, data))
         COMPONENTS[:] = []
         self.add(WixMedia(self, data))
@@ -537,7 +537,7 @@ class WixProduct(WixElement):
             pm_dir.pop('Name')
             pm_dir.comment = 'Application ProgramMenu folder'
             target_dir.add(pm_dir)
-            shortcut_dir = WixDirectory(self, Id=wixutils.get_id('mnu'),
+            shortcut_dir = WixDirectory(self, Id=utils.get_id('mnu'),
                                         Name=data.get('_ProgramMenuFolder'))
             pm_dir.add(shortcut_dir)
             ref = shortcut_dir.attrs['Id']
@@ -587,7 +587,7 @@ class Wix(WixElement):
     def __init__(self, data):
         self.msi_data = defaults()
         self.msi_data.update(data)
-        wixutils.MSI_ENCODING = 'cp%s' % self.msi_data['Codepage']
+        utils.MSI_ENCODING = 'cp%s' % self.msi_data['Codepage']
         self.source_dir = self.msi_data.get('_SourceDir', '.')
         super(Wix, self).__init__(None, self.tag, xmlns=XMLNS)
         self.pop('Id')
@@ -597,7 +597,7 @@ class Wix(WixElement):
 
     def write_xml(self, fp, indent=0):
         tab = indent * ' '
-        enc = wixutils.DEFAULT_ENCODING
+        enc = utils.DEFAULT_ENCODING
         fp.write('%s<?xml version="1.0" encoding="%s"?>\n' % (tab, enc))
         super(Wix, self).write_xml(fp, indent)
 
