@@ -51,10 +51,16 @@ class Engine(object):
     WIX = 2
 
     @classmethod
-    def from_string(cls, txt):
+    def from_string(cls, engine_name):
         return {'WIXPY': cls.WIXPY,
                 'WIXL': cls.WIXL,
-                'WIX': cls.WIX}.get(txt.upper(), cls.WIXPY)
+                'WIX': cls.WIX}.get(engine_name.upper(), cls.WIXPY)
+
+    @classmethod
+    def to_string(cls, engine):
+        return {cls.WIXPY: 'WIXPY',
+                cls.WIXL: 'WIXL',
+                cls.WIX: 'WIX'}.get(engine, 'WIXPY')
 
 
 def _normalize_path(wild_path):
@@ -63,6 +69,7 @@ def _normalize_path(wild_path):
 
 def build(json_data, xml_only=False, engine=Engine.WIXPY,
           encoding='utf-8', stdout=False):
+    utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
     utils.DEFAULT_ENCODING = encoding
     json_data['_pkgname'] = PROJECT
     json_data['_pkgver'] = VERSION
