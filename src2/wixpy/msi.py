@@ -330,8 +330,3 @@ MT_TABLES = {
                       'PRIMARY KEY `File_`'),
     ),
 }
-
-
-class FileStream(object):
-    def __init__(self, filepath):
-        self.filepath = filepath

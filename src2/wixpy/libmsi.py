@@ -131,8 +131,8 @@ class MsiTable(object):
                     msirec.set_int(index, item)
                 elif isinstance(item, str):
                     msirec.set_string(index, wixutils.msi_str(item))
-                elif isinstance(item, msi.FileStream):
-                    msirec.load_stream(index, item.filepath)
+                elif isinstance(item, tuple) and item[0] == 'filepath':
+                    msirec.load_stream(index, item[1])
                 elif self.name == '_Streams' and index == 2:
                     # TODO: implement item streaming
                     msirec.set_stream(index, item)

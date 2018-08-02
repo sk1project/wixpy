@@ -238,8 +238,7 @@ class WixIcon(WixElement):
     def write_msi_records(self, db):
         filepath = self.get('SourceFile')
         if os.path.exists(filepath):
-            db.tables[msi.MT_ICON].add(self.get('Id'),
-                                       msi.FileStream(filepath))
+            db.tables[msi.MT_ICON].add(self.get('Id'), ('filepath', filepath))
 
 
 class WixMedia(WixElement):
