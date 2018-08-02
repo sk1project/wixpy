@@ -44,16 +44,24 @@ import utils
 PROJECT = 'WiX.Py'
 VERSION = '0.1'
 
-WIXPY_ENGINE = 0
-WIXL_ENGINE = 1
-WIX_ENGINE = 2
+
+class Engine(object):
+    WIXPY = 0
+    WIXL = 1
+    WIX = 2
+
+    @classmethod
+    def from_string(cls, txt):
+        return {'WIXPY': cls.WIXPY,
+                'WIXL': cls.WIXL,
+                'WIX': cls.WIX}.get(txt.upper(), cls.WIXPY)
 
 
 def _normalize_path(wild_path):
     return os.path.abspath(os.path.expanduser(wild_path))
 
 
-def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
+def build(json_data, xml_only=False, engine=Engine.WIXPY,
           encoding='utf-8', stdout=False):
     utils.DEFAULT_ENCODING = encoding
     json_data['_pkgname'] = PROJECT
@@ -83,8 +91,7 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
         output += '.wxs'
     output_path = os.path.join(json_data.get('_OutputDir', './'), output)
 
-    if engine == WIXL_ENGINE:
-        model.WIXL = True
+    model.WIXL = engine == Engine.WIXL
 
     utils.echo_msg('Building Wix model...')
     wixmodel = model.Wix(json_data)
@@ -97,19 +104,19 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
             with open(output_path, 'wb') as fp:
                 wixmodel.write_xml(fp)
 
-    elif engine == WIXL_ENGINE:
+    elif engine == Engine.WIXL:
         xml_file = tempfile.NamedTemporaryFile(delete=True)
         with open(xml_file.name, 'wb') as fp:
             wixmodel.write_xml(fp)
         arch = '-a x64' if json_data.get('Win64') else ''
         os.system('wixl -v %s -o %s %s' % (arch, output_path, xml_file.name))
 
-    elif engine == WIX_ENGINE:
+    elif engine == Engine.WIX:
         raise Exception('WiX backend support is not implemented yet!')
 
-    elif engine == WIXPY_ENGINE:
+    elif engine == Engine.WIXPY:
         if os.name == 'nt':
-            raise Exception('pyWiXL backend is not supported on MS Windows!')
+            raise Exception('WiX.py backend is not supported on MS Windows!')
         import libmsi
         utils.echo_msg('Writing MSI package into %s...' % output_path)
         libmsi.MsiDatabase(wixmodel).write_msi(output_path)
