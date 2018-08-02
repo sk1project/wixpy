@@ -424,6 +424,8 @@ class WixRegistryValue(WixElement):
 
     def __init__(self, parent, **kwargs):
         super(WixRegistryValue, self).__init__(parent, self.tag, **kwargs)
+        pid = wixutils.get_id('reg')
+        self.set(Id=pid)
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_REGISTRY]
