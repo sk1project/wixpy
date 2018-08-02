@@ -413,6 +413,12 @@ class WixRemoveFolder(WixElement):
     def __init__(self, parent, **kwargs):
         super(WixRemoveFolder, self).__init__(parent, self.tag, **kwargs)
 
+    def write_msi_records(self, db):
+        table = db.tables[msitabs.MT_REMOVEFILE]
+        condition = msitabs.InstallMode.from_string(self.get('On'))
+        table.add(self.get('Id'), self.parent('Id'), None,
+                  self.parent.parent.get('Id'), condition)
+
 
 class WixRegistryValue(WixElement):
     tag = 'RegistryValue'
