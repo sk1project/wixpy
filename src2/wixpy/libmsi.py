@@ -24,7 +24,7 @@ gi.require_version('Libmsi', '1.0')
 from gi.repository import Libmsi
 
 import wixutils
-import msitabs
+import msi
 
 msi_str = wixutils.msi_str
 MAXINT = 4294967295
@@ -56,9 +56,9 @@ class MsiSummaryInfo(object):
         appname = msi_str(prod.get('Name'))
         security = 2
 
-        source = msitabs.SourceFlags.COMPRESSED
+        source = msi.SourceFlags.COMPRESSED
         if pkg.get('InstallScope') == "perUser":
-            source |= msitabs.SourceFlags.NO_PRIVILEGES
+            source |= msi.SourceFlags.NO_PRIVILEGES
 
         self.add(Libmsi.Property.TITLE, title)
         self.add(Libmsi.Property.AUTHOR, author)
@@ -100,7 +100,7 @@ class MsiTable(object):
     def __init__(self, name):
         self.name = name
         self.records = []
-        self.length = len(msitabs.MT_TABLES[self.name])
+        self.length = len(msi.MT_TABLES[self.name])
 
     def add(self, *args):
         if len(args) != self.length:
@@ -112,13 +112,13 @@ class MsiTable(object):
         # Create table
         if not self.name.startswith('_'):
             fields = ['`%s` %s' % (name, tp)
-                      for name, tp in msitabs.MT_TABLES[self.name]]
+                      for name, tp in msi.MT_TABLES[self.name]]
             table_description = ', '.join(fields)
             sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
             Libmsi.Query.new(db, wixutils.msi_str(sql)).execute()
 
         # Write records
-        fields = ["`%s`" % item[0] for item in msitabs.MT_TABLES[self.name]]
+        fields = ["`%s`" % item[0] for item in msi.MT_TABLES[self.name]]
         values = ["?"] * self.length
         sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
               (self.name, ', '.join(fields), ', '.join(values))
@@ -131,7 +131,7 @@ class MsiTable(object):
                     msirec.set_int(index, item)
                 elif isinstance(item, str):
                     msirec.set_string(index, wixutils.msi_str(item))
-                elif isinstance(item, msitabs.FileStream):
+                elif isinstance(item, msi.FileStream):
                     msirec.load_stream(index, item.filepath)
                 elif self.name == '_Streams' and index == 2:
                     # TODO: implement item streaming
@@ -148,7 +148,7 @@ class MsiDatabase(object):
         self.model = model
         self.tables = {}
         self.medias = []
-        for key in msitabs.MT_TABLES.keys():
+        for key in msi.MT_TABLES.keys():
             self.tables[key] = MsiTable(key)
 
     def write_msi(self, filename):

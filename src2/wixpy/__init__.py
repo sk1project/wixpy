@@ -152,6 +152,6 @@ if __name__ == "__main__":
         '_SkipHidden': True,
     }
     # build(MSI_DATA, xml_only=True, engine=WIXL_ENGINE, stdout=True)
-    # build(MSI_DATA, xml_only=True, stdout=True)
-    build(MSI_DATA, engine=WIXL_ENGINE)
+    build(MSI_DATA, xml_only=True, stdout=True)
+    # build(MSI_DATA, engine=WIXL_ENGINE)
     # build(MSI_DATA)

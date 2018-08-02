@@ -19,7 +19,7 @@
 
 import os
 
-import msitabs
+import msi
 import wixutils
 
 WIXL = False
@@ -178,8 +178,8 @@ class WixCondition(WixElement):
             fp.write('>\n%s\n%s</%s>\n' % (condition, tab, self.tag))
 
     def write_msi_records(self, db):
-        db.tables[msitabs.MT_LAUNCHCONDITION].add(self.condition,
-                                                  self.get('Message'))
+        db.tables[msi.MT_LAUNCHCONDITION].add(self.condition,
+                                              self.get('Message'))
 
 
 OS_CONDITION = {
@@ -222,7 +222,7 @@ class WixProperty(WixElement):
         super(WixProperty, self).__init__(parent, self.tag, Id=pid, Value=value)
 
     def write_msi_records(self, db):
-        db.tables[msitabs.MT_PROPERTY].add(self.get('Id'), self.get('Value'))
+        db.tables[msi.MT_PROPERTY].add(self.get('Id'), self.get('Value'))
 
 
 class WixIcon(WixElement):
@@ -238,8 +238,8 @@ class WixIcon(WixElement):
     def write_msi_records(self, db):
         filepath = self.get('SourceFile')
         if os.path.exists(filepath):
-            db.tables[msitabs.MT_ICON].add(self.get('Id'),
-                                           msitabs.FileStream(filepath))
+            db.tables[msi.MT_ICON].add(self.get('Id'),
+                                       msi.FileStream(filepath))
 
 
 class WixMedia(WixElement):
@@ -253,8 +253,8 @@ class WixMedia(WixElement):
         cabinet = '#%s' % self.get('Cabinet') if self.get('EmbedCab') == 'yes' \
             else self.get('Cabinet')
         disk = int(self.get('Id'))
-        rec = db.tables[msitabs.MT_MEDIA].add(disk, 0, self.get('DiskPrompt'),
-                                              cabinet, None, None)
+        rec = db.tables[msi.MT_MEDIA].add(disk, 0, self.get('DiskPrompt'),
+                                          cabinet, None, None)
         db.medias.append(rec)
 
 
@@ -282,17 +282,17 @@ class WixComponent(WixElement):
         COMPONENTS.append(self.attrs['Id'])
 
     def write_msi_records(self, db):
-        attr = msitabs.ComponentAttribute.LOCAL_ONLY
+        attr = msi.ComponentAttribute.LOCAL_ONLY
         key = None
         if self.get('Win64') == 'yes':
-            attr |= msitabs.ComponentAttribute.X64
+            attr |= msi.ComponentAttribute.X64
         if any([child.tag == 'RegistryValue' for child in self.childs]):
-            attr |= msitabs.ComponentAttribute.REGISTRY_KEY_PATH
+            attr |= msi.ComponentAttribute.REGISTRY_KEY_PATH
             for child in self.childs:
                 if child.tag == 'RegistryValue':
                     key = child.get('Key')
                     break
-        table = db.tables[msitabs.MT_MEDIA]
+        table = db.tables[msi.MT_MEDIA]
         table.add(self.get('Id'), '{%s}' % self.get('Guid'),
                   self.parent.get('Id'), attr, None, key)
 
@@ -320,7 +320,7 @@ class WixDirectory(WixElement):
                     self.add(WixComponent(self, data, item_path, item_rel_path))
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_DIRECTORY]
+        table = db.tables[msi.MT_DIRECTORY]
         table.add(self.get('Id'), self.parent.get('Id'),
                   self.get('Name') or '.')
 
@@ -347,7 +347,7 @@ class WixInstallDir(WixElement):
                 self.add(WixComponent(self, data, item_path, item_rel_path))
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_DIRECTORY]
+        table = db.tables[msi.MT_DIRECTORY]
         table.add(self.get('Id'), self.parent.get('Id'), self.get('Name'))
 
 
@@ -362,7 +362,7 @@ class WixPfDir(WixElement):
         self.add(WixInstallDir(self, data))
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_DIRECTORY]
+        table = db.tables[msi.MT_DIRECTORY]
         table.add(self.get('Id'), self.parent.get('Id'), self.get('Name'))
 
 
@@ -378,7 +378,7 @@ class WixTargetDir(WixElement):
         self.add(WixPfDir(self, data))
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_DIRECTORY]
+        table = db.tables[msi.MT_DIRECTORY]
         table.add(self.get('Id'), None, self.get('Name'))
 
 
@@ -393,10 +393,10 @@ class WixFeature(WixElement):
             self.add(WixComponentRef(self, Id=item))
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_FEATURE]
+        table = db.tables[msi.MT_FEATURE]
         parent = self.parent.get('Id') if self.parent.tag == 'Feature' else None
         table.add(self.get('Id'), parent, self.get('Title'),
-                  self.get('Description'), msitabs.FeatureDisplay.COLLAPSE,
+                  self.get('Description'), msi.FeatureDisplay.COLLAPSE,
                   int(self.get('Level')), self.get('ConfigurableDirectory'), 0)
 
 
@@ -414,8 +414,8 @@ class WixRemoveFolder(WixElement):
         super(WixRemoveFolder, self).__init__(parent, self.tag, **kwargs)
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_REMOVEFILE]
-        condition = msitabs.InstallMode.from_string(self.get('On'))
+        table = db.tables[msi.MT_REMOVEFILE]
+        condition = msi.InstallMode.from_string(self.get('On'))
         table.add(self.get('Id'), self.parent('Id'), None,
                   self.parent.parent.get('Id'), condition)
 
@@ -441,7 +441,7 @@ class WixComponentRef(WixElement):
         super(WixComponentRef, self).__init__(parent, self.tag, **kwargs)
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_FEATURECOMPONENTS]
+        table = db.tables[msi.MT_FEATURECOMPONENTS]
         table.add(self.parent.get('Id'), self.get('Id'))
 
 
@@ -475,7 +475,7 @@ class WixPackage(WixElement):
 
     def write_msi_records(self, db):
         if self.get('InstallScope') == "perMachine":
-            db.tables[msitabs.MT_PROPERTY].add('ALLUSERS', '1')
+            db.tables[msi.MT_PROPERTY].add('ALLUSERS', '1')
 
 
 class WixProduct(WixElement):
@@ -545,7 +545,7 @@ class WixProduct(WixElement):
         return work_dir_id, target_id
 
     def write_msi_records(self, db):
-        table = db.tables[msitabs.MT_PROPERTY]
+        table = db.tables[msi.MT_PROPERTY]
         table.add('Manufacturer', self.get('Manufacturer'))
         table.add('ProductLanguage', self.get('Language'))
         table.add('ProductCode', '{%s}' % self.get('Id'))
