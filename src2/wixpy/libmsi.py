@@ -93,7 +93,7 @@ class MsiSummaryInfo(object):
 
 
 class MsiTable(object):
-    length = None  # type: int
+    length = None
     name = None
     records = None
 
@@ -148,6 +148,7 @@ class MsiDatabase(object):
         self.model = model
         self.tables = {}
         self.medias = []
+        self.files = []
         for key in msi.MT_TABLES.keys():
             self.tables[key] = MsiTable(key)
 

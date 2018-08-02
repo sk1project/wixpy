@@ -268,6 +268,17 @@ class WixFile(WixElement):
         super(WixFile, self).__init__(parent, self.tag, **data)
         self.set(Id=pid, Name=os.path.basename(rel_path), Source=path)
 
+    def write_msi_records(self, db):
+        table = db.tables[msi.MT_FILE]
+        file_id = self.get('Id')
+        comp_id = self.parent.get('Id')
+        name = self.get('Name')
+        size = os.path.getsize(self.get('Source'))
+        sequence = len(table.records) + 1
+        table.add(file_id, comp_id, name, size, None, None,
+                  msi.FileAttribute.VITAL, sequence)
+        db.files.append(self.get('Source'))
+
 
 class WixComponent(WixElement):
     tag = 'Component'
@@ -291,6 +302,9 @@ class WixComponent(WixElement):
                 if child.tag == 'RegistryValue':
                     key = child.get('Key')
                     break
+        elif self.childs[0].tag == 'File':
+            key = self.childs[0].get('Id')
+
         table = db.tables[msi.MT_MEDIA]
         table.add(self.get('Id'), '{%s}' % self.get('Guid'),
                   self.parent.get('Id'), attr, None, key)
