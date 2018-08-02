@@ -93,6 +93,17 @@ class RegistryRoot(object):
                 'HKMU': cls.HKMU}[str_value]
 
 
+class FileAttribute(object):
+    READ_ONLY = 1 << 0
+    HIDDEN = 1 << 1
+    SYSTEM = 1 << 2
+    VITAL = 1 << 9
+    CHECKSUM = 1 << 10
+    PATCH_ADDED = 1 << 11
+    NON_COMPRESSED = 1 << 12
+    COMPRESSED = 1 << 13
+
+
 # ----------- MSI Tables -----------
 
 MT_PROPERTY = 'Property'
