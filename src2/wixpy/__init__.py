@@ -87,20 +87,20 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
         model.WIXL = True
 
     wixutils.echo_msg('Building Wix model...')
-    model = model.Wix(json_data)
+    wixmodel = model.Wix(json_data)
 
     if xml_only:
         if stdout:
-            model.write_xml(sys.stdout)
+            wixmodel.write_xml(sys.stdout)
         else:
             wixutils.echo_msg('Writing XML into %s...' % output_path)
             with open(output_path, 'wb') as fp:
-                model.write_xml(fp)
+                wixmodel.write_xml(fp)
 
     elif engine == WIXL_ENGINE:
         xml_file = tempfile.NamedTemporaryFile(delete=True)
         with open(xml_file.name, 'wb') as fp:
-            model.write_xml(fp)
+            wixmodel.write_xml(fp)
         arch = '-a x64' if json_data.get('Win64') else ''
         os.system('wixl -v %s -o %s %s' % (arch, output_path, xml_file.name))
 
@@ -112,9 +112,9 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
             raise Exception('pyWiXL backend is not supported on MS Windows!')
         import libmsi
         wixutils.echo_msg('Writing MSI package into %s...' % output_path)
-        libmsi.MsiDatabase(model).write_msi(output_path)
+        libmsi.MsiDatabase(wixmodel).write_msi(output_path)
 
-    model.destroy()
+    wixmodel.destroy()
 
 
 if __name__ == "__main__":
