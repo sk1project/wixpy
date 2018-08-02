@@ -425,6 +425,18 @@ class WixRegistryValue(WixElement):
     def __init__(self, parent, **kwargs):
         super(WixRegistryValue, self).__init__(parent, self.tag, **kwargs)
 
+    def write_msi_records(self, db):
+        table = db.tables[msi.MT_REGISTRY]
+        reg_id = self.get('Id')
+        reg_root = msi.RegistryRoot.from_string(self.get('Root'))
+        reg_key = self.get('Key')
+        reg_name = self.get('Name')
+        reg_comp = self.parent.get('Id')
+        reg_value = self.get('Value')
+        if not reg_value.startswith('#'):
+            reg_value = '#' + reg_value
+        table.add(reg_id, reg_root, reg_key, reg_name, reg_value, reg_comp)
+
 
 class WixDirectoryRef(WixElement):
     tag = 'DirectoryRef'
@@ -458,7 +470,7 @@ class WixShortcutComponent(WixElement):
         reg_key = 'Software\\%s\\%s' % (data['Manufacturer'].replace(' ', '_'),
                                         data['Name'].replace(' ', '_'))
         self.add(WixRegistryValue(self, Root='HKCU', Key=reg_key,
-                                  Name='installed', Type='integer',
+                                  Name=shortcut_data['Name'], Type='integer',
                                   Value='1', KeyPath='yes'))
         self.set(Id='cmp%s' % pid)
         COMPONENTS.append(self.attrs['Id'])

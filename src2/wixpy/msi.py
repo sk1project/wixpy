@@ -198,7 +198,7 @@ MT_TABLES = {
         ('Root', 'INT NOT NULL'),
         ('Key', 'CHAR(255) NOT NULL LOCALIZABLE'),
         ('Name', 'CHAR(255) LOCALIZABLE'),
-        ('Value', 'CHAR(0) LOCALIZABLE'),
+        ('Value', 'CHAR(255) LOCALIZABLE'),
         ('Component_', 'CHAR(72) NOT NULL PRIMARY KEY `Registry`'),
     ),
     MT_SERVICECONTROL: (
