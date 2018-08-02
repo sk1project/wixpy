@@ -17,6 +17,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# ----------- MSI enums -----------
+
 
 class SourceFlags(object):
     SHORT_NAMES = 1
@@ -58,6 +60,40 @@ class InstallMode(object):
                 'uninstall': cls.UNINSTALL,
                 'both': cls.BOTH}[str_value]
 
+
+class RegistryValueType(object):
+    STRING = 1
+    INTEGER = 2
+    BINARY = 4
+    EXPANDABLE = 8
+    MULTI_STRING = 16
+
+    @classmethod
+    def from_string(cls, str_value):
+        return {'string': cls.STRING,
+                'integer': cls.INTEGER,
+                'binary': cls.BINARY,
+                'expandable': cls.EXPANDABLE,
+                'multistring': cls.MULTI_STRING}[str_value]
+
+
+class RegistryRoot(object):
+    HKCR = 1
+    HKCU = 2
+    HKLM = 4
+    HKU = 8
+    HKMU = 16
+
+    @classmethod
+    def from_string(cls, str_value):
+        return {'HKCR': cls.HKCR,
+                'HKCU': cls.HKCU,
+                'HKLM': cls.HKLM,
+                'HKU': cls.HKU,
+                'HKMU': cls.HKMU}[str_value]
+
+
+# ----------- MSI Tables -----------
 
 MT_PROPERTY = 'Property'
 MT_ICON = 'Icon'
