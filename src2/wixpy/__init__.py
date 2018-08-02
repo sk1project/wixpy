@@ -38,7 +38,7 @@ import os
 import sys
 import tempfile
 
-import wix
+import model
 import wixutils
 
 PROJECT = 'WiX.Py'
@@ -84,10 +84,10 @@ def build(json_data, xml_only=False, engine=WIXPY_ENGINE,
     output_path = os.path.join(json_data.get('_OutputDir', './'), output)
 
     if engine == WIXL_ENGINE:
-        wix.WIXL = True
+        model.WIXL = True
 
     wixutils.echo_msg('Building Wix model...')
-    model = wix.Wix(json_data)
+    model = model.Wix(json_data)
 
     if xml_only:
         if stdout:
