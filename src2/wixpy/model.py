@@ -284,10 +284,12 @@ class WixComponent(WixElement):
     tag = 'Component'
     is_comp = True
 
-    def __init__(self, parent, data, path, rel_path):
+    def __init__(self, parent, path=None, rel_path=None, **data):
         super(WixComponent, self).__init__(parent, self.tag,
                                            Guid=utils.get_guid(), **data)
-        self.add(WixFile(self, data, path, rel_path))
+        if path and rel_path:
+            self.add(WixFile(self, data, path, rel_path))
+
         self.set(Id=utils.get_id('cmp'))
         COMPONENTS.append(self.attrs['Id'])
 
@@ -330,7 +332,8 @@ class WixDirectory(WixElement):
                 if os.path.isdir(item_path):
                     self.add(WixDirectory(self, data, item_path, item_rel_path))
                 elif os.path.isfile(item_path):
-                    self.add(WixComponent(self, data, item_path, item_rel_path))
+                    self.add(WixComponent(self, item_path, item_rel_path,
+                                          **data))
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_DIRECTORY]
@@ -484,14 +487,11 @@ class WixComponentRef(WixElement):
         table.add(self.parent.get('Id'), self.get('Id'))
 
 
-class WixShortcutComponent(WixElement):
+class WixShortcutComponent(WixComponent):
     tag = 'Component'
 
     def __init__(self, parent, data, shortcut_data):
-        pid = utils.get_id()
-        guid = utils.get_guid()
-        super(WixShortcutComponent, self).__init__(parent, self.tag,
-                                                   Guid=guid, **data)
+        super(WixShortcutComponent, self).__init__(parent, self.tag, **data)
         self.add(WixShortcut(self, shortcut_data))
         self.add(WixRemoveFolder(self, Id=shortcut_data['DirectoryRef'],
                                  On='uninstall'))
@@ -500,8 +500,6 @@ class WixShortcutComponent(WixElement):
         self.add(WixRegistryValue(self, Root='HKCU', Key=reg_key,
                                   Name=shortcut_data['Name'], Type='integer',
                                   Value='1', KeyPath='yes'))
-        self.set(Id='cmp%s' % pid)
-        COMPONENTS.append(self.attrs['Id'])
 
 
 class WixPackage(WixElement):
