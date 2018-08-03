@@ -156,7 +156,7 @@ if __name__ == "__main__":
         '_Shortcuts': [
             {'Name': PROJECT,
              'Description': 'Multiplatform MSI builder',
-             'Target': '__init__.py'},
+             'Target': 'wixpy/__init__.py'},
         ],
         '_SourceDir': path,
         '_InstallDir': 'wixpy-%s' % VERSION,
