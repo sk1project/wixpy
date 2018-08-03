@@ -58,7 +58,7 @@ class InstallMode(object):
     def from_string(cls, str_value):
         return {'install': cls.INSTALL,
                 'uninstall': cls.UNINSTALL,
-                'both': cls.BOTH}[str_value]
+                'both': cls.BOTH}[str_value.lower()]
 
 
 class RegistryValueType(object):
@@ -74,7 +74,7 @@ class RegistryValueType(object):
                 'integer': cls.INTEGER,
                 'binary': cls.BINARY,
                 'expandable': cls.EXPANDABLE,
-                'multistring': cls.MULTI_STRING}[str_value]
+                'multistring': cls.MULTI_STRING}[str_value.lower()]
 
 
 class RegistryRoot(object):
@@ -90,7 +90,7 @@ class RegistryRoot(object):
                 'HKCU': cls.HKCU,
                 'HKLM': cls.HKLM,
                 'HKU': cls.HKU,
-                'HKMU': cls.HKMU}[str_value]
+                'HKMU': cls.HKMU}[str_value.upper()]
 
 
 class FileAttribute(object):
