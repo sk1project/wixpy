@@ -21,38 +21,38 @@
 
 
 class SourceFlags(object):
-    SHORT_NAMES = 1
-    COMPRESSED = 2
-    ADMIN = 4
-    NO_PRIVILEGES = 8
+    SHORT_NAMES = 1 << 0
+    COMPRESSED = 1 << 1
+    ADMIN = 1 << 2
+    NO_PRIVILEGES = 1 << 3
 
 
 class ComponentAttribute(object):
     LOCAL_ONLY = 0
-    SOURCE_ONLY = 1
-    OPTIONAL = 2
-    REGISTRY_KEY_PATH = 4
-    SHARED_DLL_REF_COUNT = 8
-    PERMANENT = 16
-    ODBC_DATA_SOURCE = 32
-    TRANSITIVE = 64
-    NEVER_OVERWRITE = 128
-    X64 = 256
-    REGISTRY_REFLECTION = 512
-    UNINSTALL_ON_SUPERSEDENCE = 1024
-    SHARED = 2048
+    SOURCE_ONLY = 1 << 0
+    OPTIONAL = 1 << 1
+    REGISTRY_KEY_PATH = 1 << 2
+    SHARED_DLL_REF_COUNT = 1 << 3
+    PERMANENT = 1 << 4
+    ODBC_DATA_SOURCE = 1 << 5
+    TRANSITIVE = 1 << 6
+    NEVER_OVERWRITE = 1 << 7
+    X64 = 1 << 8
+    REGISTRY_REFLECTION = 1 << 9
+    UNINSTALL_ON_SUPERSEDENCE = 1 << 10
+    SHARED = 1 << 11
 
 
 class FeatureDisplay(object):
     HIDDEN = 0
-    EXPAND = 1
-    COLLAPSE = 2
+    EXPAND = 1 << 0
+    COLLAPSE = 1 << 1
 
 
 class InstallMode(object):
-    INSTALL = 1
-    UNINSTALL = 2
-    BOTH = 4
+    INSTALL = 1 << 0
+    UNINSTALL = 1 << 1
+    BOTH = 1 << 2
 
     @classmethod
     def from_string(cls, str_value):
@@ -62,11 +62,11 @@ class InstallMode(object):
 
 
 class RegistryValueType(object):
-    STRING = 1
-    INTEGER = 2
-    BINARY = 4
-    EXPANDABLE = 8
-    MULTI_STRING = 16
+    STRING = 1 << 0
+    INTEGER = 1 << 1
+    BINARY = 1 << 2
+    EXPANDABLE = 1 << 3
+    MULTI_STRING = 1 << 4
 
     @classmethod
     def from_string(cls, str_value):
@@ -78,11 +78,11 @@ class RegistryValueType(object):
 
 
 class RegistryRoot(object):
-    HKCR = 1
-    HKCU = 2
-    HKLM = 4
-    HKU = 8
-    HKMU = 16
+    HKCR = 1 << 0
+    HKCU = 1 << 1
+    HKLM = 1 << 2
+    HKU = 1 << 3
+    HKMU = 1 << 4
 
     @classmethod
     def from_string(cls, str_value):
@@ -102,6 +102,24 @@ class FileAttribute(object):
     PATCH_ADDED = 1 << 11
     NON_COMPRESSED = 1 << 12
     COMPRESSED = 1 << 13
+
+
+class UpgradeAttribute(object):
+    MIGRATE_FEATURES = 1 << 0
+    ONLY_DETECT = 1 << 1
+    IGNORE_REMOVE_FAILURE = 1 << 2
+    VERSION_MIN_INCLUSIVE = 1 << 8
+    VERSION_MAX_INCLUSIVE = 1 << 9
+    LANGUAGES_EXCLUSIVE = 1 << 10
+
+
+class ServiceControlEvent(object):
+    INSTALL_START = 1 << 0
+    INSTALL_STOP = 1 << 1
+    INSTALL_DELETE = 1 << 3
+    UNINSTALL_START = 1 << 4
+    UNINSTALL_STOP = 1 << 5
+    UNINSTALL_DELETE = 1 << 7
 
 
 # ----------- MSI Tables -----------
