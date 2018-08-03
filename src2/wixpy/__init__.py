@@ -62,6 +62,13 @@ class Engine(object):
                 cls.WIXL: 'WIXL',
                 cls.WIX: 'WIX'}.get(engine, 'WIXPY')
 
+    @classmethod
+    def normalize(cls, value):
+        if isinstance(value, int):
+            return cls.from_string(cls.to_string(value))
+        else:
+            return cls.to_string(cls.from_string(value))
+
 
 def _normalize_path(wild_path):
     return os.path.abspath(os.path.expanduser(wild_path))
