@@ -419,6 +419,18 @@ class WixShortcut(WixElement):
     def __init__(self, parent, shortcut_data):
         super(WixShortcut, self).__init__(parent, self.tag, **shortcut_data)
 
+    def write_msi_records(self, db):
+        table = db.tables[msi.MT_SHORTCUT]
+        shortcut_id = self.get('Id')
+        dir_id = self.parent.parent.get('Id')
+        name = self.get('Name')
+        comp_id = self.parent.get('Id')
+        target = self.get('Target')
+        descr = self.get('Description')
+        wkdir = self.get('WorkingDirectory')
+        table.add(shortcut_id, dir_id, name, comp_id, target, None, descr,
+                  None, None, None, None, wkdir, None, None, None, None)
+
 
 class WixRemoveFolder(WixElement):
     tag = 'RemoveFolder'
