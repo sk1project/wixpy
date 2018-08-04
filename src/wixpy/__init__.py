@@ -137,9 +137,10 @@ def create_model(json_data=None, xml_file=None):
 
 
 def build(json_data=None, xml_file=None, output=None, xml_only=False,
-          engine=Engine.WIXPY, encoding='utf-8', stdout=False):
+          engine=Engine.WIXPY, msi_codepage='1252', stdout=False):
     utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
-    utils.DEFAULT_ENCODING = encoding
+
+    # TODO: resolve msi encoding issue
 
     output = _get_output_path(json_data, xml_file, output, xml_only, stdout)
 
