@@ -74,10 +74,7 @@ def _normalize_path(wild_path):
     return os.path.abspath(os.path.expanduser(wild_path))
 
 
-def build(json_data, xml_only=False, engine=Engine.WIXPY,
-          encoding='utf-8', stdout=False):
-    utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
-    utils.DEFAULT_ENCODING = encoding
+def _normalize_json_data(json_data):
     json_data['_pkgname'] = PROJECT
     json_data['_pkgver'] = VERSION
 
@@ -96,26 +93,67 @@ def build(json_data, xml_only=False, engine=Engine.WIXPY,
         if key in json_data:
             json_data[key] = _normalize_path(json_data[key])
 
-    output = json_data.get('_OutputName')
-    if not output:
+    return json_data
+
+
+def _get_output_path(json_data=None, xml_file=None,
+                     output=None, xml_only=False, stdout=False):
+    filename = ''
+    dirpath = _normalize_path('./')
+
+    if output:
+        output = _normalize_path(output)
+        filename = os.path.basename(output)
+        if os.path.dirname(output):
+            dirpath = os.path.dirname(output)
+    elif json_data and json_data.get('_OutputName'):
+        filename = json_data.get('_OutputName')
+        if json_data.get('_OutputDir'):
+            dirpath = _normalize_path(json_data.get('_OutputDir'))
+    elif xml_file:
+        filename = os.path.basename(output)
+
+    if xml_only and stdout:
+        return None
+
+    if not filename:
         raise Exception('Output filename is not defined!')
-    if not xml_only and not output.endswith('.msi'):
-        output += '.msi'
-    elif xml_only and not output.endswith('.wxs'):
-        output += '.wxs'
-    output_path = os.path.join(json_data.get('_OutputDir', './'), output)
+
+    if not xml_only and not filename.endswith('.msi'):
+        filename += '.msi'
+    elif xml_only and not filename.endswith('.wxs'):
+        filename += '.wxs'
+
+    return os.path.join(dirpath, filename)
+
+
+def create_model(json_data=None, xml_file=None):
+    if json_data:
+        return model.Wix(_normalize_json_data(json_data))
+    elif xml_file:
+        raise Exception('XML loader is not implemented yet')
+    else:
+        raise Exception('Neither JSON nor XML data have been provided!')
+
+
+def build(json_data=None, xml_file=None, output=None, xml_only=False,
+          engine=Engine.WIXPY, encoding='utf-8', stdout=False):
+    utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
+    utils.DEFAULT_ENCODING = encoding
+
+    output = _get_output_path(json_data, xml_file, output, xml_only, stdout)
 
     model.WIXL = engine == Engine.WIXL
 
     utils.echo_msg('Building Wix model...')
-    wixmodel = model.Wix(json_data)
+    wixmodel = create_model(json_data)
 
     if xml_only:
         if stdout:
             wixmodel.write_xml(sys.stdout)
         else:
-            utils.echo_msg('Writing XML into %s...' % output_path)
-            with open(output_path, 'wb') as fp:
+            utils.echo_msg('Writing XML into %s...' % output)
+            with open(output, 'wb') as fp:
                 wixmodel.write_xml(fp)
 
     elif engine == Engine.WIXL:
@@ -123,7 +161,7 @@ def build(json_data, xml_only=False, engine=Engine.WIXPY,
         with open(xml_file.name, 'wb') as fp:
             wixmodel.write_xml(fp)
         arch = '-a x64' if json_data.get('Win64') else ''
-        os.system('wixl -v %s -o %s %s' % (arch, output_path, xml_file.name))
+        os.system('wixl -v %s -o %s %s' % (arch, output, xml_file.name))
 
     elif engine == Engine.WIX:
         raise Exception('WiX backend support is not implemented yet!')
@@ -132,8 +170,8 @@ def build(json_data, xml_only=False, engine=Engine.WIXPY,
         if os.name == 'nt':
             raise Exception('WiX.py backend is not supported on MS Windows!')
         import libmsi
-        utils.echo_msg('Writing MSI package into %s...' % output_path)
-        libmsi.MsiDatabase(wixmodel).write_msi(output_path)
+        utils.echo_msg('Writing MSI package into %s...' % output)
+        libmsi.MsiDatabase(wixmodel).write_msi(output)
 
     wixmodel.destroy()
 
@@ -162,7 +200,7 @@ if __name__ == "__main__":
         '_ProgramMenuFolder': 'sK1 Project',
         '_Shortcuts': [
             {'Name': PROJECT,
-             'Description': 'Multiplatform MSI builder',
+             'Description': 'Crossplatform MSI builder',
              'Target': 'wixpy/__init__.py'},
         ],
         '_SourceDir': path,
