@@ -1,2 +1,2 @@
-# WiX.Python
-JSON-driven MSI package generator
+# WiX.Py
+Crossplatform JSON/XML-driven MSI package builder
