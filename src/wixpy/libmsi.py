@@ -26,7 +26,6 @@ from gi.repository import Libmsi
 from wixpy import msi
 from wixpy import utils
 
-msi_str = utils.msi_str
 MAXINT = 4294967295
 
 
@@ -41,19 +40,19 @@ class MsiSummaryInfo(object):
         pkg = model.get_package()
 
         # MSI info data
-        title = msi_str('%s Installation Database' % prod.get('Name'))
-        author = msi_str(prod.get('Manufacturer'))
-        subject = msi_str(pkg.get('Description'))
-        comments = msi_str(pkg.get('Comments'))
+        title = '%s Installation Database' % prod.get('Name')
+        author = prod.get('Manufacturer')
+        subject = pkg.get('Description')
+        comments = pkg.get('Comments')
         arch = 'x64' if pkg.get('Platform') == 'x64' else 'Intel'
-        template = msi_str('%s;%s' % (arch, pkg.get('Languages')))
-        keywords = msi_str(pkg.get('Keywords'))
+        template = '%s;%s' % (arch, pkg.get('Languages'))
+        keywords = pkg.get('Keywords')
         codepage = int(pkg.get('SummaryCodepage'))
-        uuid = msi_str(prod.get('Id'))
+        uuid = prod.get('Id')
         filetime = utils.filetime_now()
         version = int(pkg.get('InstallerVersion'))
         version = 200 if arch == 'x64' and version < 200 else version
-        appname = msi_str(prod.get('Name'))
+        appname = prod.get('Name')
         security = 2
 
         source = msi.SourceFlags.COMPRESSED
@@ -115,29 +114,43 @@ class MsiTable(object):
                       for name, tp in msi.MT_TABLES[self.name]]
             table_description = ', '.join(fields)
             sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
-            Libmsi.Query.new(db, utils.msi_str(sql)).execute()
+            Libmsi.Query.new(db, sql).execute()
 
         # Write records
-        fields = ["`%s`" % item[0] for item in msi.MT_TABLES[self.name]]
-        values = ["?"] * self.length
+        if not self.records:
+            return
+
+        idx = 0
+        fields = []
+        values = []
+        for item in self.records[0]:
+            if item is not None:
+                fields.append('`%s`' % msi.MT_TABLES[self.name][idx][0])
+                values.append('?')
+            idx += 1
+
         sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
               (self.name, ', '.join(fields), ', '.join(values))
-        query = Libmsi.Query.new(db, utils.msi_str(sql))
+        query = Libmsi.Query.new(db, sql)
         for record in self.records:
-            index = self.records.index(record) + 1
-            msirec = Libmsi.Record.new(self.length)
+            msirec = Libmsi.Record.new(len(fields))
+            index = 1
             for item in record:
                 if isinstance(item, int):
                     msirec.set_int(index, item)
+                elif item is None:
+                    index -= 1
                 elif isinstance(item, str):
-                    msirec.set_string(index, utils.msi_str(item))
+                    msirec.set_string(index, item)
                 elif isinstance(item, tuple) and item[0] == 'filepath':
                     msirec.load_stream(index, item[1])
                 elif self.name == '_Streams' and index == 2:
                     # TODO: implement item streaming
                     msirec.set_stream(index, item)
                 else:
-                    raise ValueError('Incompatible type of record item')
+                    raise ValueError('Incompatible type of record item: %s %s' %
+                                     (str(type(item)), str(item)))
+                index += 1
             query.execute(msirec)
 
 
@@ -154,9 +167,12 @@ class MsiDatabase(object):
 
     def write_msi(self, filename):
         db = Libmsi.Database.new(filename, Libmsi.DbFlags.CREATE, None)
+        utils.echo_msg('Writing SummaryInfo')
         MsiSummaryInfo(self.model).write_msi(db)
+        utils.echo_msg('Building tables...')
         self.model.write_msi(self)
         for item in self.tables.items():
-            utils.echo_msg('Writing %s table...' % item[0])
+            utils.echo_msg('\tWriting %s table...' % item[0])
             item[1].write_msi(db)
+        utils.echo_msg('All tables processed')
         db.commit()

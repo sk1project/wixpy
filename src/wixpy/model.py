@@ -306,7 +306,7 @@ class WixComponent(WixElement):
         elif self.childs[0].tag == 'File':
             key = self.childs[0].get('Id')
 
-        table = db.tables[msi.MT_MEDIA]
+        table = db.tables[msi.MT_COMPONENT]
         table.add(self.get('Id'), '{%s}' % self.get('Guid'),
                   self.parent.get('Id'), attr, None, key)
 
@@ -442,7 +442,7 @@ class WixRemoveFolder(WixElement):
     def write_msi_records(self, db):
         table = db.tables[msi.MT_REMOVEFILE]
         condition = msi.InstallMode.from_string(self.get('On'))
-        table.add(self.get('Id'), self.parent('Id'), None,
+        table.add(self.get('Id'), self.parent.get('Id'), None,
                   self.parent.parent.get('Id'), condition)
 
 

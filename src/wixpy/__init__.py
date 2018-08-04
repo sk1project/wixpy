@@ -185,12 +185,14 @@ if __name__ == "__main__":
         'Name': PROJECT,
         'UpgradeCode': '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF690',
         'Version': VERSION,
-        'Manufacturer': 'sK1 Project',
+        'Manufacturer': 'команда sK1 Project',
         # Optional
         'Description': '%s %s Installer' % (PROJECT, VERSION),
         'Comments': 'Licensed under GPLv3',
         'Keywords': 'msi, wix, build',
         'Win64': win64,
+        'Codepage': '1251',
+        'SummaryCodepage': '1251',
 
         # Installation infrastructure
         '_OsCondition': 601,
@@ -211,6 +213,6 @@ if __name__ == "__main__":
         '_SkipHidden': True,
     }
     # build(MSI_DATA, xml_only=True, engine=WIXL_ENGINE, stdout=True)
-    build(MSI_DATA, xml_only=True, stdout=True)
     # build(MSI_DATA, engine=WIXL_ENGINE)
-    # build(MSI_DATA)
+    # build(MSI_DATA, xml_only=True, stdout=True)
+    build(MSI_DATA)

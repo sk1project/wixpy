@@ -40,18 +40,5 @@ def echo_msg(msg, newline=True, flush=True, code=''):
     sys.stdout.flush() if flush else None
 
 
-DEFAULT_ENCODING = 'utf-8'
-MSI_ENCODING = 'cp1252'
-
-
-def msi_str(text):
-    return text.decode(DEFAULT_ENCODING).encode(MSI_ENCODING)
-
-
-def sql_str(val):
-    return str(val).encode() if not isinstance(val, str) \
-        else "'%s'" % val.replace("'", "\\'")
-
-
 def filetime_now():
     return (int(time.time()) + 134774 * 86400) * 10 ** 7
