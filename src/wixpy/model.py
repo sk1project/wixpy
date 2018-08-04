@@ -19,8 +19,8 @@
 
 import os
 
-import msi
-import utils
+from wixpy import msi
+from wixpy import utils
 
 WIXL = False
 

@@ -38,8 +38,8 @@ import os
 import sys
 import tempfile
 
-import model
-import utils
+from wixpy import model
+from wixpy import utils
 
 PROJECT = 'WiX.Py'
 VERSION = '0.1'
@@ -169,7 +169,7 @@ def build(json_data=None, xml_file=None, output=None, xml_only=False,
     elif engine == Engine.WIXPY:
         if os.name == 'nt':
             raise Exception('WiX.py backend is not supported on MS Windows!')
-        import libmsi
+        from wixpy import libmsi
         utils.echo_msg('Writing MSI package into %s...' % output)
         libmsi.MsiDatabase(wixmodel).write_msi(output)
 

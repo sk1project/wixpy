@@ -23,8 +23,8 @@ gi.require_version('Libmsi', '1.0')
 
 from gi.repository import Libmsi
 
-import msi
-import utils
+from wixpy import msi
+from wixpy import utils
 
 msi_str = utils.msi_str
 MAXINT = 4294967295
