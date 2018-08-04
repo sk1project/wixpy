@@ -19,16 +19,21 @@
 
 import gi
 
+from wixpy import msi
+from wixpy import utils
+
 gi.require_version('Libmsi', '1.0')
 
 from gi.repository import Libmsi
 
-from wixpy import msi
-from wixpy import utils
-
 MAXINT = 4294967295
 
 
+def msi_str(text):
+    return text.decode('utf-8').encode('cp%s' % msi.MSI_CODEPAGE) \
+        if not utils.IS_PY3 else text
+
+MSI_ENCODING
 class MsiSummaryInfo(object):
     properties = None
 
@@ -40,19 +45,19 @@ class MsiSummaryInfo(object):
         pkg = model.get_package()
 
         # MSI info data
-        title = '%s Installation Database' % prod.get('Name')
-        author = prod.get('Manufacturer')
-        subject = pkg.get('Description')
-        comments = pkg.get('Comments')
+        title = msi_str('%s Installation Database' % prod.get('Name'))
+        author = msi_str(prod.get('Manufacturer'))
+        subject = msi_str(pkg.get('Description'))
+        comments = msi_str(pkg.get('Comments'))
         arch = 'x64' if pkg.get('Platform') == 'x64' else 'Intel'
         template = '%s;%s' % (arch, pkg.get('Languages'))
-        keywords = pkg.get('Keywords')
+        keywords = msi_str(pkg.get('Keywords'))
         codepage = int(pkg.get('SummaryCodepage'))
         uuid = prod.get('Id')
         filetime = utils.filetime_now()
         version = int(pkg.get('InstallerVersion'))
         version = 200 if arch == 'x64' and version < 200 else version
-        appname = prod.get('Name')
+        appname = msi_str(prod.get('Name'))
         security = 2
 
         source = msi.SourceFlags.COMPRESSED
@@ -141,7 +146,7 @@ class MsiTable(object):
                 elif item is None:
                     index -= 1
                 elif isinstance(item, str):
-                    msirec.set_string(index, item)
+                    msirec.set_string(index, msi_str(item))
                 elif isinstance(item, tuple) and item[0] == 'filepath':
                     msirec.load_stream(index, item[1])
                 elif self.name == '_Streams' and index == 2:
@@ -171,8 +176,8 @@ class MsiDatabase(object):
         MsiSummaryInfo(self.model).write_msi(db)
         utils.echo_msg('Building tables...')
         self.model.write_msi(self)
-        for item in self.tables.items():
-            utils.echo_msg('\tWriting %s table...' % item[0])
-            item[1].write_msi(db)
-        utils.echo_msg('All tables processed')
+        # for item in self.tables.items():
+        #     utils.echo_msg('\tWriting %s table...' % item[0])
+        #     item[1].write_msi(db)
+        # utils.echo_msg('All tables processed')
         db.commit()

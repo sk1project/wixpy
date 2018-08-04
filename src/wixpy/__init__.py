@@ -154,12 +154,12 @@ def build(json_data=None, xml_file=None, output=None, xml_only=False,
         else:
             utils.echo_msg('Writing XML into %s...' % output)
             with open(output, 'wb') as fp:
-                wixmodel.write_xml(fp)
+                wixmodel.write_xml(utils.XmlWriter(fp))
 
     elif engine == Engine.WIXL:
         xml_file = tempfile.NamedTemporaryFile(delete=True)
         with open(xml_file.name, 'wb') as fp:
-            wixmodel.write_xml(fp)
+            wixmodel.write_xml(utils.XmlWriter(fp))
         arch = '-a x64' if json_data.get('Win64') else ''
         os.system('wixl -v %s -o %s %s' % (arch, output, xml_file.name))
 
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         'Name': PROJECT,
         'UpgradeCode': '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF690',
         'Version': VERSION,
-        'Manufacturer': 'команда sK1 Project',
+        'Manufacturer': 'sK1 Project',
         # Optional
         'Description': '%s %s Installer' % (PROJECT, VERSION),
         'Comments': 'Licensed under GPLv3',
@@ -193,6 +193,8 @@ if __name__ == "__main__":
         'Win64': win64,
         'Codepage': '1251',
         'SummaryCodepage': '1251',
+        'Language': '1049',
+        'Languages': '1049',
 
         # Installation infrastructure
         '_OsCondition': 601,
@@ -212,7 +214,7 @@ if __name__ == "__main__":
         '_OutputDir': '~',
         '_SkipHidden': True,
     }
-    # build(MSI_DATA, xml_only=True, engine=WIXL_ENGINE, stdout=True)
-    # build(MSI_DATA, engine=WIXL_ENGINE)
+    # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
+    # build(MSI_DATA, engine=Engine.WIXL)
     # build(MSI_DATA, xml_only=True, stdout=True)
     build(MSI_DATA)

@@ -21,6 +21,8 @@ import sys
 import time
 import uuid
 
+IS_PY3 = sys.version_info.major > 2
+
 
 def get_guid():
     return str(uuid.uuid4()).upper()
@@ -42,3 +44,14 @@ def echo_msg(msg, newline=True, flush=True, code=''):
 
 def filetime_now():
     return (int(time.time()) + 134774 * 86400) * 10 ** 7
+
+
+class XmlWriter(object):
+    fp = None
+
+    def __init__(self, filepointer):
+        self.fp = filepointer
+
+    def write(self, text):
+        text = text.encode('utf-8') if IS_PY3 else text
+        self.fp.write(text)
