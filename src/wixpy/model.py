@@ -276,7 +276,7 @@ class WixFile(WixElement):
         sequence = len(table.records) + 1
         table.add(file_id, comp_id, name, size, None, None,
                   msi.FileAttribute.VITAL, sequence)
-        db.files.append(self.get('Source'))
+        db.files.append((file_id, self.get('Source')))
 
 
 class WixComponent(WixElement):

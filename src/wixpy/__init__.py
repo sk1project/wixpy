@@ -218,5 +218,5 @@ if __name__ == "__main__":
     }
     # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
     # build(MSI_DATA, engine=Engine.WIXL)
-    build(MSI_DATA, xml_only=True, stdout=True)
-    # build(MSI_DATA)
+    # build(MSI_DATA, xml_only=True, stdout=True)
+    build(MSI_DATA)

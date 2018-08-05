@@ -174,7 +174,7 @@ class MsiDatabase(object):
         self.files = []
         self.tables = {key: MsiTable(key) for key in msi.MT_TABLES.keys()}
 
-    def set_sequences(self):
+    def set_action_sequences(self):
         # AdminExecuteSequence
         tb = self.tables[msi.MT_ADMINEXECUTESEQUENCE]
         tb.add_action('CostInitialize')
@@ -264,19 +264,33 @@ class MsiDatabase(object):
         if self.tables[msi.MT_APPSEARCH].records:
             tb.add_action('AppSearch')
 
+    def set_filehash(self):
+        tb = self.tables[msi.MT_FILEHASH]
+        for file_id, filepath in self.files:
+            tb.add(file_id, 0, *utils.compute_md5(filepath))
+
     def write_msi(self, filename):
         db = Libmsi.Database.new(filename, Libmsi.DbFlags.CREATE, None)
+
         utils.echo_msg('Writing SummaryInfo')
         MsiSummaryInfo(self.model).write_msi(db)
+
         utils.echo_msg('Building tables...')
         self.model.write_msi(self)
+
         # Setting LastSequence value
         self.medias[0][1] = len(self.files)
+
         utils.echo_msg('Creating sequences...')
-        self.set_sequences()
+        self.set_action_sequences()
+
+        utils.echo_msg('Computing file hashes...')
+        self.set_filehash()
+
         utils.echo_msg('Writing tables...')
         for item in self.tables.items():
             utils.echo_msg('\tWriting %s table...' % item[0])
             item[1].write_msi(db)
         utils.echo_msg('All tables processed')
+
         db.commit()

@@ -17,6 +17,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hashlib
+import struct
 import sys
 import time
 import uuid
@@ -44,6 +46,13 @@ def echo_msg(msg, newline=True, flush=True, code=''):
 
 def filetime_now():
     return (int(time.time()) + 134774 * 86400) * 10 ** 7
+
+
+def compute_md5(filepath):
+    with open(filepath, 'rb') as fp:
+        hash = hashlib.md5(fp.read()).hexdigest()
+        data = bytes.fromhex(hash) if IS_PY3 else hash.decode('hex')
+    return struct.unpack('<iiii', data)
 
 
 class XmlWriter(object):
