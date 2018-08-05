@@ -301,7 +301,7 @@ class WixComponent(WixElement):
             attr |= msi.ComponentAttribute.REGISTRY_KEY_PATH
             for child in self.childs:
                 if child.tag == 'RegistryValue':
-                    key = child.get('Key')
+                    key = child.get('Id')
                     break
         elif self.childs[0].tag == 'File':
             key = self.childs[0].get('Id')
