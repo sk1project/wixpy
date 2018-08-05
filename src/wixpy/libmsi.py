@@ -33,7 +33,7 @@ def msi_str(text):
     return text.decode('utf-8').encode('cp%s' % msi.MSI_CODEPAGE) \
         if not utils.IS_PY3 else text
 
-MSI_ENCODING
+
 class MsiSummaryInfo(object):
     properties = None
 
@@ -121,23 +121,20 @@ class MsiTable(object):
             sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
             Libmsi.Query.new(db, sql).execute()
 
-        # Write records
-        if not self.records:
-            return
-
-        idx = 0
-        fields = []
-        values = []
-        for item in self.records[0]:
-            if item is not None:
-                fields.append('`%s`' % msi.MT_TABLES[self.name][idx][0])
-                values.append('?')
-            idx += 1
-
-        sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
-              (self.name, ', '.join(fields), ', '.join(values))
-        query = Libmsi.Query.new(db, sql)
         for record in self.records:
+            idx = 0
+            fields = []
+            values = []
+            for item in record:
+                if item is not None:
+                    fields.append('`%s`' % msi.MT_TABLES[self.name][idx][0])
+                    values.append('?')
+                idx += 1
+
+            sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
+                  (self.name, ', '.join(fields), ', '.join(values))
+            query = Libmsi.Query.new(db, sql)
+
             msirec = Libmsi.Record.new(len(fields))
             index = 1
             for item in record:
@@ -176,8 +173,8 @@ class MsiDatabase(object):
         MsiSummaryInfo(self.model).write_msi(db)
         utils.echo_msg('Building tables...')
         self.model.write_msi(self)
-        # for item in self.tables.items():
-        #     utils.echo_msg('\tWriting %s table...' % item[0])
-        #     item[1].write_msi(db)
-        # utils.echo_msg('All tables processed')
+        for item in self.tables.items():
+            utils.echo_msg('\tWriting %s table...' % item[0])
+            item[1].write_msi(db)
+        utils.echo_msg('All tables processed')
         db.commit()

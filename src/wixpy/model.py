@@ -594,7 +594,6 @@ class Wix(WixElement):
     def __init__(self, data):
         self.msi_data = defaults()
         self.msi_data.update(data)
-        msi.MSI_CODEPAGE = 'cp%s' % self.msi_data['Codepage']
         self.source_dir = self.msi_data.get('_SourceDir', '.')
         super(Wix, self).__init__(None, xmlns=XMLNS)
         self.pop('Id')
@@ -606,6 +605,9 @@ class Wix(WixElement):
         tab = indent * ' '
         fp.write('%s<?xml version="1.0" encoding="utf-8"?>\n' % tab)
         super(Wix, self).write_xml(fp, indent)
+
+    def write_msi_records(self, db):
+        msi.MSI_CODEPAGE = self.msi_data['Codepage']
 
     def get_product(self):
         return self.childs[0]

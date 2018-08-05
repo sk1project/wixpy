@@ -170,7 +170,8 @@ def build(json_data=None, xml_file=None, output=None, xml_only=False,
     elif engine == Engine.WIXPY:
         if os.name == 'nt':
             raise Exception('WiX.py backend is not supported on MS Windows!')
-        from wixpy import libmsi
+        from wixpy import libmsi, msi
+        msi.MSI_CODEPAGE = wixmodel.get_package().get('SummaryCodepage')
         utils.echo_msg('Writing MSI package into %s...' % output)
         libmsi.MsiDatabase(wixmodel).write_msi(output)
 
@@ -217,5 +218,5 @@ if __name__ == "__main__":
     }
     # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
     # build(MSI_DATA, engine=Engine.WIXL)
-    # build(MSI_DATA, xml_only=True, stdout=True)
-    build(MSI_DATA)
+    build(MSI_DATA, xml_only=True, stdout=True)
+    # build(MSI_DATA)
