@@ -278,6 +278,7 @@ MT_REGLOCATOR = 'RegLocator'
 MT_CREATEFOLDER = 'CreateFolder'
 MT_SIGNATURE = 'Signature'
 MT_FILEHASH = 'MsiFileHash'
+MT_ERROR = 'Error'
 
 MT_ACTION = (('Action', 'CHAR(72) NOT NULL'),
              ('Condition', 'CHAR(255)'),
@@ -483,5 +484,10 @@ MT_TABLES = {
         ('HashPart3', 'LONG NOT NULL'),
         ('HashPart4', 'LONG NOT NULL '
                       'PRIMARY KEY `File_`'),
+    ),
+    MT_ERROR: (
+        ('Error', 'INT NOT NULL'),
+        ('Message', 'CHAR(0) LOCALIZABLE '
+                    'PRIMARY KEY `Error`'),
     ),
 }
