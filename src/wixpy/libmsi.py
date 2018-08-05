@@ -109,8 +109,9 @@ class MsiTable(object):
     def add(self, *args):
         if len(args) != self.length:
             raise ValueError('Incorrect number of members for record!')
-        self.records.append(args)
-        return args
+        rec = list(args)
+        self.records.append(rec)
+        return rec
 
     def add_action(self, action):
         self.add(action, msi.MSI_ACTIONS[action][0], msi.MSI_ACTIONS[action][1])
