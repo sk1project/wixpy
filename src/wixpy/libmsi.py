@@ -264,7 +264,9 @@ class MsiDatabase(object):
         MsiSummaryInfo(self.model).write_msi(db)
         utils.echo_msg('Building tables...')
         self.model.write_msi(self)
+        utils.echo_msg('Creating sequences...')
         self.set_sequences()
+        utils.echo_msg('Writing tables...')
         for item in self.tables.items():
             utils.echo_msg('\tWriting %s table...' % item[0])
             item[1].write_msi(db)
