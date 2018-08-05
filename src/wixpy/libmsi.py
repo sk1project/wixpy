@@ -116,15 +116,14 @@ class MsiTable(object):
     def add_action(self, action):
         self.add(action, msi.MSI_ACTIONS[action][0], msi.MSI_ACTIONS[action][1])
 
-    def write_msi(self, db):
-        # Create table
-        if not self.name.startswith('_'):
-            fields = ['`%s` %s' % (name, tp)
-                      for name, tp in msi.MT_TABLES[self.name]]
-            table_description = ', '.join(fields)
-            sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
-            Libmsi.Query.new(db, sql).execute()
+    def _create_table(self, db):
+        fields = ['`%s` %s' % (name, tp)
+                  for name, tp in msi.MT_TABLES[self.name]]
+        table_description = ', '.join(fields)
+        sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
+        Libmsi.Query.new(db, sql).execute()
 
+    def _write_records(self, db):
         for record in self.records:
             idx = 0
             fields = []
@@ -158,6 +157,12 @@ class MsiTable(object):
                                      (str(type(item)), str(item)))
                 index += 1
             query.execute(msirec)
+
+    def write_msi(self, db):
+        # Create table
+        if not self.name.startswith('_'):
+            self._create_table(db)
+            self._write_records(db)
 
 
 class MsiDatabase(object):
