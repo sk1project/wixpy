@@ -264,6 +264,8 @@ class MsiDatabase(object):
         MsiSummaryInfo(self.model).write_msi(db)
         utils.echo_msg('Building tables...')
         self.model.write_msi(self)
+        # Setting LastSequence value
+        self.medias[0][1] = len(self.files)
         utils.echo_msg('Creating sequences...')
         self.set_sequences()
         utils.echo_msg('Writing tables...')
