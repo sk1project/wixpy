@@ -19,6 +19,7 @@
 
 MSI_CODEPAGE = '1252'
 
+
 # ----------- MSI enums -----------
 
 
@@ -123,6 +124,129 @@ class ServiceControlEvent(object):
     UNINSTALL_STOP = 1 << 5
     UNINSTALL_DELETE = 1 << 7
 
+
+class ActionFlags(object):
+    ADMIN_EXECUTE_SEQUENCE = 1 << 0
+    ADMIN_UI_SEQUENCE = 1 << 1
+    ADVT_EXECUTE_SEQUENCE = 1 << 2
+    INSTALL_EXECUTE_SEQUENCE = 1 << 3
+    INSTALL_UI_SEQUENCE = 1 << 4
+    ALL = -1
+
+
+MSI_ACTIONS = {
+    'InstallInitialize': (None, 1500, ActionFlags.ADMIN_EXECUTE_SEQUENCE |
+                          ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                          ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'InstallExecute': ('NOT Installed', 6500,
+                       ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'InstallExecuteAgain': ('NOT Installed', 6550,
+                            ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'InstallFinalize': (None, 6600, ActionFlags.ADMIN_EXECUTE_SEQUENCE |
+                        ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                        ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'InstallFiles': (None, 4000, ActionFlags.ADMIN_EXECUTE_SEQUENCE |
+                     ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'InstallAdminPackage': (None, 3900, ActionFlags.ADMIN_EXECUTE_SEQUENCE),
+    'FileCost': (None, 900, ActionFlags.ADMIN_EXECUTE_SEQUENCE |
+                 ActionFlags.ADMIN_UI_SEQUENCE |
+                 ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                 ActionFlags.INSTALL_UI_SEQUENCE),
+    'CostInitialize': (None, 800, ActionFlags.ALL),
+    'CostFinalize': (None, 1000, ActionFlags.ALL),
+    'InstallValidate': (None, 1400, ActionFlags.ADMIN_EXECUTE_SEQUENCE |
+                        ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                        ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'ExecuteAction': (None, 1300, ActionFlags.ADMIN_UI_SEQUENCE |
+                      ActionFlags.INSTALL_UI_SEQUENCE),
+    'CreateShortcuts': (None, 4500, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                        ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'MsiPublishAssemblies': (None, 6250, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                             ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'PublishComponents': (None, 6200, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                          ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'PublishFeatures': (None, 6300, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                        ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'PublishProduct': (None, 6400, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                       ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterClassInfo': (None, 4600, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                          ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterExtensionInfo': (None, 4700, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                              ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterMIMEInfo': (None, 4900, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                         ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterProgIdInfo': (None, 4800, ActionFlags.ADVT_EXECUTE_SEQUENCE |
+                           ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'AllocateRegistrySpace': ('NOT Installed', 1550,
+                              ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'AppSearch': (None, 50, ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                  ActionFlags.INSTALL_UI_SEQUENCE),
+    'BindImage': (None, 4300, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'CCPSearch': ('NOT Installed', 500, ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                  ActionFlags.INSTALL_UI_SEQUENCE),
+    'CreateFolders': (None, 3700, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'DeleteServices': ('VersionNT', 2000, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'DuplicateFiles': (None, 4210, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'FindRelatedProducts': (None, 25, ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                            ActionFlags.INSTALL_UI_SEQUENCE),
+    'InstallODBC': (None, 5400, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'InstallServices': ('VersionNT', 5800,
+                        ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'MsiConfigureServices': ('VersionNT>=600', 5850,
+                             ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'IsolateComponents': (None, 950, ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                          ActionFlags.INSTALL_UI_SEQUENCE),
+    'LaunchConditions': (None, 100, ActionFlags.ADMIN_EXECUTE_SEQUENCE |
+                         ActionFlags.ADMIN_UI_SEQUENCE |
+                         ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                         ActionFlags.INSTALL_UI_SEQUENCE),
+    'MigrateFeatureStates': (None, 1200, ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                             ActionFlags.INSTALL_UI_SEQUENCE),
+    'MoveFiles': (None, 3800, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'PatchFiles': (None, 4090, ActionFlags.ADMIN_EXECUTE_SEQUENCE |
+                   ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'ProcessComponents': (None, 1600, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterComPlus': (None, 5700, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterFonts': (None, 5300, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterProduct': (None, 6100, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterTypeLibraries': (None, 5500, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RegisterUser': (None, 6000, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveDuplicateFiles': (None, 3400, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveEnvironmentStrings': (None, 3300,
+                                 ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveFiles': (None, 3500, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveFolders': (None, 3600, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveIniValues': (None, 3100, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveODBC': (None, 2400, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveRegistryValues': (None, 2600, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RemoveShortcuts': (None, 3200, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'RMCCPSearch': ('NOT Installed', 600, ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                    ActionFlags.INSTALL_UI_SEQUENCE),
+    'SelfRegModules': (None, 5600, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'SelfUnregModules': (None, 2200, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'SetODBCFolders': (None, 1100, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'StartServices': ('VersionNT', 5900, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'StopServices': ('VersionNT', 1900, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'MsiUnpublishAssemblies': (None, 1750,
+                               ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnpublishComponents': (None, 1700, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnpublishFeatures': (None, 1800, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnregisterClassInfo': (None, 2700, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnregisterComPlus': (None, 2100, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnregisterExtensionInfo': (None, 2800,
+                                ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnregisterFonts': (None, 2500, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnregisterMIMEInfo': (None, 3000, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnregisterProgIdInfo': (None, 2900, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'UnregisterTypeLibraries': (None, 2300,
+                                ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'ValidateProductID': (None, 700, ActionFlags.INSTALL_EXECUTE_SEQUENCE |
+                          ActionFlags.INSTALL_UI_SEQUENCE),
+    'WriteEnvironmentStrings': (None, 5200,
+                                ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'WriteIniValues': (None, 5100, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+    'WriteRegistryValues': (None, 5000, ActionFlags.INSTALL_EXECUTE_SEQUENCE),
+}
 
 # ----------- MSI Tables -----------
 
