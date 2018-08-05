@@ -112,6 +112,9 @@ class MsiTable(object):
         self.records.append(args)
         return args
 
+    def add_action(self, action):
+        self.add(action, msi.MSI_ACTIONS[action][0], msi.MSI_ACTIONS[action][1])
+
     def write_msi(self, db):
         # Create table
         if not self.name.startswith('_'):
@@ -161,11 +164,99 @@ class MsiDatabase(object):
 
     def __init__(self, model):
         self.model = model
-        self.tables = {}
         self.medias = []
         self.files = []
-        for key in msi.MT_TABLES.keys():
-            self.tables[key] = MsiTable(key)
+        self.tables = {key: MsiTable(key) for key in msi.MT_TABLES.keys()}
+
+    def set_sequences(self):
+        # AdminExecuteSequence
+        tb = self.tables[msi.MT_ADMINEXECUTESEQUENCE]
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('InstallValidate')
+        tb.add_action('InstallInitialize')
+        tb.add_action('InstallAdminPackage')
+        tb.add_action('InstallFiles')
+        tb.add_action('InstallFinalize')
+
+        # AdminUISequence
+        tb = self.tables[msi.MT_ADMINUISEQUENCE]
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('ExecuteAction')
+
+        # AdvtExecuteSequence
+        tb = self.tables[msi.MT_ADVTEXECUTESEQUENCE]
+        tb.add_action('CostInitialize')
+        tb.add_action('CostFinalize')
+        tb.add_action('InstallValidate')
+        tb.add_action('InstallInitialize')
+        tb.add_action('PublishFeatures')
+        tb.add_action('PublishProduct')
+        tb.add_action('InstallFinalize')
+        if self.tables[msi.MT_SHORTCUT].records:
+            tb.add_action('CreateShortcuts')
+
+        # InstallExecuteSequence
+        tb = self.tables[msi.MT_INSTALLEXECUTESEQUENCE]
+        tb.add_action('ValidateProductID')
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('InstallValidate')
+        tb.add_action('InstallInitialize')
+        tb.add_action('ProcessComponents')
+        tb.add_action('UnpublishFeatures')
+        tb.add_action('RegisterUser')
+        tb.add_action('RegisterProduct')
+        tb.add_action('PublishFeatures')
+        tb.add_action('PublishProduct')
+        tb.add_action('InstallFinalize')
+        if self.tables[msi.MT_UPGRADE].records:
+            tb.add_action('FindRelatedProducts')
+            tb.add_action('MigrateFeatureStates')
+        if self.tables[msi.MT_LAUNCHCONDITION].records:
+            tb.add_action('LaunchConditions')
+        if self.tables[msi.MT_REGISTRY].records:
+            tb.add_action('RemoveRegistryValues')
+            tb.add_action('WriteRegistryValues')
+        if self.tables[msi.MT_SHORTCUT].records:
+            tb.add_action('RemoveShortcuts')
+            tb.add_action('CreateShortcuts')
+        if self.tables[msi.MT_FILE].records:
+            tb.add_action('RemoveFiles')
+            tb.add_action('InstallFiles')
+        if not self.tables[msi.MT_FILE].records and \
+                self.tables[msi.MT_REMOVEFILE].records:
+            tb.add_action('RemoveFiles')
+        if self.tables[msi.MT_SERVICECONTROL].records:
+            tb.add_action('StartServices')
+            tb.add_action('StopServices')
+            tb.add_action('DeleteServices')
+        if self.tables[msi.MT_SERVICEINSTALL].records:
+            tb.add_action('InstallServices')
+        if self.tables[msi.MT_CREATEFOLDER].records:
+            tb.add_action('RemoveFolders')
+            tb.add_action('CreateFolders')
+        if self.tables[msi.MT_APPSEARCH].records:
+            tb.add_action('AppSearch')
+
+        # InstallUISequence
+        tb = self.tables[msi.MT_INSTALLUISEQUENCE]
+        tb.add_action('ValidateProductID')
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('ExecuteAction')
+        if self.tables[msi.MT_UPGRADE].records:
+            tb.add_action('FindRelatedProducts')
+            tb.add_action('MigrateFeatureStates')
+        if self.tables[msi.MT_LAUNCHCONDITION].records:
+            tb.add_action('LaunchConditions')
+        if self.tables[msi.MT_APPSEARCH].records:
+            tb.add_action('AppSearch')
 
     def write_msi(self, filename):
         db = Libmsi.Database.new(filename, Libmsi.DbFlags.CREATE, None)
@@ -173,6 +264,7 @@ class MsiDatabase(object):
         MsiSummaryInfo(self.model).write_msi(db)
         utils.echo_msg('Building tables...')
         self.model.write_msi(self)
+        self.set_sequences()
         for item in self.tables.items():
             utils.echo_msg('\tWriting %s table...' % item[0])
             item[1].write_msi(db)
