@@ -34,8 +34,10 @@ MAXINT = 4294967295
 
 
 def msi_str(text):
-    return text.decode('utf-8').encode('cp%s' % msi.MSI_CODEPAGE) \
-        if not utils.IS_PY3 else text
+    if not utils.IS_PY3:
+        text = text.decode('utf-8').\
+            encode('cp%s' % msi.MSI_CODEPAGE, errors='replace')
+    return text
 
 
 class MsiSummaryInfo(object):

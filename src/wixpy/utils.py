@@ -55,6 +55,9 @@ def compute_md5(filepath):
     return struct.unpack('<iiii', data)
 
 
+XML_ENCODING = 'utf-8'
+
+
 class XmlWriter(object):
     fp = None
 
@@ -62,5 +65,8 @@ class XmlWriter(object):
         self.fp = filepointer
 
     def write(self, text):
-        text = text.encode('utf-8') if IS_PY3 else text
+        if IS_PY3:
+            text = text.encode(XML_ENCODING, errors='replace')
+        elif XML_ENCODING != 'utf-8':
+            text = text.decode('utf-8').encode(XML_ENCODING, errors='replace')
         self.fp.write(text)

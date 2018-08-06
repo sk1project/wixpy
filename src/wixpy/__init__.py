@@ -30,7 +30,7 @@ Supported features (WiX & wixl):
 
 Planned features:
 * GUI for compiled msi-installers
-* Extension associations (Open, Open with)
+* File type associations (Open, Open with)
 * add to system PATH
 """
 
@@ -96,8 +96,7 @@ def _normalize_json_data(json_data):
     return json_data
 
 
-def _get_output_path(json_data=None, xml_file=None,
-                     output=None, xml_only=False, stdout=False):
+def _get_output_path(json_data=None, output=None, xml_only=False, stdout=False):
     filename = ''
     dirpath = _normalize_path('./')
 
@@ -110,8 +109,6 @@ def _get_output_path(json_data=None, xml_file=None,
         filename = json_data.get('_OutputName')
         if json_data.get('_OutputDir'):
             dirpath = _normalize_path(json_data.get('_OutputDir'))
-    elif xml_file:
-        filename = os.path.basename(output)
 
     if xml_only and stdout:
         return None
@@ -136,15 +133,14 @@ def create_model(json_data=None, xml_file=None):
         raise Exception('Neither JSON nor XML data have been provided!')
 
 
-def build(json_data=None, xml_file=None, output=None, xml_only=False,
-          engine=Engine.WIXPY, msi_codepage='1252', stdout=False):
+def build(json_data=None, output=None, xml_only=False,
+          engine=Engine.WIXPY, stdout=False, xml_encoding=None):
     utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
 
-    # TODO: resolve msi encoding issue
-
-    output = _get_output_path(json_data, xml_file, output, xml_only, stdout)
+    output = _get_output_path(json_data, output, xml_only, stdout)
 
     model.WIXL = engine == Engine.WIXL
+    utils.XML_ENCODING = xml_encoding or 'utf-8'
 
     utils.echo_msg('Building Wix model...')
     wixmodel = create_model(json_data)
