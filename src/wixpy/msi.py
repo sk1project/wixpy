@@ -279,16 +279,7 @@ MT_CREATEFOLDER = 'CreateFolder'
 MT_SIGNATURE = 'Signature'
 MT_FILEHASH = 'MsiFileHash'
 MT_ERROR = 'Error'
-
-TABLE_ORDER = [MT_ADMINEXECUTESEQUENCE, MT_ADMINUISEQUENCE,
-               MT_ADVTEXECUTESEQUENCE, MT_INSTALLEXECUTESEQUENCE,
-               MT_INSTALLUISEQUENCE, MT_DIRECTORY, MT_MEDIA, MT_PROPERTY,
-               MT_ICON, MT_BINARY, MT_COMPONENT, MT_FEATURE, 
-               MT_FEATURECOMPONENTS, MT_REMOVEFILE, MT_REGISTRY, 
-               MT_SERVICECONTROL, MT_SERVICEINSTALL, MT_FILE, MT_STREAMS,
-               MT_SHORTCUT, MT_UPGRADE, MT_LAUNCHCONDITION, MT_APPSEARCH,
-               MT_SIGNATURE, MT_CUSTOMACTION, MT_REGLOCATOR, MT_CREATEFOLDER,
-               MT_FILEHASH, MT_ERROR]
+MT_ENVIRONMENT = 'Environment'
 
 MT_ACTION = (('Action', 'CHAR(72) NOT NULL'),
              ('Condition', 'CHAR(255)'),
@@ -499,5 +490,12 @@ MT_TABLES = {
         ('Error', 'INT NOT NULL'),
         ('Message', 'CHAR(0) LOCALIZABLE '
                     'PRIMARY KEY `Error`'),
+    ),
+    MT_ENVIRONMENT: (
+        ('Environment', 'CHAR(72) NOT NULL'),
+        ('Name', 'CHAR(255) NOT NULL'),
+        ('Value', 'CHAR(255)'),
+        ('Component_', 'CHAR(72) NOT NULL '
+                       'PRIMARY KEY `Environment`'),
     ),
 }
