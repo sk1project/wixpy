@@ -64,7 +64,9 @@ class MsiSummaryInfo(object):
         appname = msi_str(prod.get('Name'))
         security = 2
 
-        source = msi.SourceFlags.COMPRESSED
+        source = 0
+        if pkg.get('Compressed') == 'yes':
+            source |= msi.SourceFlags.COMPRESSED
         if pkg.get('InstallScope') == "perUser":
             source |= msi.SourceFlags.NO_PRIVILEGES
 
