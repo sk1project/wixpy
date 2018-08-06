@@ -64,8 +64,8 @@ def defaults():
         'Codepage': '1252',
         'SummaryCodepage': '1252',
         # Internals
-        'InstallerVersion': '200',
-        'InstallScope': 'perMachine',
+        'InstallerVersion': '400',
+        'InstallScope': 'perMachine',  # perMachine
         'Compressed': 'yes',
         'KeyPath': 'yes',
         # Media
@@ -90,8 +90,7 @@ class WixElement(object):
     nl = False
     id_prefix = ''
 
-    def __init__(self, parent, **kwargs):
-        self.parent = parent
+    def __init__(self, **kwargs):
         self.childs = []
         self.attrs = {key: value for key, value in kwargs.items()
                       if key in ATTRS[self.tag]}
@@ -108,6 +107,7 @@ class WixElement(object):
 
     def add(self, child):
         self.childs.append(child)
+        child.parent = self
 
     def set(self, **kwargs):
         self.attrs.update(kwargs)
@@ -151,10 +151,10 @@ class WixCondition(WixElement):
     tag = 'Condition'
     nl = True
 
-    def __init__(self, parent, msg, condition, level=None, comment=None):
+    def __init__(self, msg, condition, level=None, comment=None):
         self.comment = comment
         self.condition = condition
-        super(WixCondition, self).__init__(parent, Message=msg)
+        super(WixCondition, self).__init__(Message=msg)
         if level:
             self.set(Level=str(level))
         self.pop('Id')
@@ -194,32 +194,32 @@ OS_CONDITION = {
 
 
 class WixOsCondition(WixCondition):
-    def __init__(self, parent, os_condition):
+    def __init__(self, os_condition):
         comment = 'Launch Condition to check suitable system version'
         os_condition = '501' if str(os_condition) not in OS_CONDITION \
             else str(os_condition)
         msg = 'This application is only ' \
               'supported on %s or higher.' % OS_CONDITION[os_condition]
         os_condition = 'Installed OR (VersionNT >= %s)' % os_condition
-        super(WixOsCondition, self).__init__(parent, msg, os_condition,
+        super(WixOsCondition, self).__init__(msg, os_condition,
                                              comment=comment)
 
 
 class WixArchCondition(WixCondition):
-    def __init__(self, parent):
+    def __init__(self):
         comment = 'Launch Condition to check that ' \
                   'x64 installer is used on x64 systems'
         msg = '64-bit operating system was not detected, ' \
               'please use the 32-bit installer.'
-        super(WixArchCondition, self).__init__(parent, msg, 'VersionNT64',
+        super(WixArchCondition, self).__init__(msg, 'VersionNT64',
                                                comment=comment)
 
 
 class WixProperty(WixElement):
     tag = 'Property'
 
-    def __init__(self, parent, pid, value):
-        super(WixProperty, self).__init__(parent, Id=pid, Value=value)
+    def __init__(self, pid, value):
+        super(WixProperty, self).__init__(Id=pid, Value=value)
 
     def write_msi_records(self, db):
         db.tables[msi.MT_PROPERTY].add(self.get('Id'), self.get('Value'))
@@ -229,9 +229,9 @@ class WixIcon(WixElement):
     tag = 'Icon'
     nl = True
 
-    def __init__(self, parent, data):
+    def __init__(self, data):
         self.source = data.get('_Icon', '')
-        super(WixIcon, self).__init__(parent, SourceFile=data.get('_Icon', ''),
+        super(WixIcon, self).__init__(SourceFile=data.get('_Icon', ''),
                                       Id=os.path.basename(self.source))
 
     def write_msi_records(self, db):
@@ -244,8 +244,8 @@ class WixMedia(WixElement):
     tag = 'Media'
     nl = True
 
-    def __init__(self, parent, data):
-        super(WixMedia, self).__init__(parent, Id='1', **data)
+    def __init__(self, data):
+        super(WixMedia, self).__init__(Id='1', **data)
 
     def write_msi_records(self, db):
         cabinet = '#%s' % self.get('Cabinet') if self.get('EmbedCab') == 'yes' \
@@ -262,9 +262,9 @@ class WixFile(WixElement):
     is_file = True
     id_prefix = 'fil'
 
-    def __init__(self, parent, data, path, rel_path):
+    def __init__(self, data, path, rel_path):
         self.path = path
-        super(WixFile, self).__init__(parent, **data)
+        super(WixFile, self).__init__(**data)
         self.set(Name=os.path.basename(rel_path), Source=path)
 
     def write_msi_records(self, db):
@@ -284,11 +284,11 @@ class WixComponent(WixElement):
     is_comp = True
     id_prefix = 'cmp'
 
-    def __init__(self, parent, path=None, rel_path=None, **data):
-        super(WixComponent, self).__init__(parent, Guid=utils.get_guid(),
+    def __init__(self, path=None, rel_path=None, **data):
+        super(WixComponent, self).__init__(Guid=utils.get_guid(),
                                            **data)
         if path and rel_path:
-            self.add(WixFile(self, data, path, rel_path))
+            self.add(WixFile(data, path, rel_path))
 
         COMPONENTS.append(self.attrs['Id'])
 
@@ -316,11 +316,11 @@ class WixDirectory(WixElement):
     is_dir = True
     id_prefix = 'dir'
 
-    def __init__(self, parent, data=None, path=None, rel_path=None, **kwargs):
+    def __init__(self, data=None, path=None, rel_path=None, **kwargs):
         name = kwargs['Name'] if 'Name' in kwargs \
             else os.path.basename(rel_path)
         pid = kwargs['Id'] if 'Id' in kwargs else '*'
-        super(WixDirectory, self).__init__(parent, Id=pid, Name=name)
+        super(WixDirectory, self).__init__(Id=pid, Name=name)
 
         if data is not None:
             for item in os.listdir(path):
@@ -329,10 +329,9 @@ class WixDirectory(WixElement):
                 item_path = os.path.join(path, item)
                 item_rel_path = os.path.join(rel_path, item)
                 if os.path.isdir(item_path):
-                    self.add(WixDirectory(self, data, item_path, item_rel_path))
+                    self.add(WixDirectory(data, item_path, item_rel_path))
                 elif os.path.isfile(item_path):
-                    self.add(WixComponent(self, item_path, item_rel_path,
-                                          **data))
+                    self.add(WixComponent(item_path, item_rel_path, **data))
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_DIRECTORY]
@@ -344,8 +343,8 @@ class WixInstallDir(WixElement):
     tag = 'Directory'
     is_dir = True
 
-    def __init__(self, parent, data):
-        super(WixInstallDir, self).__init__(parent, Id='INSTALLDIR',
+    def __init__(self, data):
+        super(WixInstallDir, self).__init__(Id='INSTALLDIR',
                                             Name=data.get('_InstallDir'))
         path = data.get('_SourceDir')
         rel_path = os.path.basename(path)
@@ -356,9 +355,9 @@ class WixInstallDir(WixElement):
             item_path = os.path.join(path, item)
             item_rel_path = os.path.join(rel_path, item)
             if os.path.isdir(item_path):
-                self.add(WixDirectory(self, data, item_path, item_rel_path))
+                self.add(WixDirectory(data, item_path, item_rel_path))
             elif os.path.isfile(item_path):
-                self.add(WixComponent(self, item_path, item_rel_path, **data))
+                self.add(WixComponent(item_path, item_rel_path, **data))
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_DIRECTORY]
@@ -369,11 +368,11 @@ class WixPfDir(WixElement):
     tag = 'Directory'
     is_dir = True
 
-    def __init__(self, parent, data):
+    def __init__(self, data):
         pid = 'ProgramFiles64Folder' if data.get('Win64') == 'yes' \
             else 'ProgramFilesFolder'
-        super(WixPfDir, self).__init__(parent, Id=pid, Name='PFiles')
-        self.add(WixInstallDir(self, data))
+        super(WixPfDir, self).__init__(Id=pid, Name='PFiles')
+        self.add(WixInstallDir(data))
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_DIRECTORY]
@@ -385,11 +384,10 @@ class WixTargetDir(WixElement):
     is_dir = True
     nl = True
 
-    def __init__(self, parent, data):
+    def __init__(self, data):
         self.comment = 'Installed file tree'
-        super(WixTargetDir, self).__init__(parent, Id='TARGETDIR',
-                                           Name='SourceDir')
-        self.add(WixPfDir(self, data))
+        super(WixTargetDir, self).__init__(Id='TARGETDIR', Name='SourceDir')
+        self.add(WixPfDir(data))
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_DIRECTORY]
@@ -400,11 +398,10 @@ class WixFeature(WixElement):
     tag = 'Feature'
     nl = True
 
-    def __init__(self, parent, data):
-        super(WixFeature, self).__init__(parent, Title=data.get('Name'),
-                                         Level='1')
+    def __init__(self, data):
+        super(WixFeature, self).__init__(Title=data.get('Name'), Level='1')
         for item in COMPONENTS:
-            self.add(WixComponentRef(self, Id=item))
+            self.add(WixComponentRef(Id=item))
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_FEATURE]
@@ -417,8 +414,8 @@ class WixFeature(WixElement):
 class WixShortcut(WixElement):
     tag = 'Shortcut'
 
-    def __init__(self, parent, shortcut_data):
-        super(WixShortcut, self).__init__(parent, **shortcut_data)
+    def __init__(self, shortcut_data):
+        super(WixShortcut, self).__init__(**shortcut_data)
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_SHORTCUT]
@@ -436,8 +433,8 @@ class WixShortcut(WixElement):
 class WixRemoveFolder(WixElement):
     tag = 'RemoveFolder'
 
-    def __init__(self, parent, **kwargs):
-        super(WixRemoveFolder, self).__init__(parent, **kwargs)
+    def __init__(self, **kwargs):
+        super(WixRemoveFolder, self).__init__(**kwargs)
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_REMOVEFILE]
@@ -450,8 +447,8 @@ class WixRegistryValue(WixElement):
     tag = 'RegistryValue'
     id_prefix = 'reg'
 
-    def __init__(self, parent, **kwargs):
-        super(WixRegistryValue, self).__init__(parent, **kwargs)
+    def __init__(self, **kwargs):
+        super(WixRegistryValue, self).__init__(**kwargs)
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_REGISTRY]
@@ -469,15 +466,15 @@ class WixRegistryValue(WixElement):
 class WixDirectoryRef(WixElement):
     tag = 'DirectoryRef'
 
-    def __init__(self, parent, **kwargs):
-        super(WixDirectoryRef, self).__init__(parent, **kwargs)
+    def __init__(self, **kwargs):
+        super(WixDirectoryRef, self).__init__(**kwargs)
 
 
 class WixComponentRef(WixElement):
     tag = 'ComponentRef'
 
-    def __init__(self, parent, **kwargs):
-        super(WixComponentRef, self).__init__(parent, **kwargs)
+    def __init__(self, **kwargs):
+        super(WixComponentRef, self).__init__(**kwargs)
 
     def write_msi_records(self, db):
         table = db.tables[msi.MT_FEATURECOMPONENTS]
@@ -487,14 +484,14 @@ class WixComponentRef(WixElement):
 class WixShortcutComponent(WixComponent):
     tag = 'Component'
 
-    def __init__(self, parent, data, shortcut_data):
-        super(WixShortcutComponent, self).__init__(parent, **data)
-        self.add(WixShortcut(self, shortcut_data))
-        self.add(WixRemoveFolder(self, Id=shortcut_data['DirectoryRef'],
+    def __init__(self, data, shortcut_data):
+        super(WixShortcutComponent, self).__init__(**data)
+        self.add(WixShortcut(shortcut_data))
+        self.add(WixRemoveFolder(Id=shortcut_data['DirectoryRef'],
                                  On='uninstall'))
         reg_key = 'Software\\%s\\%s' % (data['Manufacturer'].replace(' ', '_'),
                                         data['Name'].replace(' ', '_'))
-        self.add(WixRegistryValue(self, Root='HKCU', Key=reg_key,
+        self.add(WixRegistryValue(Root='HKCU', Key=reg_key,
                                   Name=shortcut_data['Name'], Type='integer',
                                   Value='1', KeyPath='yes'))
 
@@ -502,8 +499,8 @@ class WixShortcutComponent(WixComponent):
 class WixPackage(WixElement):
     tag = 'Package'
 
-    def __init__(self, parent, data):
-        super(WixPackage, self).__init__(parent, **data)
+    def __init__(self, data):
+        super(WixPackage, self).__init__(**data)
         if not WIXL:
             self.set(Platform='x64' if data.get('Win64') else 'x86')
 
@@ -515,41 +512,41 @@ class WixPackage(WixElement):
 class WixProduct(WixElement):
     tag = 'Product'
 
-    def __init__(self, parent, data):
-        super(WixProduct, self).__init__(parent, **data)
+    def __init__(self, data):
+        super(WixProduct, self).__init__(**data)
         self.set(Id=utils.get_guid())
-        self.add(WixPackage(self, data))
+        self.add(WixPackage(data))
         COMPONENTS[:] = []
-        self.add(WixMedia(self, data))
+        self.add(WixMedia(data))
         media_name = '%s %s Installation' % (data['Name'], data['Version'])
-        self.add(WixProperty(self, 'DiskPrompt', media_name))
+        self.add(WixProperty('DiskPrompt', media_name))
 
         if data.get('_OsCondition'):
-            self.add(WixOsCondition(self, data['_OsCondition']))
+            self.add(WixOsCondition(data['_OsCondition']))
         if data.get('_CheckX64'):
-            self.add(WixArchCondition(self))
+            self.add(WixArchCondition())
         if data.get('_Conditions'):
             for msg, cnd in data['_Conditions']:
-                self.add(WixCondition(self, msg, cnd))
+                self.add(WixCondition(msg, cnd))
 
         if data.get('_Icon'):
-            self.add(WixIcon(self, data))
+            self.add(WixIcon(data))
             icon_name = os.path.basename(data['_Icon'])
-            self.add(WixProperty(self, 'ARPPRODUCTICON', icon_name))
-        target_dir = WixTargetDir(self, data)
+            self.add(WixProperty('ARPPRODUCTICON', icon_name))
+        target_dir = WixTargetDir(data)
         self.add(target_dir)
 
         if data.get('_Shortcuts') and data.get('_ProgramMenuFolder'):
-            pm_dir = WixDirectory(self, Id='ProgramMenuFolder', Name='')
+            pm_dir = WixDirectory(Id='ProgramMenuFolder', Name='')
             pm_dir.pop('Name')
             pm_dir.comment = 'Application ProgramMenu folder'
             target_dir.add(pm_dir)
-            shortcut_dir = WixDirectory(self, Id=utils.get_id('mnu'),
+            shortcut_dir = WixDirectory(Id=utils.get_id('mnu'),
                                         Name=data.get('_ProgramMenuFolder'))
             pm_dir.add(shortcut_dir)
             ref = shortcut_dir.attrs['Id']
 
-            dir_ref = WixDirectoryRef(self, Id=ref)
+            dir_ref = WixDirectoryRef(Id=ref)
             self.add(dir_ref)
             for shortcut in data.get('_Shortcuts'):
                 target = os.path.join(data['_SourceDir'], shortcut['Target'])
@@ -560,10 +557,10 @@ class WixProduct(WixElement):
                 }
                 shortcut_data.update(shortcut)
                 shortcut_data['Target'] = '[#%s]' % target_id
-                dir_ref.add(WixShortcutComponent(dir_ref, data, shortcut_data))
+                dir_ref.add(WixShortcutComponent(data, shortcut_data))
 
         if COMPONENTS:
-            self.add(WixFeature(self, data))
+            self.add(WixFeature(data))
 
     def find_by_path(self, parent, path):
         work_dir_id = target_id = None
@@ -595,9 +592,9 @@ class Wix(WixElement):
         self.msi_data = defaults()
         self.msi_data.update(data)
         self.source_dir = self.msi_data.get('_SourceDir', '.')
-        super(Wix, self).__init__(None, xmlns=XMLNS)
+        super(Wix, self).__init__(xmlns=XMLNS)
         self.pop('Id')
-        self.add(WixProduct(self, self.msi_data))
+        self.add(WixProduct(self.msi_data))
         self.comment = 'Generated by %s %s' % \
                        (data['_pkgname'], data['_pkgver'])
 

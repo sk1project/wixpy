@@ -18,13 +18,18 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gi
+import os
 
 from wixpy import msi
 from wixpy import utils
 
 gi.require_version('Libmsi', '1.0')
+gi.require_version('GCab', '1.0')
+# gi.require_version('Gio', '1.0')
 
 from gi.repository import Libmsi
+from gi.repository import GCab
+from gi.repository import Gio
 
 MAXINT = 4294967295
 
@@ -53,7 +58,7 @@ class MsiSummaryInfo(object):
         template = '%s;%s' % (arch, pkg.get('Languages'))
         keywords = msi_str(pkg.get('Keywords'))
         codepage = int(pkg.get('SummaryCodepage'))
-        uuid = prod.get('Id')
+        uuid = '{%s}' % prod.get('Id')
         filetime = utils.filetime_now()
         version = int(pkg.get('InstallerVersion'))
         version = 200 if arch == 'x64' and version < 200 else version
@@ -149,9 +154,6 @@ class MsiTable(object):
                     msirec.set_string(index, msi_str(item))
                 elif isinstance(item, tuple) and item[0] == 'filepath':
                     msirec.load_stream(index, item[1])
-                elif self.name == '_Streams' and index == 2:
-                    # TODO: implement item streaming
-                    msirec.set_stream(index, item)
                 else:
                     raise ValueError('Incompatible type of record item: %s %s' %
                                      (str(type(item)), str(item)))
@@ -160,9 +162,11 @@ class MsiTable(object):
 
     def write_msi(self, db):
         # Create table
-        if not self.name.startswith('_'):
+        if not self.name == msi.MT_STREAMS:
             self._create_table(db)
-            self._write_records(db)
+        if self.name == msi.MT_DIRECTORY:
+            self.records.reverse()
+        self._write_records(db)
 
 
 class MsiDatabase(object):
@@ -199,44 +203,49 @@ class MsiDatabase(object):
         tb.add_action('CostFinalize')
         tb.add_action('InstallValidate')
         tb.add_action('InstallInitialize')
+        if self.tables[msi.MT_SHORTCUT].records:
+            tb.add_action('CreateShortcuts')
         tb.add_action('PublishFeatures')
         tb.add_action('PublishProduct')
         tb.add_action('InstallFinalize')
-        if self.tables[msi.MT_SHORTCUT].records:
-            tb.add_action('CreateShortcuts')
 
         # InstallExecuteSequence
         tb = self.tables[msi.MT_INSTALLEXECUTESEQUENCE]
-        tb.add_action('ValidateProductID')
+        if self.tables[msi.MT_APPSEARCH].records:
+            tb.add_action('AppSearch')
         tb.add_action('CostInitialize')
         tb.add_action('FileCost')
         tb.add_action('CostFinalize')
         tb.add_action('InstallValidate')
         tb.add_action('InstallInitialize')
-        tb.add_action('ProcessComponents')
-        tb.add_action('UnpublishFeatures')
-        tb.add_action('RegisterUser')
-        tb.add_action('RegisterProduct')
+        if self.tables[msi.MT_FILE].records:
+            tb.add_action('InstallFiles')
+        tb.add_action('InstallFinalize')
+        if self.tables[msi.MT_SHORTCUT].records:
+            tb.add_action('CreateShortcuts')
         tb.add_action('PublishFeatures')
         tb.add_action('PublishProduct')
-        tb.add_action('InstallFinalize')
+        tb.add_action('ValidateProductID')
+        tb.add_action('ProcessComponents')
+        tb.add_action('UnpublishFeatures')
+        if self.tables[msi.MT_REGISTRY].records:
+            tb.add_action('RemoveRegistryValues')
+        if self.tables[msi.MT_SHORTCUT].records:
+            tb.add_action('RemoveShortcuts')
+        if self.tables[msi.MT_FILE].records:
+            tb.add_action('RemoveFiles')
+        if not self.tables[msi.MT_FILE].records and \
+                self.tables[msi.MT_REMOVEFILE].records:
+            tb.add_action('RemoveFiles')
+        if self.tables[msi.MT_REGISTRY].records:
+            tb.add_action('WriteRegistryValues')
+        tb.add_action('RegisterUser')
+        tb.add_action('RegisterProduct')
         if self.tables[msi.MT_UPGRADE].records:
             tb.add_action('FindRelatedProducts')
             tb.add_action('MigrateFeatureStates')
         if self.tables[msi.MT_LAUNCHCONDITION].records:
             tb.add_action('LaunchConditions')
-        if self.tables[msi.MT_REGISTRY].records:
-            tb.add_action('RemoveRegistryValues')
-            tb.add_action('WriteRegistryValues')
-        if self.tables[msi.MT_SHORTCUT].records:
-            tb.add_action('RemoveShortcuts')
-            tb.add_action('CreateShortcuts')
-        if self.tables[msi.MT_FILE].records:
-            tb.add_action('RemoveFiles')
-            tb.add_action('InstallFiles')
-        if not self.tables[msi.MT_FILE].records and \
-                self.tables[msi.MT_REMOVEFILE].records:
-            tb.add_action('RemoveFiles')
         if self.tables[msi.MT_SERVICECONTROL].records:
             tb.add_action('StartServices')
             tb.add_action('StopServices')
@@ -246,31 +255,43 @@ class MsiDatabase(object):
         if self.tables[msi.MT_CREATEFOLDER].records:
             tb.add_action('RemoveFolders')
             tb.add_action('CreateFolders')
-        if self.tables[msi.MT_APPSEARCH].records:
-            tb.add_action('AppSearch')
 
         # InstallUISequence
         tb = self.tables[msi.MT_INSTALLUISEQUENCE]
-        tb.add_action('ValidateProductID')
+        if self.tables[msi.MT_APPSEARCH].records:
+            tb.add_action('AppSearch')
         tb.add_action('CostInitialize')
         tb.add_action('FileCost')
         tb.add_action('CostFinalize')
+        tb.add_action('ValidateProductID')
         tb.add_action('ExecuteAction')
         if self.tables[msi.MT_UPGRADE].records:
             tb.add_action('FindRelatedProducts')
             tb.add_action('MigrateFeatureStates')
         if self.tables[msi.MT_LAUNCHCONDITION].records:
             tb.add_action('LaunchConditions')
-        if self.tables[msi.MT_APPSEARCH].records:
-            tb.add_action('AppSearch')
 
     def set_filehash(self):
         tb = self.tables[msi.MT_FILEHASH]
         for file_id, filepath in self.files:
             tb.add(file_id, 0, *utils.compute_md5(filepath))
 
-    def write_msi(self, filename):
-        db = Libmsi.Database.new(filename, Libmsi.DbFlags.CREATE, None)
+    def build_cabinet(self, cabfile, compressed=True, embed=True):
+        folder = GCab.Folder.new(GCab.Compression.MSZIP if compressed
+                                 else GCab.Compression.NONE)
+        for file_id, filepath in self.files:
+            gpointer = Gio.File.new_for_path(filepath)
+            folder.add_file(GCab.File.new_with_file(file_id, gpointer), False)
+        cab = GCab.Cabinet.new()
+        cab.add_folder(folder)
+        cab.write(Gio.File.new_for_path(cabfile).replace('', False, 0, None),
+                  None, None, None)
+        if embed:
+            self.tables[msi.MT_STREAMS].add(os.path.basename(cabfile),
+                                            ('filepath', cabfile))
+
+    def write_msi(self, msifile):
+        db = Libmsi.Database.new(msifile, Libmsi.DbFlags.CREATE, None)
 
         utils.echo_msg('Writing SummaryInfo')
         MsiSummaryInfo(self.model).write_msi(db)
@@ -287,10 +308,19 @@ class MsiDatabase(object):
         utils.echo_msg('Computing file hashes...')
         self.set_filehash()
 
+        utils.echo_msg('Building CAB-file...')
+        pkg = self.model.get_package()
+        media = self.model.get_media()
+        cabfile = os.path.join(os.path.dirname(msifile), media.get('Cabinet'))
+        embed = media.get('EmbedCab') == 'yes'
+        compressed = pkg.get('Compressed') == 'yes'
+        self.build_cabinet(cabfile, compressed, embed)
+
         utils.echo_msg('Writing tables...')
-        for item in self.tables.items():
-            utils.echo_msg('\tWriting %s table...' % item[0])
-            item[1].write_msi(db)
-        utils.echo_msg('All tables processed')
+        for item in msi.TABLE_ORDER:
+            self.tables[item].write_msi(db)
 
         db.commit()
+
+        if embed and os.path.exists(cabfile):
+            os.remove(cabfile)
