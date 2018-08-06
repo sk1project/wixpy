@@ -25,7 +25,6 @@ from wixpy import utils
 
 gi.require_version('Libmsi', '1.0')
 gi.require_version('GCab', '1.0')
-# gi.require_version('Gio', '1.0')
 
 from gi.repository import Libmsi
 from gi.repository import GCab

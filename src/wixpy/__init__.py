@@ -193,10 +193,10 @@ if __name__ == "__main__":
         'Comments': 'Licensed under GPLv3',
         'Keywords': 'msi, wix, build',
         'Win64': win64,
-        'Codepage': '1252',
-        'SummaryCodepage': '1252',
-        'Language': '1033',
-        'Languages': '1033',
+        'Codepage': '1251',
+        'SummaryCodepage': '1251',
+        'Language': '1049', #1033
+        'Languages': '1049',
 
         # Installation infrastructure
         '_OsCondition': 601,
