@@ -133,12 +133,11 @@ def create_model(json_data=None, xml_file=None):
         raise Exception('Neither JSON nor XML data have been provided!')
 
 
-def build(json_data=None, output=None, xml_only=False,
-          engine=Engine.WIXPY, stdout=False, xml_encoding=None):
+def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
+          engine=Engine.WIX if os.name == 'nt' else Engine.WIXPY, stdout=False):
+
     utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
-
     output = _get_output_path(json_data, output, xml_only, stdout)
-
     model.WIXL = engine == Engine.WIXL
     utils.XML_ENCODING = xml_encoding or 'utf-8'
 
