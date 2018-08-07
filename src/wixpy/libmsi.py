@@ -321,7 +321,7 @@ class MsiDatabase(object):
         self.build_cabinet(cabfile, compressed, embed)
 
         utils.echo_msg('Writing tables...')
-        for item in msi.MT_TABLES.keys():
+        for item in msi.TABLE_ORDER:
             self.tables[item].write_msi(db)
 
         db.commit()
