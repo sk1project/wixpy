@@ -27,11 +27,12 @@ Supported features (WiX & wixl):
 * OS version check
 * x64 arch check
 * custom conditions
+* add to system PATH
 
 Planned features:
 * GUI for compiled msi-installers
 * File type associations (Open, Open with)
-* add to system PATH
+* MIME-type for files
 """
 
 import os
