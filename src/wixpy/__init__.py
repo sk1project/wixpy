@@ -135,7 +135,6 @@ def create_model(json_data=None, xml_file=None):
 
 def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
           engine=Engine.WIX if os.name == 'nt' else Engine.WIXPY, stdout=False):
-
     utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
     output = _get_output_path(json_data, output, xml_only, stdout)
     model.WIXL = engine == Engine.WIXL
@@ -190,7 +189,7 @@ if __name__ == "__main__":
         'Win64': win64,
         'Codepage': '1251',
         'SummaryCodepage': '1251',
-        'Language': '1049', #1033
+        'Language': '1049',  # 1033
         'Languages': '1049',
 
         # Installation infrastructure
@@ -204,6 +203,8 @@ if __name__ == "__main__":
              'Description': 'Crossplatform MSI builder',
              'Target': 'wixpy/__init__.py'},
         ],
+        '_AddToPath': ['', ],
+        # '_AddBeforePath': ['bin\\', ],
         '_SourceDir': path,
         '_InstallDir': 'wixpy-%s' % VERSION,
         '_OutputName': '%s-%s-%s.msi' % (PROJECT.lower(), VERSION,

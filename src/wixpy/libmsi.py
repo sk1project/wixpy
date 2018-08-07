@@ -165,11 +165,12 @@ class MsiTable(object):
 
     def write_msi(self, db):
         # Create table
-        if not self.name == msi.MT_STREAMS:
-            self._create_table(db)
-        if self.name == msi.MT_DIRECTORY:
-            self.records.reverse()
-        self._write_records(db)
+        if self.records:
+            if not self.name == msi.MT_STREAMS:
+                self._create_table(db)
+            if self.name == msi.MT_DIRECTORY:
+                self.records.reverse()
+            self._write_records(db)
 
 
 class MsiDatabase(object):
@@ -221,27 +222,24 @@ class MsiDatabase(object):
         tb.add_action('CostFinalize')
         tb.add_action('InstallValidate')
         tb.add_action('InstallInitialize')
-        if self.tables[msi.MT_FILE].records:
-            tb.add_action('InstallFiles')
         tb.add_action('InstallFinalize')
-        if self.tables[msi.MT_SHORTCUT].records:
-            tb.add_action('CreateShortcuts')
         tb.add_action('PublishFeatures')
         tb.add_action('PublishProduct')
         tb.add_action('ValidateProductID')
         tb.add_action('ProcessComponents')
         tb.add_action('UnpublishFeatures')
-        if self.tables[msi.MT_REGISTRY].records:
-            tb.add_action('RemoveRegistryValues')
         if self.tables[msi.MT_SHORTCUT].records:
             tb.add_action('RemoveShortcuts')
+            tb.add_action('CreateShortcuts')
         if self.tables[msi.MT_FILE].records:
+            tb.add_action('InstallFiles')
             tb.add_action('RemoveFiles')
         if not self.tables[msi.MT_FILE].records and \
                 self.tables[msi.MT_REMOVEFILE].records:
             tb.add_action('RemoveFiles')
         if self.tables[msi.MT_REGISTRY].records:
             tb.add_action('WriteRegistryValues')
+            tb.add_action('RemoveRegistryValues')
         tb.add_action('RegisterUser')
         tb.add_action('RegisterProduct')
         if self.tables[msi.MT_UPGRADE].records:
@@ -258,6 +256,9 @@ class MsiDatabase(object):
         if self.tables[msi.MT_CREATEFOLDER].records:
             tb.add_action('RemoveFolders')
             tb.add_action('CreateFolders')
+        if self.tables[msi.MT_ENVIRONMENT].records:
+            tb.add_action('WriteEnvironmentStrings')
+            tb.add_action('RemoveEnvironmentStrings')
 
         # InstallUISequence
         tb = self.tables[msi.MT_INSTALLUISEQUENCE]
@@ -320,7 +321,7 @@ class MsiDatabase(object):
         self.build_cabinet(cabfile, compressed, embed)
 
         utils.echo_msg('Writing tables...')
-        for item in msi.TABLE_ORDER:
+        for item in msi.MT_TABLES.keys():
             self.tables[item].write_msi(db)
 
         db.commit()

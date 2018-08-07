@@ -50,6 +50,8 @@ ATTRS = {
     'RemoveFolder': ('Id', 'On'),
     'RegistryValue': ('Root', 'Key', 'Name', 'Type', 'Value', 'KeyPath'),
     'Condition': ('Message', 'Level'),
+    'Environment': ('Id', 'Name', 'Value',
+                    'Permanent', 'Part', 'Action', 'System'),
 }
 
 
@@ -496,6 +498,24 @@ class WixShortcutComponent(WixComponent):
                                   Value='1', KeyPath='yes'))
 
 
+class WixEnvironment(WixElement):
+    tag = 'Environment'
+    id_prefix = 'env'
+
+    def __init__(self, **kwargs):
+        super(WixEnvironment, self).__init__(**kwargs)
+
+    def write_msi_records(self, db):
+        table = db.tables[msi.MT_ENVIRONMENT]
+        name_prefix = '=-*' if self.get('System') == 'yes' else '=-'
+        if self.get('Part') == 'last':
+            value = '[~];%s' % self.get('Value')
+        else:
+            value = '%s;[~]' % self.get('Value')
+        table.add(self.get('Id'), name_prefix + self.get('Name'),
+                  value, self.parent.get('Id'))
+
+
 class WixPackage(WixElement):
     tag = 'Package'
 
@@ -558,6 +578,28 @@ class WixProduct(WixElement):
                 shortcut_data.update(shortcut)
                 shortcut_data['Target'] = '[#%s]' % target_id
                 dir_ref.add(WixShortcutComponent(data, shortcut_data))
+
+        if data.get('_AddToPath') or data.get('_AddBeforePath'):
+            dir_ref = WixDirectoryRef(Id='INSTALLDIR')
+            self.add(dir_ref)
+            comp_data = {'Win64': 'yes'} if data.get('Win64') else {}
+            comp = WixComponent(**comp_data)
+            dir_ref.add(comp)
+            env_data = {'Name': 'PATH',
+                        'Value': '',
+                        'Permanent': 'no',
+                        'Part': 'last',
+                        'Action': 'set',
+                        'System': 'yes', }
+            if data.get('_AddToPath'):
+                for path in data.get('_AddToPath'):
+                    env_data['Value'] = '[INSTALLDIR]%s' % path
+                    comp.add(WixEnvironment(**env_data))
+            if data.get('_AddBeforePath'):
+                for path in data.get('_AddBeforePath'):
+                    env_data['Value'] = '[INSTALLDIR]%s' % path
+                    env_data['Part'] = 'first'
+                    comp.add(WixEnvironment(**env_data))
 
         if COMPONENTS:
             self.add(WixFeature(data))
