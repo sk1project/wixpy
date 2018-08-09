@@ -36,6 +36,7 @@ Planned features:
 """
 
 import os
+import shutil
 import sys
 import tempfile
 
@@ -176,6 +177,19 @@ def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
 if __name__ == "__main__":
     current_path = os.path.dirname(os.path.abspath(__file__))
     path = os.path.dirname(current_path)
+    projdir = os.path.dirname(path)
+
+    # Prepare build dir
+    builddir = os.path.join(projdir, 'build')
+    if os.path.exists(builddir):
+        shutil.rmtree(builddir, True)
+    os.makedirs(builddir)
+    dest = os.path.join(builddir, os.path.basename(current_path))
+    shutil.copytree(current_path, dest)
+    exe_path = os.path.join(builddir, 'wix.py.exe')
+    open(exe_path, 'wb').close()
+
+    # MSI build data
     win64 = True
     MSI_DATA = {
         # Required
@@ -202,18 +216,25 @@ if __name__ == "__main__":
         '_Shortcuts': [
             {'Name': PROJECT,
              'Description': 'Crossplatform MSI builder',
-             'Target': 'wixpy/__init__.py'},
+             'Target': 'wix.py.exe'},
         ],
         '_AddToPath': ['', ],
         # '_AddBeforePath': ['bin\\', ],
-        '_SourceDir': path,
+        '_SourceDir': builddir,
         '_InstallDir': 'wixpy-%s' % VERSION,
         '_OutputName': '%s-%s-%s.msi' % (PROJECT.lower(), VERSION,
                                          'win64' if win64 else 'win32'),
         '_OutputDir': '~',
         '_SkipHidden': True,
     }
-    # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
-    # build(MSI_DATA, engine=Engine.WIXL)
-    # build(MSI_DATA, xml_only=True, stdout=True)
-    build(MSI_DATA)
+
+    # MSI build
+    try:
+        # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
+        # build(MSI_DATA, engine=Engine.WIXL)
+        # build(MSI_DATA, xml_only=True, stdout=True)
+        build(MSI_DATA)
+    except Exception as e:
+        raise e
+    finally:
+        shutil.rmtree(builddir, True)
