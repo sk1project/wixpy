@@ -541,6 +541,20 @@ class WixProduct(WixElement):
         media_name = '%s %s Installation' % (data['Name'], data['Version'])
         self.add(WixProperty('DiskPrompt', media_name))
 
+        self.set_conditions(data)
+        self.set_icon(data)
+
+        # Recursive scanning
+        target_dir = WixTargetDir(data)
+        self.add(target_dir)
+
+        self.set_shortcuts(data, target_dir)
+        self.set_envvars(data)
+
+        if COMPONENTS:
+            self.add(WixFeature(data))
+
+    def set_conditions(self, data):
         if data.get('_OsCondition'):
             self.add(WixOsCondition(data['_OsCondition']))
         if data.get('_CheckX64'):
@@ -549,13 +563,13 @@ class WixProduct(WixElement):
             for msg, cnd in data['_Conditions']:
                 self.add(WixCondition(msg, cnd))
 
+    def set_icon(self, data):
         if data.get('_Icon'):
             self.add(WixIcon(data))
             icon_name = os.path.basename(data['_Icon'])
             self.add(WixProperty('ARPPRODUCTICON', icon_name))
-        target_dir = WixTargetDir(data)
-        self.add(target_dir)
 
+    def set_shortcuts(self, data, target_dir):
         if data.get('_Shortcuts') and data.get('_ProgramMenuFolder'):
             pm_dir = WixDirectory(Id='ProgramMenuFolder', Name='')
             pm_dir.pop('Name')
@@ -579,6 +593,7 @@ class WixProduct(WixElement):
                 shortcut_data['Target'] = '[#%s]' % target_id
                 dir_ref.add(WixShortcutComponent(data, shortcut_data))
 
+    def set_envvars(self, data):
         if data.get('_AddToPath') or data.get('_AddBeforePath'):
             dir_ref = WixDirectoryRef(Id='INSTALLDIR')
             self.add(dir_ref)
@@ -600,9 +615,6 @@ class WixProduct(WixElement):
                     env_data['Value'] = '[INSTALLDIR]%s' % path
                     env_data['Part'] = 'first'
                     comp.add(WixEnvironment(**env_data))
-
-        if COMPONENTS:
-            self.add(WixFeature(data))
 
     def find_by_path(self, parent, path):
         work_dir_id = target_id = None
