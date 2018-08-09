@@ -18,7 +18,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Supported features (WiX & wixl):
+Supported features:
 * JSON-driven MSI generation
 * recursive app folder scanning
 * msi package icon
@@ -30,15 +30,16 @@ Supported features (WiX & wixl):
 * add to system PATH
 
 Planned features:
-* GUI for compiled msi-installers
+* Crossplatform MSI-generation backend
 * File type associations (Open, Open with)
 * MIME-type for files
+* Open port
+* GUI for compiled msi-installers
 """
 
 import os
 import shutil
 import sys
-import tempfile
 
 from wixpy import model
 from wixpy import utils
@@ -136,36 +137,23 @@ def create_model(json_data=None, xml_file=None):
 
 
 def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
-          engine=Engine.WIX if os.name == 'nt' else Engine.WIXPY, stdout=False):
-    utils.echo_msg('Starting with %s engine' % Engine.to_string(engine))
+          engine=Engine.WIXPY, stdout=False):
     output = _get_output_path(json_data, output, xml_only, stdout)
-    model.WIXL = engine == Engine.WIXL
     utils.XML_ENCODING = xml_encoding or 'utf-8'
 
-    utils.echo_msg('Building Wix model...')
     wixmodel = create_model(json_data)
 
     if xml_only:
+        model.WIXL = engine == Engine.WIXL
         if stdout:
             wixmodel.write_xml(sys.stdout)
         else:
             utils.echo_msg('Writing XML into %s...' % output)
             with open(output, 'wb') as fp:
                 wixmodel.write_xml(utils.XmlWriter(fp))
-
-    elif engine == Engine.WIXL:
-        xml_file = tempfile.NamedTemporaryFile(delete=True)
-        with open(xml_file.name, 'wb') as fp:
-            wixmodel.write_xml(utils.XmlWriter(fp))
-        arch = '-a x64' if json_data.get('Win64') else ''
-        os.system('wixl -v %s -o %s %s' % (arch, output, xml_file.name))
-
-    elif engine == Engine.WIX:
-        raise Exception('WiX backend support is not implemented yet!')
-
-    elif engine == Engine.WIXPY:
+    else:
         if os.name == 'nt':
-            raise Exception('WiX.py backend is not supported on MS Windows!')
+            raise Exception('WiX.py backend is not supported on Windows yet!')
         from wixpy import libmsi, msi
         msi.MSI_CODEPAGE = wixmodel.get_package().get('SummaryCodepage')
         utils.echo_msg('Writing MSI package into %s...' % output)
@@ -211,15 +199,20 @@ if __name__ == "__main__":
         '_OsCondition': 601,
         '_CheckX64': win64,
         '_Conditions': [],  # [[msg,condition,level], ...]
-        '_Icon': '~/Projects/wixpy.ico',
+        '_AppIcon': '~/Projects/wixpy.ico',
+        '_Icons': [],
         '_ProgramMenuFolder': 'sK1 Project',
         '_Shortcuts': [
             {'Name': PROJECT,
              'Description': 'Crossplatform MSI builder',
-             'Target': 'wix.py.exe'},
+             'Target': 'wix.py.exe',
+             'Open': [],
+             'OpenWith': [],
+             'EditWith': [],
+             },
         ],
         '_AddToPath': ['', ],
-        # '_AddBeforePath': ['bin\\', ],
+        '_AddBeforePath': [],
         '_SourceDir': builddir,
         '_InstallDir': 'wixpy-%s' % VERSION,
         '_OutputName': '%s-%s-%s.msi' % (PROJECT.lower(), VERSION,
@@ -231,9 +224,8 @@ if __name__ == "__main__":
     # MSI build
     try:
         # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
-        # build(MSI_DATA, engine=Engine.WIXL)
-        # build(MSI_DATA, xml_only=True, stdout=True)
-        build(MSI_DATA)
+        build(MSI_DATA, xml_only=True, stdout=True)
+        # build(MSI_DATA)
     except Exception as e:
         raise e
     finally:

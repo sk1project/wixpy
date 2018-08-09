@@ -231,10 +231,9 @@ class WixIcon(WixElement):
     tag = 'Icon'
     nl = True
 
-    def __init__(self, data):
-        self.source = data.get('_Icon', '')
-        super(WixIcon, self).__init__(SourceFile=data.get('_Icon', ''),
-                                      Id=os.path.basename(self.source))
+    def __init__(self, source):
+        super(WixIcon, self).__init__(SourceFile=source,
+                                      Id=os.path.basename(source))
 
     def write_msi_records(self, db):
         filepath = self.get('SourceFile')
@@ -564,10 +563,14 @@ class WixProduct(WixElement):
                 self.add(WixCondition(msg, cnd))
 
     def set_icon(self, data):
-        if data.get('_Icon'):
-            self.add(WixIcon(data))
-            icon_name = os.path.basename(data['_Icon'])
+        if data.get('_AppIcon'):
+            icon = data['_AppIcon']
+            icon_name = os.path.basename(icon)
+            self.add(WixIcon(icon))
             self.add(WixProperty('ARPPRODUCTICON', icon_name))
+        if data.get('_Icons'):
+            for icon in data.get('_Icons'):
+                self.add(WixIcon(icon))
 
     def set_shortcuts(self, data, target_dir):
         if data.get('_Shortcuts') and data.get('_ProgramMenuFolder'):
