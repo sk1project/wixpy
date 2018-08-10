@@ -17,6 +17,15 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
+from wixpy import utils
+
+if not os.name == 'nt':
+    from wixpy import libmsi
+else:
+    from wixpy import libmsiw as libmsi
+
 MSI_CODEPAGE = '1252'
 
 
@@ -509,3 +518,206 @@ MT_TABLES = {
                        'PRIMARY KEY `Environment`'),
     ),
 }
+
+
+def msi_str(text):
+    if not utils.IS_PY3:
+        text = text.decode('utf-8'). \
+            encode('cp%s' % MSI_CODEPAGE, errors='replace')
+    return text
+
+
+class MsiSummaryInfo(libmsi.SummaryInfo):
+    def __init__(self, model):
+        super(MsiSummaryInfo, self).__init__()
+
+        # Wix model root nodes
+        prod = model.get_product()
+        pkg = model.get_package()
+
+        # MSI info data
+        self.title = msi_str('%s Installation Database' % prod.get('Name'))
+        self.author = msi_str(prod.get('Manufacturer'))
+        self.subject = msi_str(pkg.get('Description'))
+        self.comments = msi_str(pkg.get('Comments'))
+        arch = 'x64' if pkg.get('Platform') == 'x64' else 'Intel'
+        self.template = '%s;%s' % (arch, pkg.get('Languages'))
+        self.keywords = msi_str(pkg.get('Keywords'))
+        self.codepage = int(pkg.get('SummaryCodepage'))
+        self.uuid = '{%s}' % prod.get('Id')
+        self.filetime = utils.filetime_now()
+        version = int(pkg.get('InstallerVersion'))
+        self.version = 200 if arch == 'x64' and version < 200 else version
+        self.appname = msi_str(prod.get('Name'))
+        self.security = 2
+
+        self.source = 0
+        if pkg.get('Compressed') == 'yes':
+            self.source |= SourceFlags.COMPRESSED
+        if pkg.get('InstallScope') == "perUser":
+            self.source |= SourceFlags.NO_PRIVILEGES
+
+
+class MsiTable(libmsi.Table):
+    length = None
+    name = None
+    records = None
+
+    def __init__(self, name):
+        super(MsiTable, self).__init__(name, MT_TABLES[name])
+
+    def add_action(self, action):
+        self.add(action, MSI_ACTIONS[action][0], MSI_ACTIONS[action][1])
+
+    def _normalize_str(self, text):
+        return msi_str(text)
+
+    def write_msi(self, db):
+        if self.records:
+            if not self.name == MT_STREAMS:
+                self._create_table(db)
+            if self.name == MT_DIRECTORY:
+                self.records.reverse()
+            self._write_records(db)
+
+
+class MsiDatabase(libmsi.Database):
+    model = None
+
+    def __init__(self, model):
+        super(MsiDatabase, self).__init__()
+        self.model = model
+        self.tables = {key: MsiTable(key) for key in MT_TABLES.keys()}
+
+    def set_action_sequences(self):
+        # AdminExecuteSequence
+        tb = self.tables[MT_ADMINEXECUTESEQUENCE]
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('InstallValidate')
+        tb.add_action('InstallInitialize')
+        tb.add_action('InstallAdminPackage')
+        tb.add_action('InstallFiles')
+        tb.add_action('InstallFinalize')
+
+        # AdminUISequence
+        tb = self.tables[MT_ADMINUISEQUENCE]
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('ExecuteAction')
+
+        # AdvtExecuteSequence
+        tb = self.tables[MT_ADVTEXECUTESEQUENCE]
+        tb.add_action('CostInitialize')
+        tb.add_action('CostFinalize')
+        tb.add_action('InstallValidate')
+        tb.add_action('InstallInitialize')
+        if self.tables[MT_SHORTCUT].records:
+            tb.add_action('CreateShortcuts')
+        tb.add_action('PublishFeatures')
+        tb.add_action('PublishProduct')
+        tb.add_action('InstallFinalize')
+
+        # InstallExecuteSequence
+        tb = self.tables[MT_INSTALLEXECUTESEQUENCE]
+        if self.tables[MT_APPSEARCH].records:
+            tb.add_action('AppSearch')
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('InstallValidate')
+        tb.add_action('InstallInitialize')
+        tb.add_action('InstallFinalize')
+        tb.add_action('PublishFeatures')
+        tb.add_action('PublishProduct')
+        tb.add_action('ValidateProductID')
+        tb.add_action('ProcessComponents')
+        tb.add_action('UnpublishFeatures')
+        if self.tables[MT_SHORTCUT].records:
+            tb.add_action('RemoveShortcuts')
+            tb.add_action('CreateShortcuts')
+        if self.tables[MT_FILE].records:
+            tb.add_action('InstallFiles')
+            tb.add_action('RemoveFiles')
+        if not self.tables[MT_FILE].records and \
+                self.tables[MT_REMOVEFILE].records:
+            tb.add_action('RemoveFiles')
+        if self.tables[MT_REGISTRY].records:
+            tb.add_action('WriteRegistryValues')
+            tb.add_action('RemoveRegistryValues')
+        tb.add_action('RegisterUser')
+        tb.add_action('RegisterProduct')
+        if self.tables[MT_UPGRADE].records:
+            tb.add_action('FindRelatedProducts')
+            tb.add_action('MigrateFeatureStates')
+        if self.tables[MT_LAUNCHCONDITION].records:
+            tb.add_action('LaunchConditions')
+        if self.tables[MT_SERVICECONTROL].records:
+            tb.add_action('StartServices')
+            tb.add_action('StopServices')
+            tb.add_action('DeleteServices')
+        if self.tables[MT_SERVICEINSTALL].records:
+            tb.add_action('InstallServices')
+        if self.tables[MT_CREATEFOLDER].records:
+            tb.add_action('RemoveFolders')
+            tb.add_action('CreateFolders')
+        if self.tables[MT_ENVIRONMENT].records:
+            tb.add_action('WriteEnvironmentStrings')
+            tb.add_action('RemoveEnvironmentStrings')
+
+        # InstallUISequence
+        tb = self.tables[MT_INSTALLUISEQUENCE]
+        if self.tables[MT_APPSEARCH].records:
+            tb.add_action('AppSearch')
+        tb.add_action('CostInitialize')
+        tb.add_action('FileCost')
+        tb.add_action('CostFinalize')
+        tb.add_action('ValidateProductID')
+        tb.add_action('ExecuteAction')
+        if self.tables[MT_UPGRADE].records:
+            tb.add_action('FindRelatedProducts')
+            tb.add_action('MigrateFeatureStates')
+        if self.tables[MT_LAUNCHCONDITION].records:
+            tb.add_action('LaunchConditions')
+
+    def set_filehash(self):
+        tb = self.tables[MT_FILEHASH]
+        for file_id, filepath in self.files:
+            tb.add(file_id, 0, *utils.compute_md5(filepath))
+
+    def write_msi(self, msifile):
+        self.init_db(msifile)
+
+        utils.echo_msg('Writing SummaryInfo')
+        MsiSummaryInfo(self.model).write_msi(self.db)
+
+        utils.echo_msg('Building tables...')
+        self.model.write_msi(self)
+
+        # Setting LastSequence value
+        self.medias[0][1] = len(self.files)
+
+        utils.echo_msg('Creating sequences...')
+        self.set_action_sequences()
+
+        utils.echo_msg('Computing file hashes...')
+        self.set_filehash()
+
+        utils.echo_msg('Building CAB-file...')
+        pkg = self.model.get_package()
+        media = self.model.get_media()
+        cabfile = os.path.join(os.path.dirname(msifile), media.get('Cabinet'))
+        embed = media.get('EmbedCab') == 'yes'
+        compressed = pkg.get('Compressed') == 'yes'
+        self.build_cabinet(cabfile, compressed, embed)
+
+        utils.echo_msg('Writing tables...')
+        for item in TABLE_ORDER:
+            self.tables[item].write_msi(self.db)
+
+        self.commit_db()
+
+        if not embed and os.path.exists(cabfile):
+            os.remove(cabfile)
