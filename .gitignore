@@ -10,7 +10,6 @@ __pycache__/
 *.egg
 *.com
 *.dll
-*.exe
 *.o
 /.idea
 .vagrant
