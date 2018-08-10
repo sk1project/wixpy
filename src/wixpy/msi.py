@@ -29,6 +29,13 @@ else:
 MSI_CODEPAGE = '1252'
 
 
+def msi_str(text):
+    if not utils.IS_PY3:
+        text = text.decode('utf-8'). \
+            encode('cp%s' % MSI_CODEPAGE, errors='replace')
+    return text
+
+
 # ----------- MSI enums -----------
 
 
@@ -520,11 +527,7 @@ MT_TABLES = {
 }
 
 
-def msi_str(text):
-    if not utils.IS_PY3:
-        text = text.decode('utf-8'). \
-            encode('cp%s' % MSI_CODEPAGE, errors='replace')
-    return text
+# ----------- MSI objects -----------
 
 
 class MsiSummaryInfo(libmsi.SummaryInfo):
