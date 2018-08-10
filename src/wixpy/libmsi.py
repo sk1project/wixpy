@@ -31,45 +31,40 @@ MAXINT = 4294967295
 
 
 class SummaryInfo(object):
-    def __init__(self):
-        self.properties = []
-        self.title = None
-        self.author = None
-        self.subject = None
-        self.comments = None
-        self.template = None
-        self.keywords = None
-        self.codepage = None
-        self.uuid = None
-        self.filetime = None
-        self.version = None
-        self.appname = None
-        self.security = None
-        self.source = None
-
-    def add(self, prop, value):
-        self.properties.append((prop, value))
+    title = None
+    author = None
+    subject = None
+    comments = None
+    template = None
+    keywords = None
+    codepage = None
+    uuid = None
+    filetime = None
+    version = None
+    appname = None
+    security = None
+    source = None
 
     def write_msi(self, db):
-        print 'Writing info'
-        self.add(Libmsi.Property.TITLE, self.title)
-        self.add(Libmsi.Property.AUTHOR, self.author)
-        self.add(Libmsi.Property.LASTAUTHOR, self.author)
-        self.add(Libmsi.Property.SUBJECT, self.subject)
-        self.add(Libmsi.Property.COMMENTS, self.comments)
-        self.add(Libmsi.Property.TEMPLATE, self.template)
-        self.add(Libmsi.Property.KEYWORDS, self.keywords)
-        self.add(Libmsi.Property.CODEPAGE, self.codepage)
-        self.add(Libmsi.Property.UUID, self.uuid)
-        self.add(Libmsi.Property.CREATED_TM, self.filetime)
-        self.add(Libmsi.Property.LASTSAVED_TM, self.filetime)
-        self.add(Libmsi.Property.VERSION, self.version)
-        self.add(Libmsi.Property.APPNAME, self.appname)
-        self.add(Libmsi.Property.SECURITY, self.security)
-        self.add(Libmsi.Property.SOURCE, self.source)
+        properties = [
+            (Libmsi.Property.TITLE, self.title),
+            (Libmsi.Property.AUTHOR, self.author),
+            (Libmsi.Property.LASTAUTHOR, self.author),
+            (Libmsi.Property.SUBJECT, self.subject),
+            (Libmsi.Property.COMMENTS, self.comments),
+            (Libmsi.Property.TEMPLATE, self.template),
+            (Libmsi.Property.KEYWORDS, self.keywords),
+            (Libmsi.Property.CODEPAGE, self.codepage),
+            (Libmsi.Property.UUID, self.uuid),
+            (Libmsi.Property.CREATED_TM, self.filetime),
+            (Libmsi.Property.LASTSAVED_TM, self.filetime),
+            (Libmsi.Property.VERSION, self.version),
+            (Libmsi.Property.APPNAME, self.appname),
+            (Libmsi.Property.SECURITY, self.security),
+            (Libmsi.Property.SOURCE, self.source), ]
 
         msi_prop = Libmsi.SummaryInfo.new(None, MAXINT)
-        for prop, value in self.properties:
+        for prop, value in properties:
             if prop in [Libmsi.Property.CREATED_TM,
                         Libmsi.Property.LASTSAVED_TM]:
                 msi_prop.set_filetime(prop, value)
@@ -93,7 +88,7 @@ class Table(object):
 
     def add(self, *args):
         if len(args) != self.length:
-            raise ValueError('Incorrect number of members for record!')
+            raise ValueError('Incorrect members number for record!')
         rec = list(args)
         self.records.append(rec)
         return rec
@@ -138,8 +133,8 @@ class Table(object):
                 elif isinstance(item, tuple) and item[0] == 'filepath':
                     msirec.load_stream(index, item[1])
                 else:
-                    raise ValueError('Incompatible type of record item: %s %s' %
-                                     (str(type(item)), str(item)))
+                    msg = 'Incompatible type of record item: %s %s'
+                    raise ValueError(msg % (str(type(item)), str(item)))
                 index += 1
             query.execute(msirec)
 
@@ -176,4 +171,3 @@ class Database(object):
 
     def write_msi(self, db):
         pass
-
