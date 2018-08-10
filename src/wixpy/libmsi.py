@@ -86,16 +86,6 @@ class Table(object):
         self.length = len(table_spec)
         self.tbl_spec = table_spec
 
-    def add(self, *args):
-        if len(args) != self.length:
-            raise ValueError('Incorrect members number for record!')
-        rec = list(args)
-        self.records.append(rec)
-        return rec
-
-    def add_action(self, action):
-        pass
-
     def _create_table(self, db):
         fields = ['`%s` %s' % (name, tp)
                   for name, tp in self.tbl_spec]

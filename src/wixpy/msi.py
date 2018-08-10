@@ -569,6 +569,13 @@ class MsiTable(libmsi.Table):
     def __init__(self, name):
         super(MsiTable, self).__init__(name, MT_TABLES[name])
 
+    def add(self, *args):
+        if len(args) != self.length:
+            raise ValueError('Incorrect members number for record!')
+        rec = list(args)
+        self.records.append(rec)
+        return rec
+
     def add_action(self, action):
         self.add(action, MSI_ACTIONS[action][0], MSI_ACTIONS[action][1])
 
