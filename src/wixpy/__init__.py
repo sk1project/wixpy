@@ -174,7 +174,6 @@ if __name__ == "__main__":
         shutil.rmtree(builddir, True)
     os.makedirs(builddir)
     dest = os.path.join(builddir, os.path.basename(current_path))
-    print current_path, dest
     shutil.copytree(current_path, dest)
     exe_src = os.path.join(projdir, 'scripts', 'wix.py.exe')
     shutil.copy(exe_src, builddir)
