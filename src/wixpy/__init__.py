@@ -166,6 +166,7 @@ if __name__ == "__main__":
     current_path = os.path.dirname(os.path.abspath(__file__))
     path = os.path.dirname(current_path)
     projdir = os.path.dirname(path)
+    app_icon = os.path.join(projdir, 'resources', 'wixpy.ico')
 
     # Prepare build dir
     builddir = os.path.join(projdir, 'build')
@@ -173,9 +174,10 @@ if __name__ == "__main__":
         shutil.rmtree(builddir, True)
     os.makedirs(builddir)
     dest = os.path.join(builddir, os.path.basename(current_path))
+    print current_path, dest
     shutil.copytree(current_path, dest)
-    exe_path = os.path.join(builddir, 'wix.py.exe')
-    open(exe_path, 'wb').close()
+    exe_src = os.path.join(projdir, 'scripts', 'wix.py.exe')
+    shutil.copy(exe_src, builddir)
 
     # MSI build data
     win64 = True
@@ -199,7 +201,7 @@ if __name__ == "__main__":
         '_OsCondition': 601,
         '_CheckX64': win64,
         '_Conditions': [],  # [[msg,condition,level], ...]
-        '_AppIcon': '~/Projects/wixpy.ico',
+        '_AppIcon': app_icon,
         '_Icons': [],
         '_ProgramMenuFolder': 'sK1 Project',
         '_Shortcuts': [
