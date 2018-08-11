@@ -114,7 +114,7 @@ class Table(object):
             msirec = Libmsi.Record.new(len(fields))
             index = 1
             for item in record:
-                if isinstance(item, int):
+                if isinstance(item, (int, long)):
                     msirec.set_int(index, item)
                 elif item is None:
                     index -= 1
@@ -142,7 +142,7 @@ class Database(object):
     def build_cabinet(self, cabfile, compressed=True, embed=True):
         folder = GCab.Folder.new(GCab.Compression.MSZIP if compressed
                                  else GCab.Compression.NONE)
-        for file_id, filepath in self.files:
+        for filepath, file_id in self.files:
             gpointer = Gio.File.new_for_path(filepath)
             folder.add_file(GCab.File.new_with_file(file_id, gpointer), False)
         cab = GCab.Cabinet.new()
