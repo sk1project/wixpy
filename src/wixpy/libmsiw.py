@@ -17,6 +17,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import _msi
 
 
@@ -74,36 +75,30 @@ class Table(object):
         return text
 
     def _write_records(self, db):
+        db_view = db.OpenView('SELECT * FROM `%s`' % self.name)
+        count = db_view.GetColumnInfo(_msi.MSICOLINFO_NAMES).GetFieldCount()
+        msirec = _msi.CreateRecord(count)
         for record in self.records:
-            idx = 0
-            fields = []
-            values = []
-            for item in record:
-                if item is not None:
-                    fields.append('`%s`' % self.tbl_spec[idx][0])
-                    values.append('?')
-                idx += 1
-
-            sql = 'INSERT INTO `%s` (%s) VALUES (%s)' % \
-                  (self.name, ', '.join(fields), ', '.join(values))
-            query = Libmsi.Query.new(db, sql)
-
-            msirec = Libmsi.Record.new(len(fields))
-            index = 1
-            for item in record:
-                if isinstance(item, int):
-                    msirec.set_int(index, item)
-                elif item is None:
-                    index -= 1
-                elif isinstance(item, str):
-                    msirec.set_string(index, self._normalize_str(item))
-                elif isinstance(item, tuple) and item[0] == 'filepath':
-                    msirec.load_stream(index, item[1])
+            for i in range(count):
+                field = record[i]
+                if isinstance(field, (int, long)):
+                    msirec.SetInteger(i + 1, field)
+                elif isinstance(field, basestring):
+                    msirec.SetString(i + 1, field)
+                elif field is None:
+                    pass
+                elif isinstance(field, tuple) and field[0] == 'filepath':
+                    msirec.SetStream(i + 1, field[1])
                 else:
                     msg = 'Incompatible type of record item: %s %s'
-                    raise ValueError(msg % (str(type(item)), str(item)))
-                index += 1
-            query.execute(msirec)
+                    raise ValueError(msg % (str(type(field)), str(field)))
+            try:
+                db_view.Modify(_msi.MSIMODIFY_INSERT, msirec)
+            except Exception as e:
+                raise Exception('Could not insert %s into %s: %s' %
+                                (repr(record), self.name, repr(e)))
+            msirec.ClearData()
+        db_view.Close()
 
     def write_msi(self, db):
         pass
@@ -117,13 +112,16 @@ class Database(object):
         self.tables = None
 
     def build_cabinet(self, cabfile, compressed=True, embed=True):
-        pass
+        _msi.FCICreate(cabfile, self.files)
+        if embed:
+            self.tables['_Streams'].add(os.path.basename(cabfile),
+                                        ('filepath', cabfile))
 
     def init_db(self, msifile):
         self.db = _msi.OpenDatabase(msifile, _msi.MSIDBOPEN_CREATE)
 
     def commit_db(self):
-        self.db.commit()
+        self.db.Commit()
 
     def write_msi(self, db):
         pass
