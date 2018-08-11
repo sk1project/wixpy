@@ -21,7 +21,7 @@ import os
 
 from wixpy import utils
 
-if not os.name == 'nt':
+if os.name != 'nt':
     from wixpy import libmsi
 else:
     from wixpy import libmsiw as libmsi
