@@ -694,7 +694,7 @@ class MsiDatabase(libmsi.Database):
 
     def set_filehash(self):
         tb = self.tables[MT_FILEHASH]
-        for file_id, filepath in self.files:
+        for filepath, file_id in self.files:
             tb.add(file_id, 0, *utils.compute_md5(filepath))
 
     def write_msi(self, msifile):
