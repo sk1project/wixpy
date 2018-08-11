@@ -19,6 +19,7 @@
 
 """
 Supported features:
+* Crossplatform MSI-generation
 * JSON-driven MSI generation
 * recursive app folder scanning
 * msi package icon
@@ -30,7 +31,6 @@ Supported features:
 * add to system PATH
 
 Planned features:
-* Crossplatform MSI-generation backend
 * File type associations (Open, Open with)
 * MIME-type for files
 * Open port
@@ -152,8 +152,6 @@ def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
             with open(output, 'wb') as fp:
                 wixmodel.write_xml(utils.XmlWriter(fp))
     else:
-        if os.name == 'nt':
-            raise Exception('WiX.py backend is not supported on Windows yet!')
         from wixpy import msi
         msi.MSI_CODEPAGE = wixmodel.get_package().get('SummaryCodepage')
         utils.echo_msg('Writing MSI package into %s...' % output)
@@ -225,8 +223,8 @@ if __name__ == "__main__":
     # MSI build
     try:
         # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
-        # build(MSI_DATA, xml_only=True, stdout=True)
-        build(MSI_DATA)
+        build(MSI_DATA, xml_only=True, stdout=True)
+        # build(MSI_DATA)
     except Exception as e:
         raise e
     finally:
