@@ -63,11 +63,12 @@ class Table(object):
         self.tbl_spec = table_spec
 
     def _create_table(self, db):
-        fields = ['`%s` %s' % (name, tp)
-                  for name, tp in self.tbl_spec]
+        fields = ['`%s` %s' % (name, tp) for name, tp in self.tbl_spec]
         table_description = ', '.join(fields)
         sql = 'CREATE TABLE `%s` (%s)' % (self.name, table_description)
-        Libmsi.Query.new(db, sql).execute()
+        db_view = db.OpenView(sql)
+        db_view.Execute(None)
+        db_view.Close()
 
     def _normalize_str(self, text):
         return text
