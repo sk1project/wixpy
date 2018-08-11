@@ -114,7 +114,7 @@ class Table(object):
             msirec = Libmsi.Record.new(len(fields))
             index = 1
             for item in record:
-                if isinstance(item, (int, long)):
+                if isinstance(item, int):
                     msirec.set_int(index, item)
                 elif item is None:
                     index -= 1
