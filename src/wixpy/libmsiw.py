@@ -50,6 +50,7 @@ class SummaryInfo(object):
         si.SetProperty(_msi.PID_KEYWORDS, self.keywords)
         si.SetProperty(_msi.PID_CODEPAGE, self.codepage)
         si.SetProperty(_msi.PID_SECURITY, self.security)
+        si.Persist()
 
 
 class Table(object):
