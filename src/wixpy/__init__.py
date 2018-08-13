@@ -20,7 +20,7 @@
 """
 Supported features:
 * Crossplatform MSI-generation
-* JSON-driven MSI generation
+* JSON-driven MSI build
 * recursive app folder scanning
 * msi package icon
 * 32/64bit installations
@@ -38,7 +38,6 @@ Planned features:
 """
 
 import os
-import shutil
 import sys
 
 from wixpy import model
@@ -158,74 +157,3 @@ def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
         msi.MsiDatabase(wixmodel).write_msi(output)
 
     wixmodel.destroy()
-
-
-if __name__ == "__main__":
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.dirname(current_path)
-    projdir = os.path.dirname(path)
-    app_icon = os.path.join(projdir, 'resources', 'wixpy.ico')
-
-    # Prepare build dir
-    builddir = os.path.join(projdir, 'build')
-    if os.path.exists(builddir):
-        shutil.rmtree(builddir, True)
-    os.makedirs(builddir)
-    dest = os.path.join(builddir, os.path.basename(current_path))
-    shutil.copytree(current_path, dest)
-    exe_src = os.path.join(projdir, 'scripts', 'wix.py.exe')
-    shutil.copy(exe_src, builddir)
-
-    # MSI build data
-    win64 = True
-    MSI_DATA = {
-        # Required
-        'Name': PROJECT,
-        'UpgradeCode': '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF690',
-        'Version': VERSION,
-        'Manufacturer': 'sK1 Project',
-        # Optional
-        'Description': '%s %s Installer' % (PROJECT, VERSION),
-        'Comments': 'Licensed under GPLv3',
-        'Keywords': 'msi, wix, build',
-        'Win64': win64,
-        'Codepage': '1251',
-        'SummaryCodepage': '1251',
-        'Language': '1049',  # 1033
-        'Languages': '1049',
-
-        # Installation infrastructure
-        '_OsCondition': 601,
-        '_CheckX64': win64,
-        '_Conditions': [],  # [[msg,condition,level], ...]
-        '_AppIcon': app_icon,
-        '_Icons': [],
-        '_ProgramMenuFolder': 'sK1 Project',
-        '_Shortcuts': [
-            {'Name': PROJECT,
-             'Description': 'Crossplatform MSI builder',
-             'Target': 'wix.py.exe',
-             'Open': [],
-             'OpenWith': [],
-             'EditWith': [],
-             },
-        ],
-        '_AddToPath': ['', ],
-        '_AddBeforePath': [],
-        '_SourceDir': builddir,
-        '_InstallDir': 'wixpy-%s' % VERSION,
-        '_OutputName': '%s-%s-%s.msi' % (PROJECT.lower(), VERSION,
-                                         'win64' if win64 else 'win32'),
-        '_OutputDir': '~',
-        '_SkipHidden': True,
-    }
-
-    # MSI build
-    try:
-        # build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
-        build(MSI_DATA, xml_only=True, stdout=True)
-        # build(MSI_DATA)
-    except Exception as e:
-        raise e
-    finally:
-        shutil.rmtree(builddir, True)
