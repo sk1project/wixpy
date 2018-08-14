@@ -740,7 +740,8 @@ class MsiDatabase(libmsi.Database):
 
         for record in validate.RECORDS:
             if record[0] in (MT_VALIDATION, MT_STREAMS) or \
-                    self.tables[record[0]].records:
+                    (record[0] in self.tables and
+                     self.tables[record[0]].records):
                 self.tables[MT_VALIDATION].records.append(record)
 
         utils.echo_msg('Writing tables...')
