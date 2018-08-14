@@ -90,7 +90,7 @@ class WixElement(object):
     is_dir = False
     is_comp = False
     nl = False
-    id_prefix = ''
+    id_prefix = 'i'
 
     def __init__(self, **kwargs):
         self.childs = []
