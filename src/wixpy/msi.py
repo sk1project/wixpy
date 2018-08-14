@@ -613,7 +613,6 @@ class MsiDatabase(libmsi.Database):
         super(MsiDatabase, self).__init__()
         self.model = model
         self.tables = {key: MsiTable(key) for key in MT_TABLES.keys()}
-        self.tables[MT_VALIDATION].records = validate.RECORDS
 
     def set_action_sequences(self):
         # AdminExecuteSequence
@@ -738,6 +737,11 @@ class MsiDatabase(libmsi.Database):
         embed = media.get('EmbedCab') == 'yes'
         compressed = pkg.get('Compressed') == 'yes'
         self.build_cabinet(cabfile, compressed, embed)
+
+        for record in validate.RECORDS:
+            if record[0] in (MT_VALIDATION, MT_STREAMS) or \
+                    self.tables[record[0]].records:
+                self.tables[MT_VALIDATION].records.append(record)
 
         utils.echo_msg('Writing tables...')
         for item in TABLE_ORDER:
