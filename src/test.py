@@ -58,15 +58,15 @@ if __name__ == "__main__":
         '_InstallDir': 'wixpy-%s' % wixpy.VERSION,
         '_OutputName': '%s-%s-%s.msi' % (wixpy.PROJECT.lower(), wixpy.VERSION,
                                          'win64' if win64 else 'win32'),
-        '_OutputDir': '~',
+        '_OutputDir': projdir,
         '_SkipHidden': True,
     }
 
     # MSI build
     try:
         # wixpy.build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
-        wixpy.build(MSI_DATA, xml_only=True, stdout=True)
-        # wixpy.build(MSI_DATA)
+        # wixpy.build(MSI_DATA, xml_only=True, stdout=True)
+        wixpy.build(MSI_DATA)
     except Exception as e:
         raise e
     finally:
