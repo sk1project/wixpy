@@ -20,7 +20,7 @@
 import os
 
 from wixpy import utils
-from wixpy import validation
+from wixpy import validate
 
 if os.name != 'nt':
     from wixpy import libmsi
@@ -613,7 +613,7 @@ class MsiDatabase(libmsi.Database):
         super(MsiDatabase, self).__init__()
         self.model = model
         self.tables = {key: MsiTable(key) for key in MT_TABLES.keys()}
-        self.tables[MT_VALIDATION].records = validation.RECORDS
+        self.tables[MT_VALIDATION].records = validate.RECORDS
 
     def set_action_sequences(self):
         # AdminExecuteSequence
