@@ -20,6 +20,7 @@
 import os
 
 from wixpy import utils
+from wixpy import validation
 
 if os.name != 'nt':
     from wixpy import libmsi
@@ -296,8 +297,9 @@ MT_SIGNATURE = 'Signature'
 MT_FILEHASH = 'MsiFileHash'
 MT_ERROR = 'Error'
 MT_ENVIRONMENT = 'Environment'
+MT_VALIDATION = '_Validation'
 
-TABLE_ORDER = [MT_ADMINEXECUTESEQUENCE, MT_ADMINUISEQUENCE,
+TABLE_ORDER = [MT_VALIDATION, MT_ADMINEXECUTESEQUENCE, MT_ADMINUISEQUENCE,
                MT_ADVTEXECUTESEQUENCE, MT_INSTALLEXECUTESEQUENCE,
                MT_INSTALLUISEQUENCE, MT_DIRECTORY, MT_MEDIA, MT_PROPERTY,
                MT_ICON, MT_BINARY, MT_COMPONENT, MT_FEATURE,
@@ -313,6 +315,19 @@ MT_ACTION = (('Action', 'CHAR(72) NOT NULL'),
                           'PRIMARY KEY `Action`'),)
 
 MT_TABLES = {
+    MT_VALIDATION: (
+        ('Table', 'CHAR(72) NOT NULL'),
+        ('Column', 'CHAR(72) NOT NULL'),
+        ('Nullable', 'CHAR(1) NOT NULL'),
+        ('MinValue', 'LONG'),
+        ('MaxValue', 'LONG'),
+        ('KeyTable', 'CHAR(72)'),
+        ('KeyColumn', 'INT'),
+        ('Category', 'CHAR(72)'),
+        ('Set', 'CHAR(72)'),
+        ('Description', 'CHAR(255)'
+                        'PRIMARY KEY `Table`, `Column`'),
+    ),
     MT_PROPERTY: (
         ('Property', 'CHAR(72) NOT NULL'),
         ('Value', 'CHAR(0) NOT NULL LOCALIZABLE '
@@ -598,6 +613,7 @@ class MsiDatabase(libmsi.Database):
         super(MsiDatabase, self).__init__()
         self.model = model
         self.tables = {key: MsiTable(key) for key in MT_TABLES.keys()}
+        self.tables[MT_VALIDATION].records = validation.RECORDS
 
     def set_action_sequences(self):
         # AdminExecuteSequence
@@ -729,5 +745,5 @@ class MsiDatabase(libmsi.Database):
 
         self.commit_db()
 
-        if not embed and os.path.exists(cabfile):
+        if embed and os.path.exists(cabfile):
             os.remove(cabfile)
