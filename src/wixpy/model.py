@@ -268,11 +268,24 @@ class WixFile(WixElement):
         super(WixFile, self).__init__(**data)
         self.set(Name=os.path.basename(rel_path), Source=path)
 
+    def get_msi_name(self):
+        filename = self.get('Name')
+        longname = name = filename.replace(' ', '_')
+        ext = None
+        if '.' in longname:
+            name = longname.split('.')[0]
+            ext = longname.split('.')[-1]
+        name = name[:8] if len(name) > 8 else name
+        ext = ext[:3] if ext and len(ext) > 3 else ext
+        shortname = '.'.join([name, ext]) if ext else name
+        return '|'.join([shortname, filename]) \
+            if shortname != filename else filename
+
     def write_msi_records(self, db):
         table = db.tables[msi.MT_FILE]
         file_id = self.get('Id')
         comp_id = self.parent.get('Id')
-        name = self.get('Name')
+        name = self.get_msi_name()
         size = os.path.getsize(self.get('Source'))
         sequence = len(table.records) + 1
         table.add(file_id, comp_id, name, size, None, None,
@@ -334,10 +347,23 @@ class WixDirectory(WixElement):
                 elif os.path.isfile(item_path):
                     self.add(WixComponent(item_path, item_rel_path, **data))
 
+    def get_msi_name(self, dirname):
+        longname = name = dirname.replace(' ', '_')
+        ext = None
+        if '.' in longname:
+            name = longname.split('.')[0]
+            ext = longname.split('.')[-1]
+        name = name[:8] if len(name) > 8 else name
+        ext = ext[:3] if ext and len(ext) > 3 else ext
+        shortname = '.'.join([name, ext]) if ext else name
+        return '|'.join([shortname, dirname]) \
+            if shortname != dirname else dirname
+
     def write_msi_records(self, db):
         table = db.tables[msi.MT_DIRECTORY]
-        table.add(self.get('Id'), self.parent.get('Id'),
-                  self.get('Name') or '.')
+        name = self.get('Name')
+        name = self.get_msi_name(name) if name else '.'
+        table.add(self.get('Id'), self.parent.get('Id'), name)
 
 
 class WixInstallDir(WixElement):
