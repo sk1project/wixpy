@@ -273,7 +273,7 @@ class WixFile(WixElement):
         longname = name = filename.replace(' ', '_')
         ext = None
         if '.' in longname:
-            name = longname.split('.')[0]
+            name = ''.join(longname.split('.')[:-1])
             ext = longname.split('.')[-1]
         name = name[:8] if len(name) > 8 else name
         ext = ext[:3] if ext and len(ext) > 3 else ext
@@ -351,7 +351,7 @@ class WixDirectory(WixElement):
         longname = name = dirname.replace(' ', '_')
         ext = None
         if '.' in longname:
-            name = longname.split('.')[0]
+            name = ''.join(longname.split('.')[:-1])
             ext = longname.split('.')[-1]
         name = name[:8] if len(name) > 8 else name
         ext = ext[:3] if ext and len(ext) > 3 else ext
