@@ -67,7 +67,7 @@ def defaults():
         'SummaryCodepage': '1252',
         # Internals
         'InstallerVersion': '400',
-        'InstallScope': 'perMachine',  # perMachine
+        'InstallScope': 'perMachine',
         'Compressed': 'yes',
         'KeyPath': 'yes',
         # Media
@@ -518,7 +518,8 @@ class WixShortcutComponent(WixComponent):
                                  On='uninstall'))
         reg_key = 'Software\\%s\\%s' % (data['Manufacturer'].replace(' ', '_'),
                                         data['Name'].replace(' ', '_'))
-        self.add(WixRegistryValue(Root='HKCU', Key=reg_key,
+        root = 'HKLM' if data.get('InstallScope') == 'perMachine' else 'HKCU'
+        self.add(WixRegistryValue(Root=root, Key=reg_key,
                                   Name=shortcut_data['Name'], Type='integer',
                                   Value='1', KeyPath='yes'))
 
@@ -624,7 +625,7 @@ class WixProduct(WixElement):
 
     def set_envvars(self, data):
         if data.get('_AddToPath') or data.get('_AddBeforePath'):
-            dir_ref = WixDirectoryRef(Id='INSTALLDIR')
+            dir_ref = WixDirectoryRef(Id='TARGETDIR')
             self.add(dir_ref)
             comp_data = {'Win64': 'yes'} if data.get('Win64') else {}
             comp = WixComponent(**comp_data)
