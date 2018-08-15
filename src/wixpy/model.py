@@ -518,8 +518,7 @@ class WixShortcutComponent(WixComponent):
                                  On='uninstall'))
         reg_key = 'Software\\%s\\%s' % (data['Manufacturer'].replace(' ', '_'),
                                         data['Name'].replace(' ', '_'))
-        root = 'HKLM' if data.get('InstallScope') == 'perMachine' else 'HKCU'
-        self.add(WixRegistryValue(Root=root, Key=reg_key,
+        self.add(WixRegistryValue(Root='HKCU', Key=reg_key,
                                   Name=shortcut_data['Name'], Type='integer',
                                   Value='1', KeyPath='yes'))
 
