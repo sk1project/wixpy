@@ -98,11 +98,11 @@ class RegistryValueType(object):
 
 
 class RegistryRoot(object):
-    HKCR = 1 << 0
-    HKCU = 1 << 1
-    HKLM = 1 << 2
-    HKU = 1 << 3
-    HKMU = 1 << 4
+    HKMU = -1
+    HKCR = 0
+    HKCU = 1
+    HKLM = 2
+    HKU = 3
 
     @classmethod
     def from_string(cls, str_value):
