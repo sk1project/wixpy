@@ -115,7 +115,7 @@ class WixElement(object):
         self.attrs.update(kwargs)
 
     def get(self, key):
-        return self.attrs.get(key, '')
+        return self.attrs.get(key)
 
     def pop(self, key):
         if key in self.attrs:
@@ -485,7 +485,7 @@ class WixRegistryValue(WixElement):
         reg_name = self.get('Name')
         reg_comp = self.parent.get('Id')
         reg_value = self.get('Value')
-        if not reg_value.startswith('#'):
+        if self.get('Type') == 'integer' and not reg_value.startswith('#'):
             reg_value = '#' + reg_value
         table.add(reg_id, reg_root, reg_key, reg_name, reg_value, reg_comp)
 
@@ -620,7 +620,72 @@ class WixProduct(WixElement):
                 }
                 shortcut_data.update(shortcut)
                 shortcut_data['Target'] = '[#%s]' % target_id
-                dir_ref.add(WixShortcutComponent(data, shortcut_data))
+                component = WixShortcutComponent(data, shortcut_data)
+                dir_ref.add(component)
+
+                if shortcut.get('OpenWith'):
+                    # Shortcut ref
+                    target_ref = shortcut.get('Name')
+                    description = shortcut.get('Description')
+                    component.add(WixRegistryValue(Root='HKCR', Key=target_ref,
+                                                   Value=description))
+                    # Shortcut open option
+                    key = target_ref + '\\shell\\open'
+                    value = 'Open with %s' % shortcut['Name']
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    key = target_ref + '\\shell\\open\\command'
+                    value = '"[#%s]" "%%1"' % target_id
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    # OpenWith menu item
+                    for item in shortcut.get('OpenWith'):
+                        key = item + '\\OpenWithProgids'
+                        component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                       Name=target_ref))
+                for item in shortcut.get('Open'):
+                    ext = item['Extension']
+                    description = item['Descriptrion']
+                    mime = item['MIME']
+                    icon_index = item.get('IconIndex', '0')
+                    target_ref = shortcut.get('Name') + ext
+
+                    # Shortcut ref
+                    component.add(WixRegistryValue(Root='HKCR', Key=target_ref,
+                                                   Value=description))
+                    # Shortcut icon
+                    key = target_ref + '\\DefaultIcon'
+                    value = '"[#%s]",%s' % (target_id, icon_index)
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    # Shortcut open option
+                    key = target_ref + '\\shell\\open'
+                    value = 'Open with %s' % shortcut['Name']
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    key = target_ref + '\\shell\\open\\command'
+                    value = '"[#%s]" "%%1"' % target_id
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    if item.get('Edit'):
+                        # Shortcut edit option
+                        key = target_ref + '\\shell\\edit'
+                        value = 'Edit with %s' % shortcut['Name']
+                        component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                       Value=value))
+                        key = target_ref + '\\shell\\edit\\command'
+                        value = '"[#%s]" "%%1"' % target_id
+                        component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                       Value=value))
+                    # File association
+                    component.add(WixRegistryValue(Root='HKCR', Key=ext,
+                                                   Value=target_ref))
+                    component.add(WixRegistryValue(Root='HKCR', Key=ext,
+                                                   Name='Content Type',
+                                                   Value=mime))
+                    key = ext + '\\OpenWithProgids'
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Name=target_ref))
 
     def set_envvars(self, data):
         if data.get('_AddToPath') or data.get('_AddBeforePath'):

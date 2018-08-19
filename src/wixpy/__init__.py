@@ -29,10 +29,10 @@ Supported features:
 * x64 arch check
 * custom conditions
 * add to system PATH
-
-Planned features:
 * File type associations (Open, Open with)
 * MIME-type for files
+
+Planned features:
 * Open port
 * GUI for compiled msi-installers
 """
@@ -155,5 +155,7 @@ def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
         msi.MSI_CODEPAGE = wixmodel.get_package().get('SummaryCodepage')
         utils.echo_msg('Writing MSI package into %s...' % output)
         msi.MsiDatabase(wixmodel).write_msi(output)
+
+        wixmodel.write_xml(sys.stdout)
 
     wixmodel.destroy()
