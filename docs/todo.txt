@@ -1,8 +1,9 @@
-0.start script + json reading
-1.setup.py
-2.whl package
-3.exe proj
-4.msi build
-5.md docs
-6.github release
-7.project site (News Bugs Docs Downloads)
+* start script + json reading
+* setup.py
+* whl package
+* deb/rpm packages (Ubuntu 16.04, 18.04, Debian 8,9, Centos 6,7)
+* exe proj
+* msi build
+* md docs
+* github release
+* project site (News Bugs Docs Downloads)
