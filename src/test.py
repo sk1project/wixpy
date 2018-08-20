@@ -36,8 +36,8 @@ if __name__ == "__main__":
         'Language': '1049',  # 1033
         'Languages': '1049',
 
-        # Installation infrastructure
-        '_OsCondition': 601,
+        # Installation features
+        '_OsCondition': '601',
         '_CheckX64': win64,
         '_Conditions': [],  # [[msg,condition,level], ...]
         '_AppIcon': app_icon,
@@ -47,9 +47,13 @@ if __name__ == "__main__":
             {'Name': wixpy.PROJECT,
              'Description': 'Crossplatform MSI builder',
              'Target': 'wix.py.exe',
-             'Open': [],
-             'OpenWith': [],
-             'EditWith': [],
+             'AddOnDesktop': True,
+             'Open': [{'Extension': '.json',
+                       'Descriptrion': 'File "JSON"',
+                       'IconIndex': '0',
+                       'Edit': False,
+                       'MIME': 'application/json'}],
+             'OpenWith': ['.png', '.svg', '.jpg'],
              },
         ],
         '_AddToPath': ['', ],

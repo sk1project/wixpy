@@ -622,6 +622,39 @@ class WixProduct(WixElement):
                 shortcut_data['Target'] = '[#%s]' % target_id
                 component = WixShortcutComponent(data, shortcut_data)
                 dir_ref.add(component)
+                if shortcut.get('AddOnDesktop'):
+                    desktop_dir = None
+                    for child in target_dir.childs:
+                        if child.get('Id') == 'DesktopFolder':
+                            desktop_dir = child
+                            break
+                    if desktop_dir is None:
+                        desktop_dir = WixDirectory(Id='DesktopFolder',
+                                                   Name='Desktop')
+                        desktop_dir.comment = 'Desktop folder'
+                        target_dir.add(desktop_dir)
+                    desktop_dir_ref = WixDirectoryRef(Id='DesktopFolder')
+                    self.add(desktop_dir_ref)
+                    desktop_component = WixComponent(**data)
+                    desktop_dir_ref.add(desktop_component)
+                    desktop_shortcut_data = {
+                        'DirectoryRef': 'DesktopFolder',
+                        'WorkingDirectory': work_dir_id,
+                    }
+                    desktop_shortcut_data.update(shortcut)
+                    desktop_shortcut_data.pop('Description')
+                    desktop_shortcut_data['Target'] = '[#%s]' % target_id
+                    desktop_component.add(WixShortcut(desktop_shortcut_data))
+
+                    reg_key = 'Software\\%s\\%s' % (
+                        data['Manufacturer'].replace(' ', '_'),
+                        data['Name'].replace(' ', '_'))
+                    name = desktop_shortcut_data['Name']
+                    reg_val = WixRegistryValue(Root='HKCU', Key=reg_key,
+                                               Name=name,
+                                               Type='integer',
+                                               Value='1', KeyPath='yes')
+                    desktop_component.add(reg_val)
 
                 if shortcut.get('OpenWith'):
                     # Shortcut ref
