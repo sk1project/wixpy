@@ -68,11 +68,6 @@ if __name__ == "__main__":
 
     # MSI build
     try:
-        # wixpy.build(MSI_DATA, xml_only=True, engine=Engine.WIXL, stdout=True)
-        # wixpy.build(MSI_DATA, xml_only=True, stdout=True)
-        wixpy.build(MSI_DATA)
-    except Exception as e:
-        raise e
+        wixpy.build(MSI_DATA, stdout=True)
     finally:
-        pass
         shutil.rmtree(builddir, True)

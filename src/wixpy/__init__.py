@@ -158,6 +158,7 @@ def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
         utils.echo_msg('Writing MSI package into %s...' % output)
         msi.MsiDatabase(wixmodel).write_msi(output)
 
-        wixmodel.write_xml(sys.stdout)
+        if stdout:
+            wixmodel.write_xml(sys.stdout)
 
     wixmodel.destroy()
