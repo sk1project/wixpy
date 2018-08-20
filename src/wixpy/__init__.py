@@ -21,16 +21,18 @@
 Supported features:
 * Crossplatform MSI-generation
 * JSON-driven MSI build
-* recursive app folder scanning
-* msi package icon
+* Recursive app folder scanning
+* MSI package icon
 * 32/64bit installations
 * ProgramMenu folder and shortcuts
+* Desktop shortcuts
 * OS version check
 * x64 arch check
-* custom conditions
-* add to system PATH
+* Custom conditions
+* Add to system PATH
 * File type associations (Open, Open with)
-* MIME-type for files
+* MIME-type and icon for associated files
+* 'Edit with' menu item for associated files
 
 Planned features:
 * Open port
