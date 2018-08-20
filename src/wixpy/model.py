@@ -700,7 +700,7 @@ class WixProduct(WixElement):
                     value = '"[#%s]" "%%1"' % target_id
                     component.add(WixRegistryValue(Root='HKCR', Key=key,
                                                    Value=value))
-                    if item.get('Edit'):
+                    if item.get('EditWith'):
                         # Shortcut edit option
                         key = target_ref + '\\shell\\edit'
                         value = 'Edit with %s' % shortcut['Name']

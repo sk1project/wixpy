@@ -51,7 +51,7 @@ if __name__ == "__main__":
              'Open': [{'Extension': '.json',
                        'Descriptrion': 'File "JSON"',
                        'IconIndex': '0',
-                       'Edit': False,
+                       'EditWith': False,
                        'MIME': 'application/json'}],
              'OpenWith': ['.png', '.svg', '.jpg'],
              },
