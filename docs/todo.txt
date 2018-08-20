@@ -1,0 +1,8 @@
+0.start script + json reading
+1.setup.py
+2.whl package
+3.exe proj
+4.msi build
+5.md docs
+6.github release
+7.project site (News Bugs Docs Downloads)

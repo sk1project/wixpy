@@ -1,6 +1,0 @@
-https://habr.com/post/68616/
-http://dennisbareis.com/makemsi.htm
-https://helgeklein.com/blog/2014/09/real-world-example-wix-msi-application-installer/
-https://docs.microsoft.com/en-us/windows/desktop/msi/environment-table
-https://msdn.microsoft.com/en-us/library/gg513929.aspx
-https://stackoverflow.com/questions/2772452/how-to-associate-application-with-existing-file-types-using-wix-installer
