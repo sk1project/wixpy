@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #   WiX MSI builder script
@@ -19,5 +20,4 @@
 
 import os
 import sys
-
 

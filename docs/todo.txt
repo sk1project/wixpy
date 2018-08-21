@@ -1,5 +1,5 @@
 * start script + json reading
-* setup.py
++ setup.py
 * whl package
 * deb/rpm packages (Ubuntu 16.04, 18.04, Debian 8,9, Centos 6,7)
 * exe proj
