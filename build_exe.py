@@ -30,11 +30,11 @@ SCRIPT = "scripts\\wix.py"
 
 setup(
     options={'py2exe': {'bundle_files': 2,
-        'compressed': True,
-        'includes': INCLUDES,
+                        'compressed': True,
+                        'includes': INCLUDES,
     }},
     console=[{'script': SCRIPT,
-              'icon_resources': [(1, 'resources\\wixpy.ico')]
+              'icon_resources': [(0, 'resources\\wixpy.ico')]
     }],
     zipfile=None,
     name=wixpy.PROJECT,
