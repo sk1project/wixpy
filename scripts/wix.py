@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 # -*- coding: utf-8 -*-
 #
-#   WiX MSI builder script
+#   WiX.Py MSI builder script
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #
