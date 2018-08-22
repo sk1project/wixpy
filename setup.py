@@ -19,6 +19,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import platform
 import sys
 
 from distutils.core import setup
@@ -27,6 +28,8 @@ import datetime
 
 sys.path.insert(1, os.path.abspath('./src'))
 
+IS_WIN32 = platform.architecture()[0] == '32bit'
+WIN_ARCH = 'win32' if IS_WIN32 else 'win64'
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 import wixpy
@@ -76,6 +79,6 @@ setup(
     classifiers=CLASSIFIERS,
     packages=['wixpy'],
     package_dir={'wixpy': 'src/wixpy'},
-    scripts=['scripts/wix.py.exe'] if os.name == 'nt'
+    scripts=['scripts/%s/wix.py.exe' % WIN_ARCH] if os.name == 'nt'
     else ['scripts/wix.py'],
 )
