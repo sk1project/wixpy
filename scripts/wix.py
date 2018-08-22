@@ -21,6 +21,13 @@
 import os
 import sys
 
+if os.name == 'nt':
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    stdlib = os.path.join(current_path, 'stdlib')
+    if os.path.exists(stdlib):
+        sys.path.insert(0, stdlib)
+        sys.path.insert(0, current_path)
+
 import json
 import wixpy
 
