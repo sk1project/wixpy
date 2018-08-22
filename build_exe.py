@@ -25,6 +25,7 @@ from distutils.core import setup
 import py2exe
 import wixpy
 
+sys.argv += ['py2exe', ]
 INCLUDES = ['os', 'sys']
 SCRIPT = "scripts\\wix.py"
 
