@@ -23,7 +23,6 @@ import sys
 
 if os.name == 'nt':
     current_path = os.path.dirname(sys.argv[0])
-    print(current_path)
     stdlib = os.path.join(current_path, 'stdlib')
     if os.path.exists(stdlib):
         sys.path.insert(0, stdlib)
