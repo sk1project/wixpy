@@ -28,17 +28,17 @@ HELP_TEMPLATE = '''
 %s %s
 
 Crossplatform MSI builder
-Copyright (C) 2018 sK1 Project Team (http://wix.sk1project.net)
+Copyright (C) 2018 sK1 Project Team (https://wix.sk1project.net)
 
 Usage: wix.py [OPTIONS] [INPUT FILE]
 Example: wix.py drawing.json
 
  Available options:
- --help             Display this help and exit
- --xml_only         Generate WXS representation of MSI package
- --stdout           Show generated WXS representation
- --output=          Resulted MSI/WXS filename
- --xml_encoding=    WXS content encoding (utf-8, cp1251 etc.). Default utf-8
+ --help                Display this help and exit
+ --xml_only            Generate WXS representation of MSI package
+ --stdout              Show generated WXS representation
+ --output=FILE         Resulted MSI/WXS filename
+ --xml_encoding=ENC    WXS content encoding (utf-8, cp1251 etc.). Default utf-8
 '''
 
 if '--help' in sys.argv or '-help' in sys.argv or len(sys.argv) == 1:
@@ -52,10 +52,6 @@ args = {}
 for item in options:
     if '=' in item:
         key, value = item[2:].split('=')[:2]
-        if value.startswith('"') and value.endswith('"'):
-            value = value[1:-1]
-        if value.startswith('\'') and value.endswith('\''):
-            value = value[1:-1]
         if value.lower() in ('yes', 'true'):
             value = True
         if value.lower() in ('no', 'false'):
@@ -88,5 +84,4 @@ wixpy.build(json_data,
             output=args.get('output'),
             stdout=args.get('stdout', False),
             xml_only=args.get('xml_only', False),
-            xml_encoding=args.get('xml_encoding', 'utf-8'),
-            )
+            xml_encoding=args.get('xml_encoding', 'utf-8'))
