@@ -31,9 +31,9 @@ Crossplatform MSI builder
 Copyright (C) 2018 sK1 Project Team (https://wix.sk1project.net)
 
 Usage: wix.py [OPTIONS] [INPUT FILE]
-Example: wix.py drawing.json
+Example: wix.py myapp.json
 
- Available options:
+Available options:
  --help                Display this help and exit
  --xml_only            Generate WXS representation of MSI package
  --stdout              Show generated WXS representation
@@ -66,7 +66,7 @@ if not non_options:
     print('Input JSON file is not provided!')
     sys.exit(1)
 
-json_file = non_options[0]
+json_file = non_options[1]
 if not os.path.exists(json_file):
     print('Specified JSON file "%s" is not found!' % json_file)
     sys.exit(1)
@@ -78,6 +78,7 @@ try:
         json_data = json.load(fp, encoding=json_encoding)
     if not json_data:
         raise Exception('Empty JSON data!')
+    json_data = wixpy.utils.encode_json(json_data)
 except Exception as e:
     print('Error reading JSON file! %s' % str(e))
     sys.exit(1)
