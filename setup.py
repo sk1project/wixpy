@@ -39,7 +39,7 @@ AUTHOR_EMAIL = 'sk1.project.org@gmail.com'
 MAINTAINER = AUTHOR
 MAINTAINER_EMAIL = AUTHOR_EMAIL
 LICENSE = 'GPL v3'
-URL = 'http://wix.sk1project.net'
+URL = 'https://wix.sk1project.net'
 DOWNLOAD_URL = URL
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
@@ -58,7 +58,7 @@ platforms including inside Docker environment. Unlike WiX/wixl applications
 WiX.Py is an JSON-driven builder. To build MSI package you need filling
 small JSON file only, describing generic application data (name, version etc.)
 
-Copyright (C) %s sK1 Project Team (http://wix.sk1project.net)
+Copyright (C) %s sK1 Project Team (https://wix.sk1project.net)
 ''' % str(datetime.date.today().year)
 
 setup(
