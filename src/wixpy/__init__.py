@@ -35,8 +35,7 @@ Supported features:
 * 'Edit with' menu item for associated files
 
 Planned features:
-* Open port
-* GUI for compiled msi-installers
+* GUI for compiled MSI installers
 """
 
 import os
