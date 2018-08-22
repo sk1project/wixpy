@@ -1,2 +1,2 @@
 include LICENSE README.txt MANIFEST.in setup.cfg
-include scripts/wix.py scripts/wix.py.exe
+include scripts/wix.py scripts/win32/wix.py.exe scripts/win64/wix.py.exe
