@@ -18,6 +18,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import platform
 
 sys.path.insert(0, 'src')
 
@@ -25,12 +26,13 @@ from distutils.core import setup
 import py2exe
 import wixpy
 
+IS_WIN32 = platform.architecture()[0] == '32bit'
 sys.argv += ['py2exe', ]
 INCLUDES = ['os', 'sys']
 SCRIPT = "scripts\\wix.py"
 
 setup(
-    options={'py2exe': {'bundle_files': 2,
+    options={'py2exe': {'bundle_files': 2 if IS_WIN32 else 3,
                         'compressed': True,
                         'includes': INCLUDES,
     }},
