@@ -38,7 +38,8 @@ Example: wix.py drawing.json
  --xml_only            Generate WXS representation of MSI package
  --stdout              Show generated WXS representation
  --output=FILE         Resulted MSI/WXS filename
- --xml_encoding=ENC    WXS content encoding (utf-8, cp1251 etc.). Default utf-8
+ --xml_encoding=ENC    WXS content encoding. Default "utf-8"
+ --json_encoding=ENC   JSON content encoding. Default "utf-8"
 '''
 
 if '--help' in sys.argv or '-help' in sys.argv or len(sys.argv) == 1:
@@ -73,7 +74,8 @@ if not os.path.exists(json_file):
 json_data = {}
 try:
     with open(json_file, 'rb') as fp:
-        json_data = json.load(fp)
+        json_encoding = args.get('json_encoding', 'utf-8')
+        json_data = json.load(fp, encoding=json_encoding)
     if not json_data:
         raise Exception('Empty JSON data!')
 except Exception as e:
