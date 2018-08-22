@@ -68,7 +68,7 @@ if not non_options:
 
 json_file = non_options[0]
 if not os.path.exists(json_file):
-    print('Defined JSON file "%s" is not found!' % json_file)
+    print('Specified JSON file "%s" is not found!' % json_file)
     sys.exit(1)
 
 json_data = {}
