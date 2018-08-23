@@ -20,6 +20,7 @@
 import os
 
 from wixpy import utils
+from wixpy import validate
 
 if os.name != 'nt':
     from wixpy import libmsi
@@ -97,11 +98,11 @@ class RegistryValueType(object):
 
 
 class RegistryRoot(object):
-    HKCR = 1 << 0
-    HKCU = 1 << 1
-    HKLM = 1 << 2
-    HKU = 1 << 3
-    HKMU = 1 << 4
+    HKMU = -1
+    HKCR = 0
+    HKCU = 1
+    HKLM = 2
+    HKU = 3
 
     @classmethod
     def from_string(cls, str_value):
@@ -296,8 +297,9 @@ MT_SIGNATURE = 'Signature'
 MT_FILEHASH = 'MsiFileHash'
 MT_ERROR = 'Error'
 MT_ENVIRONMENT = 'Environment'
+MT_VALIDATION = '_Validation'
 
-TABLE_ORDER = [MT_ADMINEXECUTESEQUENCE, MT_ADMINUISEQUENCE,
+TABLE_ORDER = [MT_VALIDATION, MT_ADMINEXECUTESEQUENCE, MT_ADMINUISEQUENCE,
                MT_ADVTEXECUTESEQUENCE, MT_INSTALLEXECUTESEQUENCE,
                MT_INSTALLUISEQUENCE, MT_DIRECTORY, MT_MEDIA, MT_PROPERTY,
                MT_ICON, MT_BINARY, MT_COMPONENT, MT_FEATURE,
@@ -313,6 +315,19 @@ MT_ACTION = (('Action', 'CHAR(72) NOT NULL'),
                           'PRIMARY KEY `Action`'),)
 
 MT_TABLES = {
+    MT_VALIDATION: (
+        ('Table', 'CHAR(72) NOT NULL'),
+        ('Column', 'CHAR(72) NOT NULL'),
+        ('Nullable', 'CHAR(1) NOT NULL'),
+        ('MinValue', 'LONG'),
+        ('MaxValue', 'LONG'),
+        ('KeyTable', 'CHAR(72)'),
+        ('KeyColumn', 'INT'),
+        ('Category', 'CHAR(72)'),
+        ('Set', 'CHAR(72)'),
+        ('Description', 'CHAR(255)'
+                        'PRIMARY KEY `Table`, `Column`'),
+    ),
     MT_PROPERTY: (
         ('Property', 'CHAR(72) NOT NULL'),
         ('Value', 'CHAR(0) NOT NULL LOCALIZABLE '
@@ -723,11 +738,17 @@ class MsiDatabase(libmsi.Database):
         compressed = pkg.get('Compressed') == 'yes'
         self.build_cabinet(cabfile, compressed, embed)
 
+        for record in validate.RECORDS:
+            if record[0] in (MT_VALIDATION, MT_STREAMS) or \
+                    (record[0] in self.tables and
+                     self.tables[record[0]].records):
+                self.tables[MT_VALIDATION].records.append(record)
+
         utils.echo_msg('Writing tables...')
         for item in TABLE_ORDER:
             self.tables[item].write_msi(self.db)
 
         self.commit_db()
 
-        if not embed and os.path.exists(cabfile):
+        if embed and os.path.exists(cabfile):
             os.remove(cabfile)

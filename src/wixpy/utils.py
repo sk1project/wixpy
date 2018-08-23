@@ -20,6 +20,7 @@
 import hashlib
 import struct
 import sys
+
 import time
 import uuid
 
@@ -53,6 +54,21 @@ def compute_md5(filepath):
         hash = hashlib.md5(fp.read()).hexdigest()
         data = bytes.fromhex(hash) if IS_PY3 else hash.decode('hex')
     return struct.unpack('<iiii', data)
+
+
+def encode_value(value):
+    if isinstance(value, unicode):
+        return value.encode('utf-8')
+    elif isinstance(value, list):
+        return [encode_value(item) for item in value]
+    elif isinstance(value, dict):
+        return {encode_value(key): encode_value(val)
+                for key, val in value.items()}
+    return value
+
+
+def encode_json(data):
+    return data if IS_PY3 else encode_value(data)
 
 
 XML_ENCODING = 'utf-8'

@@ -67,7 +67,7 @@ def defaults():
         'SummaryCodepage': '1252',
         # Internals
         'InstallerVersion': '400',
-        'InstallScope': 'perMachine',  # perMachine
+        'InstallScope': 'perMachine',
         'Compressed': 'yes',
         'KeyPath': 'yes',
         # Media
@@ -90,7 +90,7 @@ class WixElement(object):
     is_dir = False
     is_comp = False
     nl = False
-    id_prefix = ''
+    id_prefix = 'i'
 
     def __init__(self, **kwargs):
         self.childs = []
@@ -115,7 +115,7 @@ class WixElement(object):
         self.attrs.update(kwargs)
 
     def get(self, key):
-        return self.attrs.get(key, '')
+        return self.attrs.get(key)
 
     def pop(self, key):
         if key in self.attrs:
@@ -268,11 +268,24 @@ class WixFile(WixElement):
         super(WixFile, self).__init__(**data)
         self.set(Name=os.path.basename(rel_path), Source=path)
 
+    def get_msi_name(self):
+        filename = self.get('Name')
+        longname = name = filename.replace(' ', '_')
+        ext = None
+        if '.' in longname:
+            name = ''.join(longname.split('.')[:-1])
+            ext = longname.split('.')[-1]
+        name = name[:8] if len(name) > 8 else name
+        ext = ext[:3] if ext and len(ext) > 3 else ext
+        shortname = '.'.join([name, ext]) if ext else name
+        return '|'.join([shortname, filename]) \
+            if shortname != filename else filename
+
     def write_msi_records(self, db):
         table = db.tables[msi.MT_FILE]
         file_id = self.get('Id')
         comp_id = self.parent.get('Id')
-        name = self.get('Name')
+        name = self.get_msi_name()
         size = os.path.getsize(self.get('Source'))
         sequence = len(table.records) + 1
         table.add(file_id, comp_id, name, size, None, None,
@@ -334,10 +347,23 @@ class WixDirectory(WixElement):
                 elif os.path.isfile(item_path):
                     self.add(WixComponent(item_path, item_rel_path, **data))
 
+    def get_msi_name(self, dirname):
+        longname = name = dirname.replace(' ', '_')
+        ext = None
+        if '.' in longname:
+            name = ''.join(longname.split('.')[:-1])
+            ext = longname.split('.')[-1]
+        name = name[:8] if len(name) > 8 else name
+        ext = ext[:3] if ext and len(ext) > 3 else ext
+        shortname = '.'.join([name, ext]) if ext else name
+        return '|'.join([shortname, dirname]) \
+            if shortname != dirname else dirname
+
     def write_msi_records(self, db):
         table = db.tables[msi.MT_DIRECTORY]
-        table.add(self.get('Id'), self.parent.get('Id'),
-                  self.get('Name') or '.')
+        name = self.get('Name')
+        name = self.get_msi_name(name) if name else '.'
+        table.add(self.get('Id'), self.parent.get('Id'), name)
 
 
 class WixInstallDir(WixElement):
@@ -459,7 +485,7 @@ class WixRegistryValue(WixElement):
         reg_name = self.get('Name')
         reg_comp = self.parent.get('Id')
         reg_value = self.get('Value')
-        if not reg_value.startswith('#'):
+        if self.get('Type') == 'integer' and not reg_value.startswith('#'):
             reg_value = '#' + reg_value
         table.add(reg_id, reg_root, reg_key, reg_name, reg_value, reg_comp)
 
@@ -594,11 +620,109 @@ class WixProduct(WixElement):
                 }
                 shortcut_data.update(shortcut)
                 shortcut_data['Target'] = '[#%s]' % target_id
-                dir_ref.add(WixShortcutComponent(data, shortcut_data))
+                component = WixShortcutComponent(data, shortcut_data)
+                dir_ref.add(component)
+                if shortcut.get('AddOnDesktop'):
+                    desktop_dir = None
+                    for child in target_dir.childs:
+                        if child.get('Id') == 'DesktopFolder':
+                            desktop_dir = child
+                            break
+                    if desktop_dir is None:
+                        desktop_dir = WixDirectory(Id='DesktopFolder',
+                                                   Name='Desktop')
+                        desktop_dir.comment = 'Desktop folder'
+                        target_dir.add(desktop_dir)
+                    desktop_dir_ref = WixDirectoryRef(Id='DesktopFolder')
+                    self.add(desktop_dir_ref)
+                    desktop_component = WixComponent(**data)
+                    desktop_dir_ref.add(desktop_component)
+                    desktop_shortcut_data = {
+                        'DirectoryRef': 'DesktopFolder',
+                        'WorkingDirectory': work_dir_id,
+                    }
+                    desktop_shortcut_data.update(shortcut)
+                    desktop_shortcut_data.pop('Description')
+                    desktop_shortcut_data['Target'] = '[#%s]' % target_id
+                    desktop_component.add(WixShortcut(desktop_shortcut_data))
+
+                    reg_key = 'Software\\%s\\%s' % (
+                        data['Manufacturer'].replace(' ', '_'),
+                        data['Name'].replace(' ', '_'))
+                    name = desktop_shortcut_data['Name']
+                    reg_val = WixRegistryValue(Root='HKCU', Key=reg_key,
+                                               Name=name,
+                                               Type='integer',
+                                               Value='1', KeyPath='yes')
+                    desktop_component.add(reg_val)
+
+                if shortcut.get('OpenWith'):
+                    # Shortcut ref
+                    target_ref = shortcut.get('Name')
+                    description = shortcut.get('Description')
+                    component.add(WixRegistryValue(Root='HKCR', Key=target_ref,
+                                                   Value=description))
+                    # Shortcut open option
+                    key = target_ref + '\\shell\\open'
+                    value = 'Open with %s' % shortcut['Name']
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    key = target_ref + '\\shell\\open\\command'
+                    value = '"[#%s]" "%%1"' % target_id
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    # OpenWith menu item
+                    for item in shortcut.get('OpenWith'):
+                        key = item + '\\OpenWithProgids'
+                        component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                       Name=target_ref))
+                for item in shortcut.get('Open'):
+                    ext = item['Extension']
+                    description = item['Descriptrion']
+                    mime = item['MIME']
+                    icon_index = item.get('IconIndex', '0')
+                    target_ref = shortcut.get('Name') + ext
+
+                    # Shortcut ref
+                    component.add(WixRegistryValue(Root='HKCR', Key=target_ref,
+                                                   Value=description))
+                    # Shortcut icon
+                    key = target_ref + '\\DefaultIcon'
+                    value = '"[#%s]",%s' % (target_id, icon_index)
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    # Shortcut open option
+                    key = target_ref + '\\shell\\open'
+                    value = 'Open with %s' % shortcut['Name']
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    key = target_ref + '\\shell\\open\\command'
+                    value = '"[#%s]" "%%1"' % target_id
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Value=value))
+                    if item.get('EditWith'):
+                        # Shortcut edit option
+                        key = target_ref + '\\shell\\edit'
+                        value = 'Edit with %s' % shortcut['Name']
+                        component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                       Value=value))
+                        key = target_ref + '\\shell\\edit\\command'
+                        value = '"[#%s]" "%%1"' % target_id
+                        component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                       Value=value))
+                    # File association
+                    component.add(WixRegistryValue(Root='HKCR', Key=ext,
+                                                   Value=target_ref))
+                    component.add(WixRegistryValue(Root='HKCR', Key=ext,
+                                                   Name='Content Type',
+                                                   Value=mime))
+                    key = ext + '\\OpenWithProgids'
+                    component.add(WixRegistryValue(Root='HKCR', Key=key,
+                                                   Name=target_ref))
 
     def set_envvars(self, data):
         if data.get('_AddToPath') or data.get('_AddBeforePath'):
-            dir_ref = WixDirectoryRef(Id='INSTALLDIR')
+            dir_ref = WixDirectoryRef(Id='TARGETDIR')
             self.add(dir_ref)
             comp_data = {'Win64': 'yes'} if data.get('Win64') else {}
             comp = WixComponent(**comp_data)
