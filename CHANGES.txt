@@ -1,0 +1,2 @@
+v0.1, 8.30.2018 -- Initial release: headless MSI generation.
+                   Ready for use in production.
