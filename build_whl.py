@@ -29,7 +29,7 @@ import wixpy
 if 'bdist_wheel' not in sys.argv:
     sys.argv.append('bdist_wheel')
 
-with open("README.txt", "r") as fp:
+with open("README.md", "r") as fp:
     long_description = fp.read()
 
 setuptools.setup(
@@ -39,6 +39,7 @@ setuptools.setup(
     author_email='sk1.project.org@gmail.com',
     description='Crossplatform MSI builder',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url='https://wix.sk1project.net',
     packages=['wixpy'],
     package_dir={'wixpy': 'src/wixpy'},
