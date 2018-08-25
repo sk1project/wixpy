@@ -1,9 +1,9 @@
 + start script + json reading
 + setup.py
 + exe proj
-* msi build
-(*) whl package
++ msi build
 * deb/rpm packages (Ubuntu 16.04, 18.04, Debian 8,9, Centos 6,7)
 * md docs
 * github release
 * project site (News Bugs Docs Downloads)
+(*) whl package
