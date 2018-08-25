@@ -50,9 +50,11 @@ setuptools.setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: POSIX :: Linux',
         'Operating System :: Microsoft :: Windows',
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         "Topic :: Software Development :: Build Tools",
     ],
     scripts=['scripts/wix.py'],
     python_requires='>=2.7, <3',
+    keywords='wix msi',
 )
