@@ -44,6 +44,7 @@ import sys
 from wixpy import model
 from wixpy import utils
 
+NAME = 'wixpy'
 PROJECT = 'WiX.Py'
 VERSION = '0.1'
 
