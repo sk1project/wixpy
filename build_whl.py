@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 # -*- coding: utf-8 -*-
 #
 #   WiX.Py WHL build
@@ -35,25 +34,15 @@ with open("README.md", "r") as fp:
 setuptools.setup(
     name=wixpy.PROJECT,
     version=wixpy.VERSION,
-    author='Igor E. Novikov',
-    author_email='sk1.project.org@gmail.com',
-    description='Crossplatform JSON-driven MSI package builder',
+    author=wixpy.AUTHOR,
+    author_email=wixpy.AUTHOR_EMAIL,
+    description=wixpy.DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://wix.sk1project.net',
     packages=['wixpy'],
     package_dir={'wixpy': 'src/wixpy'},
-    classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Operating System :: POSIX :: Linux',
-        'Operating System :: Microsoft :: Windows',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Topic :: Software Development :: Build Tools',
-    ],
+    classifiers=wixpy.CLASSIFIERS,
     scripts=['scripts/wix.py'],
     python_requires='>=2.7, <3',
     keywords='wix msi',
