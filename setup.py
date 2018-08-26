@@ -25,7 +25,8 @@ from distutils.core import setup
 
 sys.path.insert(1, os.path.abspath('./src'))
 
-IS_WIN32 = platform.architecture()[0] == '32bit'
+IS_MSW = os.name == 'nt'
+IS_WIN32 = IS_MSW and platform.architecture()[0] == '32bit'
 WIN_ARCH = 'win32' if IS_WIN32 else 'win64'
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -46,6 +47,6 @@ setup(
     classifiers=wixpy.CLASSIFIERS,
     packages=['wixpy'],
     package_dir={'wixpy': 'src/wixpy'},
-    scripts=['scripts/%s/wix.py.exe' % WIN_ARCH] if os.name == 'nt'
+    scripts=['scripts/%s/wix.py.exe' % WIN_ARCH] if IS_MSW
     else ['scripts/wix.py'],
 )
