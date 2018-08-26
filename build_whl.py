@@ -33,11 +33,11 @@ with open("README.md", "r") as fp:
     long_description = fp.read()
 
 setuptools.setup(
-    name=wixpy.NAME,
+    name=wixpy.PROJECT,
     version=wixpy.VERSION,
     author='Igor E. Novikov',
     author_email='sk1.project.org@gmail.com',
-    description='Crossplatform MSI builder',
+    description='Crossplatform JSON-driven MSI package builder',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://wix.sk1project.net',
