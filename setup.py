@@ -25,12 +25,14 @@ from distutils.core import setup
 
 sys.path.insert(1, os.path.abspath('./src'))
 
+import wixpy
+import dependencies
+
+IS_PY2 = sys.version_info.major < 3
 IS_MSW = os.name == 'nt'
 IS_WIN32 = IS_MSW and platform.architecture()[0] == '32bit'
 WIN_ARCH = 'win32' if IS_WIN32 else 'win64'
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-import wixpy
 
 setup(
     name=wixpy.PROJECT,
@@ -47,6 +49,9 @@ setup(
     classifiers=wixpy.CLASSIFIERS,
     packages=['wixpy'],
     package_dir={'wixpy': 'src/wixpy'},
-    scripts=['scripts/%s/wix.py.exe' % WIN_ARCH] if IS_MSW
+    scripts=['scripts/%s/wix.py.exe' % WIN_ARCH] if IS_MSW and IS_PY2
     else ['scripts/wix.py'],
 )
+
+if 'install' in sys.argv and not IS_MSW:
+    dependencies.install()
