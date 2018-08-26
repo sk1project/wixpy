@@ -22,6 +22,7 @@ Supported features:
 * Crossplatform MSI-generation
 * JSON-driven MSI build
 * Recursive app folder scanning
+* Localizable installer
 * MSI package icon
 * 32/64bit installations
 * ProgramMenu folder and shortcuts
@@ -45,14 +46,15 @@ import sys
 from wixpy import model
 from wixpy import utils
 
-NAME = 'wixpy'
 PROJECT = 'WiX.Py'
 VERSION = '0.1'
+UPGRADE_CODE = '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF690'
 DESCRIPTION = 'Crossplatform MSI builder'
 AUTHOR = 'Igor E. Novikov'
 AUTHOR_EMAIL = 'sk1.project.org@gmail.com'
 MAINTAINER = AUTHOR
 MAINTAINER_EMAIL = AUTHOR_EMAIL
+MANUFACTURER = 'sK1 Project'
 LICENSE = 'GPL v3'
 URL = 'https://wix.sk1project.net'
 DOWNLOAD_URL = URL
@@ -75,6 +77,8 @@ small JSON file only, describing generic application data (name, version etc.)
 
 Copyright (C) %s sK1 Project Team (https://wix.sk1project.net)
 ''' % str(datetime.date.today().year)
+KEYWORDS = ['msi', 'wix', 'build']
+
 
 class Engine(object):
     WIXPY = 0
