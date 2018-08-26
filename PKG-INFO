@@ -1,19 +1,27 @@
 Metadata-Version: 1.1
-Name: wixpy
+Name: WiX.Py
 Version: 0.1
 Summary: Crossplatform MSI builder
 Home-page: https://wix.sk1project.net
 Author: Igor E. Novikov
 Author-email: sk1.project.org@gmail.com
-License: GPLv3
-Description: Crossplatform MSI builder
-
+License: GPL v3
+Download-URL: https://wix.sk1project.net
+Description: 
+        WiX.Py is an open source crossplatform alternative for WiX toolset.
+        Application allows building MSI packages as under MS Windows and Linux
+        platforms including inside Docker environment. Unlike WiX/wixl applications
+        WiX.Py is an JSON-driven builder. To build MSI package you need filling
+        small JSON file only, describing generic application data (name, version etc.)
+        
+        Copyright (C) 2018 sK1 Project Team (https://wix.sk1project.net)
+        
+Platform: UNKNOWN
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Console
 Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
 Classifier: Operating System :: POSIX :: Linux
 Classifier: Operating System :: Microsoft :: Windows
-Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 2.7
 Classifier: Topic :: Software Development :: Build Tools
