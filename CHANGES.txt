@@ -6,6 +6,7 @@ Ready for use in production. Supported features:
 * WXS file generation
 * JSON-driven MSI build
 * Recursive application folder scanning
+* Localizable installer
 * MSI package icon
 * 32/64bit installations
 * ProgramMenu folder and shortcuts
