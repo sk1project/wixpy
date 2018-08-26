@@ -40,5 +40,5 @@ setup(
     zipfile=None,
     name=wixpy.PROJECT,
     version=wixpy.VERSION,
-    description="Crossplatform MSI builder",
+    description=wixpy.DESCRIPTION,
 )
