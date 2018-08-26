@@ -45,5 +45,5 @@ setuptools.setup(
     classifiers=wixpy.CLASSIFIERS,
     scripts=['scripts/wix.py'],
     python_requires='>=2.7, <3',
-    keywords='wix msi',
+    keywords=' '.join(wixpy.KEYWORDS),
 )
