@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   WiX.Py MSI builder setup
+#   WiX.Py setup script
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #
