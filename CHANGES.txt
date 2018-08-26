@@ -1,2 +1,19 @@
-v0.1, 8.30.2018 -- Initial release: headless MSI generation.
-                   Ready for use in production.
+Version 0.1 (8.30.2018)
+-----------------------
+Initial release: headless MSI generation.
+Ready for use in production. Supported features:
+* Crossplatform MSI package generation
+* WXS file generation
+* JSON-driven MSI build
+* Recursive application folder scanning
+* MSI package icon
+* 32/64bit installations
+* ProgramMenu folder and shortcuts
+* Desktop shortcuts
+* OS version check
+* x64 arch check
+* Custom conditions
+* Add to system PATH
+* File type associations (Open, Open with)
+* MIME-type and icon for associated files
+* 'Edit with' menu item for associated files
