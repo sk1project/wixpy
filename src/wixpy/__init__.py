@@ -38,6 +38,7 @@ Planned features:
 * GUI for compiled MSI installers
 """
 
+import datetime
 import os
 import sys
 
@@ -47,7 +48,33 @@ from wixpy import utils
 NAME = 'wixpy'
 PROJECT = 'WiX.Py'
 VERSION = '0.1'
+DESCRIPTION = 'Crossplatform MSI builder'
+AUTHOR = 'Igor E. Novikov'
+AUTHOR_EMAIL = 'sk1.project.org@gmail.com'
+MAINTAINER = AUTHOR
+MAINTAINER_EMAIL = AUTHOR_EMAIL
+LICENSE = 'GPL v3'
+URL = 'https://wix.sk1project.net'
+DOWNLOAD_URL = URL
+CLASSIFIERS = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Operating System :: POSIX :: Linux',
+    'Operating System :: Microsoft :: Windows',
+    'Programming Language :: Python :: 2.7',
+    "Topic :: Software Development :: Build Tools",
+]
+LONG_DESCRIPTION = '''
+WiX.Py is an open source crossplatform alternative for WiX toolset.
+Application allows building MSI packages as under MSW and Linux
+platforms including inside Docker environment. Unlike WiX/wixl applications
+WiX.Py is an JSON-driven builder. To build MSI package you need filling
+small JSON file only, describing generic application data (name, version etc.)
 
+Copyright (C) %s sK1 Project Team (https://wix.sk1project.net)
+''' % str(datetime.date.today().year)
 
 class Engine(object):
     WIXPY = 0
