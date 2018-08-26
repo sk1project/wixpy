@@ -23,8 +23,6 @@ import sys
 
 from distutils.core import setup
 
-import datetime
-
 sys.path.insert(1, os.path.abspath('./src'))
 
 IS_WIN32 = platform.architecture()[0] == '32bit'
