@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 # -*- coding: utf-8 -*-
 #
 #   WiX.Py MSI build script
@@ -75,13 +74,13 @@ for arch in ('win32', 'win64'):
     MSI_DATA = {
         # Required
         'Name': wixpy.PROJECT,
-        'UpgradeCode': '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF690',
+        'UpgradeCode': wixpy.UPGRADE_CODE,
         'Version': wixpy.VERSION,
-        'Manufacturer': 'sK1 Project',
+        'Manufacturer': wixpy.MANUFACTURER,
         # Optional
         'Description': '%s %s Installer' % (wixpy.PROJECT, wixpy.VERSION),
-        'Comments': 'Licensed under GPLv3',
-        'Keywords': 'msi, wix, build',
+        'Comments': 'Licensed under %s' % wixpy.LICENSE,
+        'Keywords': ', '.join(wixpy.KEYWORDS),
         'Win64': win64,
         'Codepage': '1252',
         'SummaryCodepage': '1252',
@@ -94,8 +93,8 @@ for arch in ('win32', 'win64'):
         '_AppIcon': app_icon,
         '_AddToPath': ['', ],
         '_SourceDir': builddir,
-        '_InstallDir': 'wixpy-%s' % wixpy.VERSION,
-        '_OutputName': '%s-%s-%s.msi' % (wixpy.PROJECT.lower(),
+        '_InstallDir': '%s-%s' % (wixpy.PROJECT, wixpy.VERSION),
+        '_OutputName': '%s-%s-%s.msi' % (wixpy.PROJECT,
                                          wixpy.VERSION, arch),
         '_OutputDir': distro_folder,
         '_SkipHidden': True,
