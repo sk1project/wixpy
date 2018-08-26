@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   wix.py.exe build script
+#   wix.py.exe build script for python 2.7
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #
