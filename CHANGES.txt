@@ -1,7 +1,7 @@
-Version 0.1 (8.30.2018)
------------------------
-Initial release: headless MSI generation.
-Ready for use in production. Supported features:
+Version 0.1 - August 30, 2018
+-----------------------------
+Initial release: headless MSI generation. Ready for use in production. 
+Supported features:
 * Crossplatform MSI package generation
 * WXS file generation
 * JSON-driven MSI build
@@ -15,6 +15,6 @@ Ready for use in production. Supported features:
 * x64 arch check
 * Custom conditions
 * Add to system PATH
-* File type associations (Open, Open with)
+* File type associations ('Open', 'Open with' menu items)
 * MIME-type and icon for associated files
 * 'Edit with' menu item for associated files
