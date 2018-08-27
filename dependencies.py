@@ -26,17 +26,63 @@ IS_PY2 = sys.version_info.major < 3
 IS_MSW = os.name == 'nt'
 
 WIXPY_DEB_PY2 = {
-    UBUNTU16: ['python-gi', 'gir1.2-glib-2.0',
-               'gir1.2-libmsi0', 'gir1.2-libgcab-1.0'],
+    UBUNTU16: ['python-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi0',
+               'gir1.2-libgcab-1.0'],
+    UBUNTU17: ['python-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi-1.0',
+               'gir1.2-gcab-1.0'],
+    UBUNTU18: ['python-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi-1.0',
+               'gir1.2-gcab-1.0'],
+    MINT18: ['python-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi0',
+             'gir1.2-libgcab-1.0'],
+    MINT19: ['python-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi-1.0',
+             'gir1.2-gcab-1.0'],
+    DEBIAN9: ['python-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi0',
+              'gir1.2-libgcab-1.0'],
 }
 
-WIXPY_RPM = {}
+WIXPY_DEB_PY3 = {
+    UBUNTU16: ['python3-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi0',
+               'gir1.2-libgcab-1.0'],
+    UBUNTU17: ['python3-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi-1.0',
+               'gir1.2-gcab-1.0'],
+    UBUNTU18: ['python3-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi-1.0',
+               'gir1.2-gcab-1.0'],
+    MINT18: ['python3-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi0',
+             'gir1.2-libgcab-1.0'],
+    MINT19: ['python3-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi-1.0',
+             'gir1.2-gcab-1.0'],
+    DEBIAN9: ['python3-gi', 'gir1.2-glib-2.0', 'gir1.2-libmsi0',
+              'gir1.2-libgcab-1.0'],
+}
+
+WIXPY_RPM_PY2 = {}
+WIXPY_RPM_PY3 = {}
+
+WARNING = '''
+
+WARNING!
+--------
+Dependencies for you distributive are unknown. Please install manually following
+packages: python-gi, gir1.2-glib, gir1.2-libmsi, gir1.2-libgcab
+May be they have different names in your system.
+
+'''
 
 
 def install():
-    if not IS_MSW and IS_PY2:
-        if SYSFACTS.is_deb and SYSFACTS.sid in WIXPY_DEB_PY2:
-            deps = ' '.join(WIXPY_DEB_PY2[SYSFACTS.sid])
-            os.system('sudo apt-get -y install %s' % deps)
-    elif not IS_MSW and not IS_PY2:
-        pass
+    installed = IS_MSW
+    if not installed:
+        if SYSFACTS.is_deb:
+            deps_dict = WIXPY_DEB_PY2 if IS_PY2 else WIXPY_DEB_PY3
+            deps = ' '.join(deps_dict.get(SYSFACTS.sid, []))
+            if deps:
+                os.system('sudo apt-get -y install %s' % deps)
+                installed = True
+        elif SYSFACTS.is_rpm:
+            deps_dict = WIXPY_RPM_PY2 if IS_PY2 else WIXPY_RPM_PY3
+            deps = ' '.join(deps_dict.get(SYSFACTS.sid, []))
+            if deps:
+                os.system('yum -y install %s' % deps)
+                installed = True
+    if not installed:
+        print(WARNING)
