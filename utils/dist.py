@@ -97,7 +97,7 @@ class SystemFacts(object):
         self.is_deb = self.family in [MINT, UBUNTU, DEBIAN]
         self.is_debian = self.family == DEBIAN
         self.is_ubuntu = self.family == UBUNTU
-        self.is_rpm = self.family in [FEDORA, OPENSUSE]
+        self.is_rpm = self.family in [FEDORA, OPENSUSE, CENTOS]
         self.is_fedora = self.family == FEDORA
         self.is_opensuse = self.family == OPENSUSE
         self.is_src = all([self.is_64bit, self.is_deb, self.version == '16.04'])
