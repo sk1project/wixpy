@@ -1,4 +1,4 @@
-Version 0.1 - August 30, 2018
+Version 0.1 - 2018-08-30
 -----------------------------
 Initial release: headless MSI generation. Ready for use in production. 
 Supported features:
