@@ -52,6 +52,10 @@ FEDORA26 = 'fedora 26'
 FEDORA27 = 'fedora 27'
 FEDORA28 = 'fedora 28'
 
+CENTOS = 'centos'
+CENTOS6 = 'centos 6'
+CENTOS7 = 'centos 7'
+
 OPENSUSE = 'SuSE'
 OPENSUSE13 = 'SuSE 13'
 OPENSUSE42 = 'SuSE 42.1'
