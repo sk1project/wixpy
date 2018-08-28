@@ -82,7 +82,8 @@ WARNING!
 --------
 Dependencies for you distributive are unknown. Please install manually following
 packages: python-gi, gir1.2-glib, gir1.2-libmsi, gir1.2-libgcab
-May be they have different names in your system.
+May be they have different names in your system. Take a look at dependencies.py
+file for hints.
 
 '''
 
