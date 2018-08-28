@@ -77,6 +77,18 @@ small JSON file only, describing generic application data (name, version etc.)
 
 Copyright (C) %s sK1 Project Team (https://wix.sk1project.net)
 ''' % str(datetime.date.today().year)
+
+LONG_DEB_DESCRIPTION = ''' .
+ WiX.Py is an open source crossplatform alternative for WiX toolset.
+ Application allows building MSI packages as under MSW and Linux
+ platforms including inside Docker environment. Unlike WiX/wixl applications
+ WiX.Py is an JSON-driven builder. To build MSI package you need filling
+ small JSON file only, describing generic application data (name, version etc.)
+ .
+ Copyright (C) %s sK1 Project Team (https://wix.sk1project.net)
+ .
+''' % str(datetime.date.today().year)
+
 KEYWORDS = ['msi', 'wix', 'build']
 
 
