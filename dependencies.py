@@ -55,8 +55,26 @@ WIXPY_DEB_PY3 = {
               'gir1.2-libgcab-1.0'],
 }
 
-WIXPY_RPM_PY2 = {}
-WIXPY_RPM_PY3 = {}
+WIXPY_RPM_PY2 = {
+    FEDORA26: ['python-gobject-base', 'gobject-introspection', 'libmsi1',
+               'libgcab1'],
+    FEDORA27: ['python2-gobject-base', 'gobject-introspection', 'libmsi1',
+               'libgcab1'],
+    FEDORA28: ['python2-gobject-base', 'gobject-introspection', 'libmsi1',
+               'libgcab1'],
+    OPENSUSE15_0: ['python2-gobject', 'girepository-1_0',
+                   'typelib-1_0-Libmsi-1_0', 'typelib-1_0-GCab-1_0'],
+}
+WIXPY_RPM_PY3 = {
+    FEDORA26: ['python3-gobject-base', 'gobject-introspection', 'libmsi1',
+               'libgcab1'],
+    FEDORA27: ['python3-gobject-base', 'gobject-introspection', 'libmsi1',
+               'libgcab1'],
+    FEDORA28: ['python3-gobject-base', 'gobject-introspection', 'libmsi1',
+               'libgcab1'],
+    OPENSUSE15_0: ['python3-gobject', 'girepository-1_0',
+                   'typelib-1_0-Libmsi-1_0', 'typelib-1_0-GCab-1_0'],
+}
 
 WARNING = '''
 
