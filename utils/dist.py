@@ -69,6 +69,7 @@ MARKERS = {
     DEBIAN: ('debian', 'Debian'),
     FEDORA: ('fc', 'Fedora'),
     OPENSUSE: ('opensuse', 'OpenSuse'),
+    CENTOS: ('centos', 'CentOS'),
 }
 
 
