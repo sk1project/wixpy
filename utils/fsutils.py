@@ -98,3 +98,18 @@ def get_files_tree(path='.', ext='*'):
         files.sort()
         tree += files
     return tree
+
+
+def clear_files(folder, ext=None):
+    """
+    Delete files with provided extension recursively
+
+    :param folder: target folder path
+    :param ext: list or str
+    """
+    ext = 'py' if ext is None else ext
+    exts = [ext] if not isinstance(ext, list) else ext
+    for ext in exts:
+        for path in get_files_tree(folder, ext):
+            if os.path.exists(path) and path.endswith(ext):
+                os.remove(path)
