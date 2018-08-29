@@ -25,17 +25,8 @@ from zipfile import ZipFile
 sys.path.insert(0, 'src')
 
 from utils import build
-from utils.fsutils import get_files_tree
+from utils.fsutils import clear_files
 import wixpy
-
-
-def clear_files(folder, ext=None):
-    ext = 'py' if ext is None else ext
-    exts = [ext] if not isinstance(ext, list) else ext
-    for ext in exts:
-        for path in get_files_tree(folder, ext):
-            if os.path.exists(path) and path.endswith(ext):
-                os.remove(path)
 
 
 projdir = os.path.dirname(os.path.abspath(__file__))
