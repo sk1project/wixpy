@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   WiX.Py DEB build script
+#   WiX.Py DEB build script (Ubuntu 16.04 under sudo)
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #
