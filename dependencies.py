@@ -84,7 +84,7 @@ WiX.Py dependencies for your distributive are unknown. Please install manually
 following packages: python-gi, gir1.2-glib, gir1.2-libmsi, gir1.2-libgcab
 May be they have different names in your system. Take a look at dependencies.py
 file for hints. Ubuntu =<14, LinuxMint =<17, Debian =<8, CentOS =<7,
-OpenSuse =<42.3 have no these packages in the system repositories.
+OpenSuse =<42.3 have no all the packages in the system repositories.
 
 '''
 
