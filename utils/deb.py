@@ -147,6 +147,7 @@ class DebBuilder:
             name='',
             version='',
             arch='',
+            dist='',
             maintainer='',
             depends='',
             section='',
@@ -170,6 +171,7 @@ class DebBuilder:
         self.name = name
         self.version = version
         self.arch = arch
+        self.dist = dist
         self.maintainer = maintainer
         self.depends = depends
         if section:
@@ -206,8 +208,8 @@ class DebBuilder:
             self.dst = self.build_dir + self.dst
         self.bin_dir = '%s/usr/bin' % self.build_dir
 
-        self.package_name = 'python-%s-%s_%s.deb' % (
-            self.name, self.version, self.arch)
+        self.package_name = 'python-%s-%s%s_%s.deb' % (
+            self.name, self.version, self.dist, self.arch)
         self.build()
 
     def clear_build(self):
@@ -216,11 +218,7 @@ class DebBuilder:
             if os.system('rm -rf ' + self.build_dir):
                 raise IOError(
                     'Error while removing %s directory.' % self.build_dir)
-        if os.path.lexists('dist'):
-            info('Cleaning dist/ directory.', RM_CODE)
-            if os.system('rm -rf dist/*.deb'):
-                raise IOError('Error while cleaning dist/ directory.')
-        else:
+        if not os.path.exists('dist'):
             _make_dir('dist')
 
     def write_control(self):
