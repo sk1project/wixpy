@@ -28,12 +28,13 @@ import wixpy
 import dependencies
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
-IS_PY2 = sys.version_info.major < 3
 scripts = ['scripts/py2/wix.py']
 
-targets=[('_ubuntu_16.04', dist.UBUNTU16),
-         ('_ubuntu_18.04', dist.UBUNTU18),
-         ('_debian_9', dist.DEBIAN9)]
+targets = [('_ubuntu_16.04', dist.UBUNTU16),
+           ('_ubuntu_18.04', dist.UBUNTU18),
+           ('_mint_18', dist.MINT18),
+           ('_mint_19', dist.MINT19),
+           ('_debian_9', dist.DEBIAN9)]
 
 os.system('python setup.py build')
 build.compile_sources()
