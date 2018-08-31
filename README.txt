@@ -1,3 +1,3 @@
 WiX.Py
 
-Crossplatform JSON-driven MSI package builder.
+Cross-platform JSON-driven MSI package builder.

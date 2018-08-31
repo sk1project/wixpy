@@ -34,7 +34,7 @@ import wixpy
 HELP_TEMPLATE = '''
 %s %s
 
-Crossplatform MSI builder
+Cross-platform MSI builder
 Copyright (C) 2018 sK1 Project Team (https://wix.sk1project.net)
 
 Usage: wix.py [OPTIONS] [INPUT FILE]
