@@ -6,6 +6,6 @@
 + deb packages (Ubuntu 16.04, 18.04, Debian 9)
 * test packages
 * md docs
-* project site (News Bugs Docs Downloads)
++ project site (News Bugs Docs Downloads)
 * github release
 * PyPI release
