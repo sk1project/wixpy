@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   MSW MSI builder
+#   Cross-platform MSI builder
 #
 #   Copyright (C) 2018 by Igor E. Novikov
 #
@@ -19,7 +19,7 @@
 
 """
 Supported features:
-* Crossplatform MSI-generation
+* Cross-platform MSI-generation
 * JSON-driven MSI build
 * Recursive app folder scanning
 * Localizable installer
@@ -49,7 +49,7 @@ from wixpy import utils
 PROJECT = 'WiX.Py'
 VERSION = '0.1'
 UPGRADE_CODE = '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF690'
-DESCRIPTION = 'Crossplatform MSI builder'
+DESCRIPTION = 'Cross-platform MSI builder'
 AUTHOR = 'Igor E. Novikov'
 AUTHOR_EMAIL = 'sk1.project.org@gmail.com'
 MAINTAINER = AUTHOR
@@ -69,7 +69,7 @@ CLASSIFIERS = [
     "Topic :: Software Development :: Build Tools",
 ]
 LONG_DESCRIPTION = '''
-WiX.Py is an open source crossplatform alternative for WiX toolset.
+WiX.Py is an open source cross-platform alternative for WiX toolset.
 Application allows building MSI packages as under MSW and Linux
 platforms including inside Docker environment. Unlike WiX/wixl applications
 WiX.Py is an JSON-driven builder. To build MSI package you need filling
@@ -79,7 +79,7 @@ Copyright (C) %s sK1 Project Team (https://wix.sk1project.net)
 ''' % str(datetime.date.today().year)
 
 LONG_DEB_DESCRIPTION = ''' .
- WiX.Py is an open source crossplatform alternative for WiX toolset.
+ WiX.Py is an open source cross-platform alternative for WiX toolset.
  Application allows building MSI packages as under MSW and Linux
  platforms including inside Docker environment. Unlike WiX/wixl applications
  WiX.Py is an JSON-driven builder. To build MSI package you need filling

@@ -2,7 +2,7 @@ Version 0.1 - 2018-08-30
 ------------------------
 Initial release: headless MSI generation. Ready for use in production. 
 Supported features:
-* Crossplatform MSI package generation
+* Cross-platform MSI package generation
 * WXS file generation
 * JSON-driven MSI build
 * Recursive source folder scanning

@@ -19,7 +19,7 @@
   "_ProgramMenuFolder": "sK1 Project",
   "_Shortcuts": [
       {"Name": "WiX.Py",
-       "Description": "Crossplatform MSI builder",
+       "Description": "Cross-platform MSI builder",
        "Target": "wix.py.exe",
        "AddOnDesktop": true,
        "Open": [{"Extension": ".json",

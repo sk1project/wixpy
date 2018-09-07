@@ -27,7 +27,7 @@ import wixpy
 
 sys.argv += ['py2exe', ]
 INCLUDES = ['os', 'sys']
-SCRIPT = "scripts\\wix.py"
+SCRIPT = "scripts\\py2\\wix.py"
 
 setup(
     options={'py2exe': {'bundle_files': 3,
