@@ -19,8 +19,7 @@ We have designed WiX.Py first of all to build installers for small and medium
 size desktop applications. If you need complex enterprise features for your
 installer you may use WiX.
 
-Brief visual guide how to use WiX.Py is on the main page of project website:
-
+Brief visual guide how to use WiX.Py is on the main page of project website: 
 https://wix.sk1project.net
 
 ## WiX.Py features
