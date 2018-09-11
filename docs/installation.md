@@ -27,7 +27,7 @@ As for PyPI install, you need installing Python 2.7 and have it in system PATH.
 For Debian, Ubuntu, LinuxMint and other deb-based distors we are providing ready
 deb-packages. WiX.Py has not own native extensions. Therefore all packages are
 `noarch`. Major difference for them is a dependency list. For access to libmsi
-and libgcab libraries WiX.Py uses gobject introspection. To install WiX.Py 
+and libgcab libraries WiX.Py uses gobject introspection. To run WiX.Py 
 you need installing libmsi, libgcab, their introspection stubs and python
 gobject introspection package. In different distros the packages have different 
 naming. If you installing WiX.Py deb-package on non-specified system, you need be
