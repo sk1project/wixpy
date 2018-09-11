@@ -9,10 +9,12 @@ License: GPL v3
 Download-URL: https://wix.sk1project.net
 Description: 
         WiX.Py is an open source cross-platform alternative for WiX toolset.
-        Application allows building MSI packages as under MS Windows and Linux
+        Application allows building MSI packages as under MSW and Linux
         platforms including inside Docker environment. Unlike WiX/wixl applications
         WiX.Py is an JSON-driven builder. To build MSI package you need filling
         small JSON file only, describing generic application data (name, version etc.)
+        WiX.Py is a standalone application. It uses libmsi on UNIX platforms
+        and msi.dll on MS Windows.
         
         Copyright (C) 2018 sK1 Project Team (https://wix.sk1project.net)
         

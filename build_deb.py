@@ -32,8 +32,6 @@ scripts = ['scripts/py2/wix.py']
 
 targets = [('_ubuntu_16.04', dist.UBUNTU16),
            ('_ubuntu_18.04', dist.UBUNTU18),
-           ('_mint_18', dist.MINT18),
-           ('_mint_19', dist.MINT19),
            ('_debian_9', dist.DEBIAN9)]
 
 os.system('python setup.py build')
@@ -41,20 +39,21 @@ build.compile_sources()
 
 for dist, dist_key in targets:
     deb_depends = ', '.join(dependencies.WIXPY_DEB_PY2[dist_key])
-    DebBuilder(
-        name=wixpy.PROJECT.lower(),
-        version=wixpy.VERSION,
-        arch='noarch',
-        dist=dist,
-        maintainer='%s <%s>' % (wixpy.AUTHOR, wixpy.AUTHOR_EMAIL),
-        depends=deb_depends,
-        homepage=wixpy.URL,
-        description=wixpy.DESCRIPTION,
-        long_description=wixpy.LONG_DEB_DESCRIPTION,
-        section='devel',
-        package_dirs={'wixpy': 'src/wixpy'},
-        scripts=scripts,
-    )
+    for arch in ('amd64', 'i386'):
+        DebBuilder(
+            name=wixpy.PROJECT.lower(),
+            version=wixpy.VERSION,
+            dist=dist,
+            arch=arch,
+            maintainer='%s <%s>' % (wixpy.AUTHOR, wixpy.AUTHOR_EMAIL),
+            depends=deb_depends,
+            homepage=wixpy.URL,
+            description=wixpy.DESCRIPTION,
+            long_description=wixpy.LONG_DEB_DESCRIPTION,
+            section='devel',
+            package_dirs={'wixpy': 'src/wixpy'},
+            scripts=scripts,
+        )
 
 os.chdir(CURRENT_PATH)
 build.clear_build()
