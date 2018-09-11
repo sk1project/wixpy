@@ -41,7 +41,7 @@ https://wix.sk1project.net
 * MIME-type and icon for associated files
 * 'Edit with' menu item for associated files
 
-If you need some additional feature, submit feature request feature.
+If you need some additional feature, just submit feature request.
 Installation and usage details see on project documentation page.
 
 ---
