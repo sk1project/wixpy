@@ -13,8 +13,6 @@ Description:
         platforms including inside Docker environment. Unlike WiX/wixl applications
         WiX.Py is an JSON-driven builder. To build MSI package you need filling
         small JSON file only, describing generic application data (name, version etc.)
-        WiX.Py is a standalone application. It uses libmsi on UNIX platforms
-        and msi.dll on MS Windows.
         
         Copyright (C) 2018 sK1 Project Team (https://wix.sk1project.net)
         
