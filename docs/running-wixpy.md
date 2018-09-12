@@ -18,6 +18,16 @@ Thus you can skip dedicated MSW cloud instance building MSI packages in
 CI service. This one decreases project infrastructure cost and speed-ups 
 continuous integration builds.
 
+# Preparing source folder
+To prepare application source folder just copy all the files and directories
+into some folder. The folder name does not matter. For example, you can use
+`build` name. Source folder content should be the same as you need installing
+on target machine in `ProgramFiles`. Installation folder name will be specified
+in json file.
+
+Resource files like icon for MSI package can be placed outside source folder
+because they will not be in installation folder on target machine.
+
 ---
 
 [Return to help TOC](https://wix.sk1project.net/docs.php)
