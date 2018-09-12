@@ -76,3 +76,7 @@ introspection stubs and python gobject introspection package. For example,
 on macOS you could try using `brew install msitools` to install libmsi and 
 libgcab. The issue is rather theoretical because there is no practical sense
 for that.
+
+---
+
+[Return to help TOC](https://wix.sk1project.net/docs.php)
