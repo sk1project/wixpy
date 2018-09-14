@@ -9,7 +9,7 @@ Unique application UUID. Should be the same for all versions. String value.
 
 ## "Version" field
 Application version in format "1.1","1.1.1", "1.1.1.111". Cannot contains any
-letters, i.e. version like "1.1alpha" or "2.3b4" are not valid. String value.
+letters, i.e. versions like "1.1alpha" or "2.3b4" are not valid. String value.
 
 ## "Manufacturer" field
 Your company/project name. String value.
