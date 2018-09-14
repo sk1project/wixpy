@@ -86,9 +86,9 @@ Optional list of icon paths.
 Name of application folder in `Program Menu`. Optional string value.
 
 ## "_Shortcuts" field
-This field is a most complex because application binary can contains file 
-associations. The field is a list of shortcut definitions. In simple case this
-will be:
+This field is a most complex because it can contains file associations. 
+The field is a list of shortcut definitions. In simple case this will be:
+
 ```
   "_Shortcuts": [
       {"Name": "WiX.Py",
@@ -97,8 +97,56 @@ will be:
        }
    ]
 ```
-Target is an installation directory relative value, i.e. this will be 
+
+Target is an installation directory relative value, i.e. this will be equal to
 `[INSTALL_DIR]\wix.py.exe`
+
+To place shortcut on desktop too just add according flag:
+
+```
+  "_Shortcuts": [
+      {"Name": "WiX.Py",
+       "Description": "Cross-platform MSI builder",
+       "Target": "wix.py.exe",
+       "AddOnDesktop": true
+       }
+   ]
+```
+
+If you need associating some file extensions with your application in `Open With`
+Explorer context submenu, just add list of desired extensions:
+
+```
+  "_Shortcuts": [
+      {"Name": "WiX.Py",
+       "Description": "Cross-platform MSI builder",
+       "Target": "wix.py.exe",
+       "OpenWith": [".png", ".svg", ".jpg"]
+       }
+   ]
+```
+
+And last option is adding new file type to the Windows registry using "Open" field:
+
+```
+  "_Shortcuts": [
+      {"Name": "WiX.Py",
+       "Description": "Cross-platform MSI builder",
+       "Target": "wix.py.exe",
+       "Open": [{"Extension": ".json",
+                 "Descriptrion": "File \"JSON\"",
+                 "IconIndex": "0",
+                 "EditWith": false,
+                 "MIME": "application/json"}],
+       }
+   ]
+```
+
+The field value is a list of dicts. So you could define several file types 
+associated with your application. "IconIndex" is an icon index inside your 
+application binary. "EditWith" is a flag to add `Edit With <app name>` Explorer
+context menu item. "MIME" - correct [media tye description ](https://en.wikipedia.org/wiki/Media_type)
+
 
 ## "_AddToPath" field
 List of relative paths in installation folder. Adds paths at the end of 
