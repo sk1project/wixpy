@@ -6,7 +6,10 @@ type `wix.py <your-file-name>.json` to run application.
 
 ## Linux
 Linux/Unix version uses `wix.py` script as an executable file. But command will 
-be the same as for Windows version: `wix.py <your-file-name>.json`
+be the same as for Windows version:
+```
+wix.py <your-file-name>.json
+```
 
 ## Inside Docker environment
 WiX.Py is designed to be Docker compatible tool, i.e. it doesn't depend on 
