@@ -5,7 +5,8 @@
 Application name. String value.
 
 ## "UpgradeCode" field
-Unique application UUID. Should be the same for all versions. String value.
+Unique application GUID used to identify itself. Should be the same for all 
+application versions. String value. For example, "3AC4B4FF-19C5-4B8F-83AD-BAC3238BF690".
 
 ## "Version" field
 Application version in format "1.1","1.1.1", "1.1.1.111". Cannot contains any
@@ -31,17 +32,19 @@ If true application will be installed in 64bit `Program Files` folder. If false,
 there will be 32bit `Program Files (x86)` folder.
 
 ## "Codepage" field
-Installer encoding for file names. Optional string value. Default
+Installer encoding for file names and messages. Optional string value. Default
 is "1252"
 
 ## "SummaryCodepage" field
 Installer summary encoding. Optional string value. Default is "1252"
 
 ## "Language" field
-Installer messages language code. Optional string value. Default is "1033"
+The [Microsoft Windows Language Code identifier](https://msdn.microsoft.com/en-us/library/cc233965.aspx)
+used by installer. Optional string value. Default is "1033"
 
 ## "Languages" field
-Installer messages language codes. Optional string value. Default is "1033"
+The list of language IDs (LCIDs) supported in the package. Optional string value. 
+Default is "1033"
 
 ## "_OsCondition" field
 Minimally suitable OS version. Optional string value. If presents MSI installer 
@@ -83,8 +86,8 @@ Name of application folder in `Program Menu`. Optional string value.
 
 ## "_AddToPath" field
 List of relative paths in installation folder. Adds paths at the end of 
-system PATH environmental variable. For example to add installation folder this
-will be:
+system PATH environmental variable. For example to add installation folder into 
+system PATH this will be:
 ```
  "_AddToPath": [""]
 ```
