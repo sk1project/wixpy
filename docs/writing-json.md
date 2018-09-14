@@ -145,7 +145,7 @@ And last option is adding new file type to the Windows registry using "Open" fie
 The field value is a list of dicts. So you could define several file types 
 associated with your application. "IconIndex" is an icon index inside your 
 application binary. "EditWith" is a flag to add `Edit With <app name>` Explorer
-context menu item. "MIME" - correct [media tye description ](https://en.wikipedia.org/wiki/Media_type)
+context menu item. "MIME" - correct [media type description ](https://en.wikipedia.org/wiki/Media_type)
 
 
 ## "_AddToPath" field
