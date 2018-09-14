@@ -8,7 +8,7 @@ description you could find below:
 Application name. String value.
 
 ## "UpgradeCode" field
-Unique application GUID used to identify itself. Should be the same for all 
+Unique GUID used your application to identify itself. Should be the same for all 
 application versions. String value. For example, "3AC4B4FF-19C5-4B8F-83AD-BAC3238BF690".
 
 ## "Version" field
@@ -86,6 +86,19 @@ Optional list of icon paths.
 Name of application folder in `Program Menu`. Optional string value.
 
 ## "_Shortcuts" field
+This field is a most complex because application binary can contains file 
+associations. The field is a list of shortcut definitions. In simple case this
+will be:
+```
+  "_Shortcuts": [
+      {"Name": "WiX.Py",
+       "Description": "Cross-platform MSI builder",
+       "Target": "wix.py.exe"
+       }
+   ]
+```
+Target is an installation directory relative value, i.e. this will be 
+`[INSTALL_DIR]\wix.py.exe`
 
 ## "_AddToPath" field
 List of relative paths in installation folder. Adds paths at the end of 
