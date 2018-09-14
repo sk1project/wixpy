@@ -1,4 +1,7 @@
 # Writing JSON file
+Almost all fields of JSON file are simple. You can take [an example file](https://github.com/sk1project/wixpy/blob/master/samples/wixpy.json)
+and modify it for your application. Paths can be absolute or relative. Some field 
+description you could find below: 
 
 
 ## "Name" field
