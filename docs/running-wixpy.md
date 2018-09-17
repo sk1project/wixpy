@@ -11,6 +11,12 @@ be the same as for Windows version:
 wix.py <your-file-name>.json
 ```
 
+## Generation GUID
+For you app you need unique GUIDs. You could generate them using WiX.Py:
+```
+wix.py --generate_guid
+```
+
 ## Inside Docker environment
 WiX.Py is designed to be Docker compatible tool, i.e. it doesn't depend on 
 windowing system or networking features. So just use WiX.Py inside Docker

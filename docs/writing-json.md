@@ -7,6 +7,10 @@ description you could find below:
 ## "Name" field
 Application name. String value.
 
+## "ProductCode" field
+Unique product GUID. The field is optional. If not specified the product id will
+be generated. String value. For example, "3AC4B4FF-19C5-4B8F-83AD-BAC3238BF690".
+
 ## "UpgradeCode" field
 Unique GUID used your application to identify itself. Should be the same for all 
 application versions. String value. For example, "3AC4B4FF-19C5-4B8F-83AD-BAC3238BF690".
