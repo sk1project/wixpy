@@ -34,6 +34,7 @@ Supported features:
 * File type associations (Open, Open with)
 * MIME-type and icon for associated files
 * 'Edit with' menu item for associated files
+* GUID generation
 
 Planned features:
 * GUI for compiled MSI installers
@@ -47,7 +48,7 @@ from wixpy import model
 from wixpy import utils
 
 PROJECT = 'WiX.Py'
-VERSION = '0.1'
+VERSION = '0.2'
 UPGRADE_CODE = '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF690'
 DESCRIPTION = 'Cross-platform MSI builder'
 AUTHOR = 'Igor E. Novikov'
