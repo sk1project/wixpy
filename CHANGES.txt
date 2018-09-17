@@ -1,6 +1,7 @@
 Version 0.2 - 2018-xx-xx
 ------------------------
 * GUID generation
+* ProductCode optional field
 
 
 Version 0.1 - 2018-09-11
