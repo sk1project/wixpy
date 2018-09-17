@@ -1,4 +1,9 @@
-Version 0.1 - 2018-08-30
+Version 0.2 - 2018-xx-xx
+------------------------
+* GUID generation
+
+
+Version 0.1 - 2018-09-11
 ------------------------
 Initial release: headless MSI generation. Ready for use in production. 
 Supported features:
