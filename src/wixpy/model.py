@@ -559,7 +559,7 @@ class WixProduct(WixElement):
 
     def __init__(self, data):
         super(WixProduct, self).__init__(**data)
-        self.set(Id=utils.get_guid())
+        self.set(Id=data.get('ProductCode') or utils.get_guid())
         self.add(WixPackage(data))
         COMPONENTS[:] = []
         self.add(WixMedia(data))
