@@ -47,10 +47,15 @@ Available options:
  --output=FILE         Resulted MSI/WXS filename
  --xml_encoding=ENC    WXS content encoding. Default "utf-8"
  --json_encoding=ENC   JSON content encoding. Default "utf-8"
+ --generate_guid       Generate random GUID
 '''
 
 if '--help' in sys.argv or '-help' in sys.argv or len(sys.argv) == 1:
     print(HELP_TEMPLATE % (wixpy.PROJECT, wixpy.VERSION))
+    sys.exit(0)
+
+if '--generate_guid' in sys.argv:
+    print(wixpy.utils.get_guid())
     sys.exit(0)
 
 options = [item for item in sys.argv if item.startswith('--')]
