@@ -44,7 +44,6 @@ import datetime
 import os
 import sys
 
-from wixpy import model
 from wixpy import utils
 
 PROJECT = 'WiX.Py'
@@ -173,6 +172,7 @@ def _get_output_path(json_data=None, output=None, xml_only=False, stdout=False):
 
 
 def create_model(json_data=None, xml_file=None):
+    from wixpy import model
     if json_data:
         return model.Wix(_normalize_json_data(json_data))
     elif xml_file:
@@ -186,6 +186,7 @@ def build(json_data=None, output=None, xml_only=False, xml_encoding=None,
     output = _get_output_path(json_data, output, xml_only, stdout)
     utils.XML_ENCODING = xml_encoding or 'utf-8'
 
+    from wixpy import model
     wixmodel = create_model(json_data)
 
     if xml_only:
