@@ -676,7 +676,7 @@ class WixProduct(WixElement):
                         key = item + '\\OpenWithProgids'
                         component.add(WixRegistryValue(Root='HKCR', Key=key,
                                                        Name=target_ref))
-                for item in shortcut.get('Open'):
+                for item in shortcut.get('Open', []):
                     ext = item['Extension']
                     description = item['Descriptrion']
                     mime = item['MIME']
